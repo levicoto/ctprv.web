@@ -33,7 +33,7 @@ interface StoredEvaluation {
   enlaceReferencia: string;
   modoOperacion: 'solo' | 'equipo';
   preocupacionReciente: string;
-  tierSugerido: 'Tier 1: Argos' | 'Tier 2: Atlas';
+  tierSugerido: 'Tier 1: Argos' | 'Tier 2: Atlas' | 'Palantir Raptor';
   status: EvaluationStatus;
   adminNotes: string;
   createdAtMillis: number;
@@ -103,16 +103,24 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
           const d = docSnap.data();
           const createdTs = d.createdAt instanceof Timestamp ? d.createdAt : null;
           const millis = createdTs ? createdTs.toMillis() : 0;
+          const rawFolio = String(d.folio ?? '').trim();
+          const normalizedFolio = /^CTPV-/i.test(rawFolio)
+            ? rawFolio
+            : rawFolio.replace(/^[A-Z]{2}-(?=\d{2}-\d{4}$)/i, 'CTPV-');
           return {
             id: docSnap.id,
-            folio: String(d.folio ?? ''),
+            folio: normalizedFolio,
             nombreAlias: String(d.nombreAlias ?? ''),
             rolPrincipal: String(d.rolPrincipal ?? ''),
             enlaceReferencia: String(d.enlaceReferencia ?? ''),
             modoOperacion: d.modoOperacion === 'equipo' ? 'equipo' : 'solo',
             preocupacionReciente: String(d.preocupacionReciente ?? ''),
             tierSugerido:
-              d.tierSugerido === 'Tier 2: Atlas' ? 'Tier 2: Atlas' : 'Tier 1: Argos',
+              d.tierSugerido === 'Tier 2: Atlas'
+                ? 'Tier 2: Atlas'
+                : d.tierSugerido === 'Palantir Raptor'
+                  ? 'Palantir Raptor'
+                  : 'Tier 1: Argos',
             status: (['pendiente', 'en_revision', 'contactado', 'cerrado'].includes(d.status)
               ? d.status
               : 'pendiente') as EvaluationStatus,

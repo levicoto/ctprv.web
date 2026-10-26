@@ -10,6 +10,7 @@ import TierKineticObject3D, { type ServiceTierId } from './components/TierKineti
 import TechnologyStack from './components/TechnologyStack';
 import EvaluationForm, { type OperationMode } from './components/EvaluationForm';
 import AdminInboxModal from './components/AdminInboxModal';
+import PalantirRaptorPage from './components/PalantirRaptorPage';
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -22,13 +23,45 @@ const LANGUAGES: { code: Language; short: string; name: string }[] = [
   { code: 'pt', short: 'PT', name: 'Português' },
 ];
 
+type ActiveView = 'main' | 'raptor';
+
+function readViewFromHash(): ActiveView {
+  if (typeof window === 'undefined') return 'main';
+  const raw = window.location.hash.replace(/^#/, '').trim().toLowerCase();
+  return raw === 'palantir-raptor' || raw.startsWith('raptor-') ? 'raptor' : 'main';
+}
+
 export default function App() {
   const { lang, setLang, t } = useI18n();
+  const [activeView, setActiveView] = useState<ActiveView>(() => readViewFromHash());
   const [activeTier, setActiveTier] = useState<ServiceTierId>('atlas');
   const [preferredMode, setPreferredMode] = useState<OperationMode>('solo');
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const syncRoute = () => {
+      const nextView = readViewFromHash();
+      setActiveView((prev) => {
+        if (prev !== nextView) {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+        return nextView;
+      });
+    };
+
+    window.addEventListener('hashchange', syncRoute);
+    window.addEventListener('popstate', syncRoute);
+    return () => {
+      window.removeEventListener('hashchange', syncRoute);
+      window.removeEventListener('popstate', syncRoute);
+    };
+  }, []);
+
+  useEffect(() => {
+    document.title = activeView === 'raptor' ? t.raptorMetaTitle : t.metaTitle;
+  }, [activeView, t.metaTitle, t.raptorMetaTitle]);
 
   useEffect(() => {
     if (!langMenuOpen) return;
@@ -53,6 +86,22 @@ export default function App() {
     };
   }, [langMenuOpen]);
 
+  const handleOpenRaptorPage = () => {
+    setLangMenuOpen(false);
+    if (window.location.hash !== '#palantir-raptor') {
+      window.history.pushState(null, '', '#palantir-raptor');
+    }
+    setActiveView('raptor');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const handleBackToMain = () => {
+    setLangMenuOpen(false);
+    window.history.pushState(null, '', window.location.pathname + window.location.search);
+    setActiveView('main');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
   const handleAnchorClick = (e: MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
     smoothScrollToSection(sectionId);
@@ -67,6 +116,18 @@ export default function App() {
       firstInput?.focus({ preventScroll: true });
     }, 620);
   };
+
+  if (activeView === 'raptor') {
+    return (
+      <>
+        <PalantirRaptorPage
+          onBackToMain={handleBackToMain}
+          onOpenAdmin={() => setAdminModalOpen(true)}
+        />
+        <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
+      </>
+    );
+  }
 
   const currentLangItem = LANGUAGES.find((item) => item.code === lang) ?? LANGUAGES[0];
 
@@ -265,6 +326,7 @@ export default function App() {
                 <div className="lg:col-span-6 flex">
                   <article
                     onMouseEnter={() => setActiveTier('argos')}
+                    onTouchStart={() => setActiveTier('argos')}
                     className="w-full h-full glass-panel rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
                   >
                     <div>
@@ -317,6 +379,7 @@ export default function App() {
                 <div className="lg:col-span-6 flex">
                   <article
                     onMouseEnter={() => setActiveTier('atlas')}
+                    onTouchStart={() => setActiveTier('atlas')}
                     className="w-full h-full glass-panel-dark text-white rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
                   >
                     <div>
@@ -365,6 +428,31 @@ export default function App() {
                       </button>
                     </div>
                   </article>
+                </div>
+              </div>
+
+              {/* Off-Tier Editorial Horizontal Strip: Palantir Raptor (OSINT) */}
+              <div className="mt-6 lg:mt-8 glass-panel rounded-2xl p-6 sm:px-10 sm:py-7 flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-transform duration-200 hover:-translate-y-0.5">
+                <div className="max-w-[64ch]">
+                  <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
+                    <span className="text-zinc-800">{t.services.raptorCallout.kicker[0]}</span>
+                    <span aria-hidden="true">·</span>
+                    <span>{t.services.raptorCallout.kicker[1]}</span>
+                  </div>
+                  <p className="mt-2 text-base sm:text-lg font-medium text-zinc-950 leading-snug text-balance">
+                    {t.services.raptorCallout.hook}
+                  </p>
+                </div>
+
+                <div className="flex items-center shrink-0">
+                  <button
+                    type="button"
+                    onClick={handleOpenRaptorPage}
+                    className="w-full sm:w-auto py-3 px-5 rounded-xl border border-zinc-900 bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                  >
+                    <span>{t.services.raptorCallout.cta}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
             </ParallaxLayer>

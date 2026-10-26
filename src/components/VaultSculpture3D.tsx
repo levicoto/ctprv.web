@@ -285,7 +285,7 @@ export default function VaultSculpture3D() {
     const initialW = container.clientWidth || 600;
     const initialH = container.clientHeight || 520;
     renderer.setSize(initialW, initialH);
-    renderer.domElement.className = 'block w-full h-full outline-none';
+    renderer.domElement.className = 'block w-full h-full outline-none touch-pan-y';
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -617,19 +617,83 @@ export default function VaultSculpture3D() {
       renderer.compile(scene, camera);
     }
 
-    // Pure mouse-hover interaction (no controls)
-    let targetX = 0;
-    let targetY = 0;
+    // Unified Desktop + Mobile interaction (mouse hover, touch drag/tap, scroll parallax & passive tilt)
+    let pointerX = 0;
+    let pointerY = 0;
+    let scrollYaw = 0;
+    let scrollPitch = 0;
+    let gyroX = 0;
+    let gyroY = 0;
+    let gyroBaseGamma: number | null = null;
+    let gyroBaseBeta: number | null = null;
     let smoothX = 0;
     let smoothY = 0;
     let isCanvasHovered = false;
+    let isTouchActive = false;
+    let touchActuateUntil = 0;
     let hoverLift = 0;
 
     const onWindowPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
       const nx = (e.clientX / Math.max(window.innerWidth, 1)) * 2 - 1;
       const ny = -(e.clientY / Math.max(window.innerHeight, 1)) * 2 + 1;
-      targetX = THREE.MathUtils.clamp(nx, -1, 1);
-      targetY = THREE.MathUtils.clamp(ny, -1, 1);
+      pointerX = THREE.MathUtils.clamp(nx, -1, 1);
+      pointerY = THREE.MathUtils.clamp(ny, -1, 1);
+    };
+
+    const updateFromTouch = (touch: Touch) => {
+      const rect = container.getBoundingClientRect();
+      const nx = (((touch.clientX - rect.left) / Math.max(rect.width, 1)) * 2 - 1) * 1.25;
+      const ny = (-((touch.clientY - rect.top) / Math.max(rect.height, 1)) * 2 + 1) * 1.25;
+      pointerX = THREE.MathUtils.clamp(nx, -1, 1);
+      pointerY = THREE.MathUtils.clamp(ny, -1, 1);
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        isTouchActive = true;
+        touchActuateUntil = performance.now() + 1350;
+        updateFromTouch(e.touches[0]);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        isTouchActive = true;
+        updateFromTouch(e.touches[0]);
+      }
+    };
+
+    const onTouchEnd = () => {
+      isTouchActive = false;
+      pointerX *= 0.35;
+      pointerY *= 0.35;
+    };
+
+    const updateScrollTilt = () => {
+      if (prefersReducedMotion) {
+        scrollYaw = 0;
+        scrollPitch = 0;
+        return;
+      }
+      const rect = container.getBoundingClientRect();
+      const vh = Math.max(window.innerHeight, 1);
+      const centerDelta = (vh * 0.5 - (rect.top + rect.height * 0.5)) / (vh * 0.65);
+      const isCompact = window.innerWidth < 1024;
+      const yawScale = isCompact ? 0.52 : 0.16;
+      const pitchScale = isCompact ? 0.34 : 0.12;
+      scrollYaw = THREE.MathUtils.clamp(centerDelta * yawScale, -0.58, 0.58);
+      scrollPitch = THREE.MathUtils.clamp(-centerDelta * pitchScale, -0.42, 0.42);
+    };
+
+    const onDeviceOrientation = (e: DeviceOrientationEvent) => {
+      if (prefersReducedMotion || e.gamma === null || e.beta === null) return;
+      if (gyroBaseGamma === null || gyroBaseBeta === null) {
+        gyroBaseGamma = e.gamma;
+        gyroBaseBeta = e.beta;
+      }
+      gyroX = THREE.MathUtils.clamp((e.gamma - gyroBaseGamma) / 28, -0.65, 0.65);
+      gyroY = THREE.MathUtils.clamp(-(e.beta - gyroBaseBeta) / 28, -0.55, 0.55);
     };
 
     const onPointerEnter = () => {
@@ -640,8 +704,15 @@ export default function VaultSculpture3D() {
     };
 
     window.addEventListener('pointermove', onWindowPointerMove, { passive: true });
+    window.addEventListener('scroll', updateScrollTilt, { passive: true });
+    window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
     container.addEventListener('pointerenter', onPointerEnter);
     container.addEventListener('pointerleave', onPointerLeave);
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    updateScrollTilt();
 
     let contextLost = false;
     const onContextLost = (e: Event) => {
@@ -708,9 +779,14 @@ export default function VaultSculpture3D() {
       const elapsed = clock.getElapsedTime();
 
       if (isVisible && !contextLost) {
-        smoothX = THREE.MathUtils.damp(smoothX, targetX, 5.2, dt);
-        smoothY = THREE.MathUtils.damp(smoothY, targetY, 5.2, dt);
-        hoverLift = THREE.MathUtils.damp(hoverLift, isCanvasHovered ? 1 : 0, 5.0, dt);
+        const activeTargetX = THREE.MathUtils.clamp(pointerX + gyroX + scrollYaw, -1.05, 1.05);
+        const activeTargetY = THREE.MathUtils.clamp(pointerY + gyroY + scrollPitch, -1.0, 1.0);
+        const shouldActuate =
+          isCanvasHovered || isTouchActive || performance.now() < touchActuateUntil;
+
+        smoothX = THREE.MathUtils.damp(smoothX, activeTargetX, 5.4, dt);
+        smoothY = THREE.MathUtils.damp(smoothY, activeTargetY, 5.4, dt);
+        hoverLift = THREE.MathUtils.damp(hoverLift, shouldActuate ? 1 : 0, 5.2, dt);
 
         const motionScale = prefersReducedMotion ? 0.15 : 1.0;
 
@@ -753,8 +829,14 @@ export default function VaultSculpture3D() {
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
       window.removeEventListener('pointermove', onWindowPointerMove);
+      window.removeEventListener('scroll', updateScrollTilt);
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
       container.removeEventListener('pointerenter', onPointerEnter);
       container.removeEventListener('pointerleave', onPointerLeave);
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
       renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
       renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored);
       io.disconnect();
@@ -784,9 +866,9 @@ export default function VaultSculpture3D() {
   return (
     <div
       aria-label={t.hero.padlockAria}
-      className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-200/90 bg-[#F4F4F5] overflow-hidden select-none"
+      className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-200/90 bg-[#F4F4F5] overflow-hidden select-none touch-pan-y"
     >
-      <div ref={canvasMountRef} className="w-full h-full" />
+      <div ref={canvasMountRef} className="w-full h-full touch-pan-y" />
     </div>
   );
 }

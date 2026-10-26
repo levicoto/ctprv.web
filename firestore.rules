@@ -49,9 +49,9 @@ service cloud.firestore {
       return data.keys().hasAll(allowedKeys)
         && data.keys().hasOnly(allowedKeys)
         && data.folio is string
-        && data.folio.size() >= 10
+        && data.folio.size() >= 12
         && data.folio.size() <= 16
-        && data.folio.matches('^CP-[0-9]{2}-[0-9]{4}$')
+        && data.folio.matches('^CTPV-[0-9]{2}-[0-9]{4}$')
         && data.nombreAlias is string
         && data.nombreAlias.size() >= 2
         && data.nombreAlias.size() <= 120
@@ -68,7 +68,7 @@ service cloud.firestore {
         && data.preocupacionReciente.size() <= 1500
         && data.tierSugerido is string
         && data.tierSugerido.size() <= 20
-        && (data.tierSugerido == 'Tier 1: Argos' || data.tierSugerido == 'Tier 2: Atlas')
+        && (data.tierSugerido == 'Tier 1: Argos' || data.tierSugerido == 'Tier 2: Atlas' || data.tierSugerido == 'Palantir Raptor')
         && data.status is string
         && data.status.size() <= 20
         && (data.status == 'pendiente' || data.status == 'en_revision' || data.status == 'contactado' || data.status == 'cerrado')

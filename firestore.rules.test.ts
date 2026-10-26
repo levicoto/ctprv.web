@@ -14,7 +14,7 @@ export interface DirtyDozenCase {
 }
 
 const VALID_BASE_PAYLOAD = {
-  folio: 'CP-26-4821',
+  folio: 'CTPV-26-4821',
   nombreAlias: 'Martín V.',
   rolPrincipal: 'Fundador Tecnológico',
   enlaceReferencia: 'https://coto.lat',

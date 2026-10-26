@@ -9,8 +9,15 @@ export interface PartnerTranslation {
   desc: string;
 }
 
+export interface RaptorCapabilityItem {
+  num: string;
+  title: string;
+  desc: string;
+}
+
 export interface TranslationDictionary {
   metaTitle: string;
+  raptorMetaTitle: string;
   nav: {
     overview: string;
     services: string;
@@ -47,6 +54,40 @@ export interface TranslationDictionary {
       items: { title: string; desc: string }[];
       cta: string;
     };
+    raptorCallout: {
+      kicker: [string, string];
+      hook: string;
+      cta: string;
+    };
+  };
+  raptor: {
+    nav: {
+      backToMain: string;
+      overview: string;
+      capabilities: string;
+      dossier: string;
+      evaluation: string;
+      cta: string;
+    };
+    hero: {
+      kicker: [string, string];
+      name: string;
+      subtitle: string;
+      body: string;
+      primaryCta: string;
+      eyeAria: string;
+    };
+    capabilities: {
+      headline: string;
+      subtitle: string;
+      items: RaptorCapabilityItem[];
+    };
+    dossier: {
+      kicker: [string, string];
+      title: string;
+      body: string;
+      cta: string;
+    };
   };
   tech: {
     headline: string;
@@ -56,6 +97,8 @@ export interface TranslationDictionary {
   form: {
     headline: string;
     body: string;
+    raptorHeadline: string;
+    raptorBody: string;
     fields: {
       nameLabel: string;
       namePlaceholder: string;
@@ -71,6 +114,7 @@ export interface TranslationDictionary {
       optionalTag: string;
       concernPlaceholder: string;
       submitIdle: string;
+      raptorSubmitIdle: string;
       submitLoading: string;
     };
     validation: {
@@ -99,6 +143,7 @@ export interface TranslationDictionary {
       resetBtn: string;
       tierDisplayArgos: string;
       tierDisplayAtlas: string;
+      tierDisplayRaptor: string;
       receiptHeader: string;
       receiptFolio: string;
       receiptDate: string;
@@ -175,6 +220,7 @@ export interface TranslationDictionary {
 const DICTIONARIES: Record<Language, TranslationDictionary> = {
   es: {
     metaTitle: 'Coto Privado — Safe, Trust, Cybersecurity',
+    raptorMetaTitle: 'Palantir Raptor — Inteligencia y Reconocimiento OSINT | Coto Privado',
     nav: {
       overview: 'Inicio',
       services: 'Servicios',
@@ -238,6 +284,62 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         ],
         cta: 'Elegir Atlas',
       },
+      raptorCallout: {
+        kicker: ['División Especial', 'Inteligencia OSINT'],
+        hook: '¿Necesitas saber qué revela la huella pública antes de dar un paso crítico? Conoce nuestra unidad de reconocimiento externo y pasivo.',
+        cta: 'Explorar Palantir Raptor',
+      },
+    },
+    raptor: {
+      nav: {
+        backToMain: 'Volver',
+        overview: 'Resumen',
+        capabilities: 'Capacidades',
+        dossier: 'Dossier',
+        evaluation: 'Evaluación',
+        cta: 'Solicitar Inteligencia',
+      },
+      hero: {
+        kicker: ['División Especial', 'Ejecución 100% Externa y Pasiva'],
+        name: 'Palantir Raptor',
+        subtitle: 'Inteligencia y Reconocimiento OSINT',
+        body: 'Inteligencia táctica accionable basada en la recolección y análisis de fuentes abiertas (OSINT) para individuos y corporaciones. Ejecución 100% externa y pasiva.',
+        primaryCta: 'Solicitar Dossier OSINT',
+        eyeAria: 'Esfera Palantír y faro óptico de observación en cristal tornasol',
+      },
+      capabilities: {
+        headline: 'Vectores de Reconocimiento',
+        subtitle:
+          'Recolección y correlación pasiva sobre fuentes públicas, registros técnicos y exposición filtrada.',
+        items: [
+          {
+            num: '01',
+            title: 'Reconocimiento e Identificación',
+            desc: 'Perfilamiento de personas de interés, investigación de terceros (due diligence) y trazabilidad completa de la huella digital.',
+          },
+          {
+            num: '02',
+            title: 'Inteligencia Competitiva',
+            desc: 'Análisis del entorno corporativo, monitoreo de la reputación de marca y mapeo de la infraestructura pública de competidores.',
+          },
+          {
+            num: '03',
+            title: 'Análisis de Riesgo y Exposición',
+            desc: 'Rastreo profundo de credenciales, documentos confidenciales y datos personales filtrados en la Surface y Dark Web.',
+          },
+          {
+            num: '04',
+            title: 'Superficie de Ataque',
+            desc: 'Detección de dominios clonados, campañas de suplantación de identidad y activos digitales expuestos que representan una amenaza.',
+          },
+        ],
+      },
+      dossier: {
+        kicker: ['Entregable Confidencial', 'Cero Interacción con el Objetivo'],
+        title: 'Dossier Táctico',
+        body: 'Un reporte de inteligencia confidencial con evidencia directa y rutas de mitigación, estructurado a partir del análisis de información pública, sin alertar ni interactuar con la infraestructura del objetivo.',
+        cta: 'Coordinar Operación OSINT',
+      },
     },
     tech: {
       headline: 'Tecnología y Respaldo',
@@ -278,11 +380,14 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
     form: {
       headline: 'Formulario de Evaluación',
       body: 'Completa estos datos esenciales —puedes usar un alias— para coordinar tu diagnóstico inicial. Nunca solicitamos contraseñas ni acceso a dispositivos en esta etapa.',
+      raptorHeadline: 'Solicitud de Inteligencia — Palantir Raptor',
+      raptorBody:
+        'Completa estos datos esenciales —puedes usar un alias— para coordinar el alcance de reconocimiento pasivo. Ejecución confidencial sin alertar ni tocar infraestructura.',
       fields: {
         nameLabel: 'Nombre / Alias',
         namePlaceholder: 'Ej. Martín V. o alias privado',
         roleLabel: 'Rol principal (Ej. Fundador, Creador, Consultor)',
-        rolePlaceholder: 'Fundador, Creador, Figura pública...',
+        rolePlaceholder: 'Fundador, Dirección, Figura pública...',
         refLabel: 'Enlace de referencia (Web de tu proyecto / Red social principal)',
         refPlaceholder: 'https://tuproyecto.com o @perfil',
         modeLabel: '¿Operas en solitario o delegas accesos a un equipo/agencia?',
@@ -293,6 +398,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         optionalTag: 'Opcional',
         concernPlaceholder: 'Contexto breve si deseas compartirlo...',
         submitIdle: 'Solicitar Auditoría Privada',
+        raptorSubmitIdle: 'Solicitar Operación Palantir Raptor',
         submitLoading: 'Enviando solicitud...',
       },
       validation: {
@@ -309,9 +415,9 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
           'Ocurrió un inconveniente al registrar tu solicitud. Verifica tu conexión e inténtalo de nuevo.',
       },
       confirmation: {
-        title: 'Auditoría Privada Registrada',
+        title: 'Solicitud Privada Registrada',
         folioLabel: 'Folio',
-        tierLabel: 'Nivel asignado',
+        tierLabel: 'Servicio asignado',
         nameLabel: 'Nombre / Alias',
         roleLabel: 'Rol principal',
         refLabel: 'Enlace de referencia',
@@ -323,7 +429,8 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         resetBtn: 'Nueva solicitud',
         tierDisplayArgos: 'Tier 1: Argos',
         tierDisplayAtlas: 'Tier 2: Atlas',
-        receiptHeader: 'COTO PRIVADO — AUDITORÍA PRIVADA',
+        tierDisplayRaptor: 'Palantir Raptor',
+        receiptHeader: 'COTO PRIVADO — SOLICITUD CONFIDENCIAL',
         receiptFolio: 'Folio',
         receiptDate: 'Fecha',
         receiptName: 'Nombre / Alias',
@@ -332,10 +439,10 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptMode: 'Modalidad',
         receiptModeSolo: 'Solo',
         receiptModeTeam: 'Equipo',
-        receiptTier: 'Nivel',
+        receiptTier: 'Servicio',
         receiptNotes: 'Notas',
         receiptNoNotes: 'Sin incidentes reportados',
-        mailSubjectPrefix: 'Auditoría Privada',
+        mailSubjectPrefix: 'Solicitud Confidencial',
       },
     },
     footer: {
@@ -374,7 +481,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       confirmDelete: 'Confirmar borrado',
       cancelDelete: 'Cancelar',
       deleteAria: 'Eliminar solicitud',
-      modeAndTier: 'Modalidad y Nivel',
+      modeAndTier: 'Modalidad y Servicio',
       soloShort: 'Solo',
       teamShort: 'Equipo',
       refLink: 'Referencia',
@@ -398,6 +505,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
 
   en: {
     metaTitle: 'Coto Privado — Safe, Trust, Cybersecurity',
+    raptorMetaTitle: 'Palantir Raptor — OSINT Intelligence & Reconnaissance | Coto Privado',
     nav: {
       overview: 'Overview',
       services: 'Services',
@@ -461,6 +569,62 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         ],
         cta: 'Select Atlas',
       },
+      raptorCallout: {
+        kicker: ['Special Division', 'OSINT Intelligence'],
+        hook: 'Need to know what the public footprint reveals before making a critical move? Explore our external, passive reconnaissance unit.',
+        cta: 'Explore Palantir Raptor',
+      },
+    },
+    raptor: {
+      nav: {
+        backToMain: 'Back',
+        overview: 'Overview',
+        capabilities: 'Capabilities',
+        dossier: 'Dossier',
+        evaluation: 'Assessment',
+        cta: 'Request Intelligence',
+      },
+      hero: {
+        kicker: ['Special Division', '100% External & Passive Execution'],
+        name: 'Palantir Raptor',
+        subtitle: 'OSINT Intelligence & Reconnaissance',
+        body: 'Actionable tactical intelligence based on Open-Source Intelligence (OSINT) collection and analysis for individuals and corporations. 100% external and passive execution.',
+        primaryCta: 'Request OSINT Dossier',
+        eyeAria: 'Iridescent crystal Palantír orb and optical observation beacon',
+      },
+      capabilities: {
+        headline: 'Reconnaissance Vectors',
+        subtitle:
+          'Passive collection and correlation across public records, technical infrastructure, and leaked exposure.',
+        items: [
+          {
+            num: '01',
+            title: 'Reconnaissance & Identification',
+            desc: 'Profiling of persons of interest, third-party due diligence investigations, and full end-to-end digital footprint traceability.',
+          },
+          {
+            num: '02',
+            title: 'Competitive Intelligence',
+            desc: 'Corporate environment analysis, brand reputation monitoring, and mapping of competitors’ public infrastructure.',
+          },
+          {
+            num: '03',
+            title: 'Risk & Exposure Analysis',
+            desc: 'Deep tracking of credentials, confidential documents, and leaked personal data across the Surface and Dark Web.',
+          },
+          {
+            num: '04',
+            title: 'Attack Surface',
+            desc: 'Detection of cloned domains, impersonation campaigns, and exposed digital assets that represent an active threat.',
+          },
+        ],
+      },
+      dossier: {
+        kicker: ['Confidential Deliverable', 'Zero Target Interaction'],
+        title: 'Tactical Dossier',
+        body: 'A confidential intelligence report with direct evidence and mitigation pathways, structured strictly from public information analysis without alerting or interacting with the target’s infrastructure.',
+        cta: 'Coordinate OSINT Operation',
+      },
     },
     tech: {
       headline: 'Technology & Backing',
@@ -501,11 +665,14 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
     form: {
       headline: 'Assessment Form',
       body: 'Complete these essential details—you may use an alias—to coordinate your initial diagnostic. We never request passwords or device access at this stage.',
+      raptorHeadline: 'Intelligence Request — Palantir Raptor',
+      raptorBody:
+        'Complete these essential details—you may use an alias—to coordinate your passive reconnaissance scope. Confidential execution without alerting or touching infrastructure.',
       fields: {
         nameLabel: 'Name / Alias',
         namePlaceholder: 'E.g. Martin V. or private alias',
         roleLabel: 'Primary role (E.g. Founder, Creator, Consultant)',
-        rolePlaceholder: 'Founder, Creator, Public Figure...',
+        rolePlaceholder: 'Founder, Executive, Public Figure...',
         refLabel: 'Reference link (Project website / Main social profile)',
         refPlaceholder: 'https://yourproject.com or @handle',
         modeLabel: 'Do you operate solo or delegate access to a team/agency?',
@@ -516,6 +683,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         optionalTag: 'Optional',
         concernPlaceholder: 'Brief context if you wish to share...',
         submitIdle: 'Request Private Audit',
+        raptorSubmitIdle: 'Request Palantir Raptor Operation',
         submitLoading: 'Submitting request...',
       },
       validation: {
@@ -531,9 +699,9 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
           'An issue occurred while saving your request. Check your connection and try again.',
       },
       confirmation: {
-        title: 'Private Audit Registered',
+        title: 'Private Request Registered',
         folioLabel: 'Reference',
-        tierLabel: 'Assigned tier',
+        tierLabel: 'Assigned service',
         nameLabel: 'Name / Alias',
         roleLabel: 'Primary role',
         refLabel: 'Reference link',
@@ -545,7 +713,8 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         resetBtn: 'New request',
         tierDisplayArgos: 'Tier 1: Argos',
         tierDisplayAtlas: 'Tier 2: Atlas',
-        receiptHeader: 'COTO PRIVADO — PRIVATE AUDIT',
+        tierDisplayRaptor: 'Palantir Raptor',
+        receiptHeader: 'COTO PRIVADO — CONFIDENTIAL REQUEST',
         receiptFolio: 'Reference',
         receiptDate: 'Date',
         receiptName: 'Name / Alias',
@@ -554,10 +723,10 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptMode: 'Mode',
         receiptModeSolo: 'Solo',
         receiptModeTeam: 'Team',
-        receiptTier: 'Tier',
+        receiptTier: 'Service',
         receiptNotes: 'Notes',
         receiptNoNotes: 'No recent incidents reported',
-        mailSubjectPrefix: 'Private Audit',
+        mailSubjectPrefix: 'Confidential Request',
       },
     },
     footer: {
@@ -596,7 +765,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       confirmDelete: 'Confirm delete',
       cancelDelete: 'Cancel',
       deleteAria: 'Delete request',
-      modeAndTier: 'Mode & Tier',
+      modeAndTier: 'Mode & Service',
       soloShort: 'Solo',
       teamShort: 'Team',
       refLink: 'Reference',
@@ -620,6 +789,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
 
   pt: {
     metaTitle: 'Coto Privado — Safe, Trust, Cybersecurity',
+    raptorMetaTitle: 'Palantir Raptor — Inteligência e Reconhecimento OSINT | Coto Privado',
     nav: {
       overview: 'Início',
       services: 'Serviços',
@@ -683,6 +853,62 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         ],
         cta: 'Escolher Atlas',
       },
+      raptorCallout: {
+        kicker: ['Divisão Especial', 'Inteligência OSINT'],
+        hook: 'Precisa saber o que a pegada pública revela hoje antes de dar um passo crítico? Conheça nossa unidade de reconhecimento externo e passivo.',
+        cta: 'Explorar Palantir Raptor',
+      },
+    },
+    raptor: {
+      nav: {
+        backToMain: 'Voltar',
+        overview: 'Resumo',
+        capabilities: 'Capacidades',
+        dossier: 'Dossiê',
+        evaluation: 'Avaliação',
+        cta: 'Solicitar Inteligência',
+      },
+      hero: {
+        kicker: ['Divisão Especial', 'Execução 100% Externa e Passiva'],
+        name: 'Palantir Raptor',
+        subtitle: 'Inteligência e Reconhecimento OSINT',
+        body: 'Inteligência tática acionável baseada na coleta e análise de fontes abertas (OSINT) para indivíduos e corporações. Execução 100% externa e passiva.',
+        primaryCta: 'Solicitar Dossiê OSINT',
+        eyeAria: 'Esfera Palantír e farol óptico de observação em cristal furta-cor',
+      },
+      capabilities: {
+        headline: 'Vetores de Reconhecimento',
+        subtitle:
+          'Coleta e correlação passiva em fontes públicas, registros técnicos e exposição vazada.',
+        items: [
+          {
+            num: '01',
+            title: 'Reconhecimento e Identificação',
+            desc: 'Perfilamento de pessoas de interesse, investigação de terceiros (due diligence) e rastreabilidade completa da pegada digital.',
+          },
+          {
+            num: '02',
+            title: 'Inteligência Competitiva',
+            desc: 'Análise do ambiente corporativo, monitoramento de reputação de marca e mapeamento da infraestrutura pública de concorrentes.',
+          },
+          {
+            num: '03',
+            title: 'Análise de Risco e Exposição',
+            desc: 'Rastreamento profundo de credenciais, documentos confidenciais e dados pessoais vazados na Surface e Dark Web.',
+          },
+          {
+            num: '04',
+            title: 'Superfície de Ataque',
+            desc: 'Detecção de domínios clonados, campanhas de falsidade ideológica e ativos digitais expostos que representam uma ameaça.',
+          },
+        ],
+      },
+      dossier: {
+        kicker: ['Entregável Confidencial', 'Zero Interação com o Alvo'],
+        title: 'Dossiê Tático',
+        body: 'Um relatório de inteligência confidencial com evidências diretas e rotas de mitigação, estruturado a partir da análise de informações públicas, sem alertar nem interagir com a infraestrutura do alvo.',
+        cta: 'Coordenar Operação OSINT',
+      },
     },
     tech: {
       headline: 'Tecnologia e Respaldo',
@@ -723,11 +949,14 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
     form: {
       headline: 'Formulário de Avaliação',
       body: 'Preencha estes dados essenciais — você pode usar um alias — para coordenar seu diagnóstico inicial. Jamais solicitamos senhas ou acesso a dispositivos nesta etapa.',
+      raptorHeadline: 'Solicitação de Inteligência — Palantir Raptor',
+      raptorBody:
+        'Preencha estes dados essenciais — você pode usar um alias — para coordenar o escopo de reconhecimento passivo. Execução confidencial sem alertar nem tocar na infraestrutura.',
       fields: {
         nameLabel: 'Nome / Alias',
         namePlaceholder: 'Ex.: Martín V. ou alias privado',
         roleLabel: 'Função principal (Ex.: Fundador, Criador, Consultor)',
-        rolePlaceholder: 'Fundador, Criador, Figura pública...',
+        rolePlaceholder: 'Fundador, Diretoria, Figura pública...',
         refLabel: 'Link de referência (Site do projeto / Rede social principal)',
         refPlaceholder: 'https://seuprojeto.com ou @perfil',
         modeLabel: 'Você opera sozinho ou delega acessos a uma equipe/agência?',
@@ -738,6 +967,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         optionalTag: 'Opcional',
         concernPlaceholder: 'Contexto breve, caso queira compartilhar...',
         submitIdle: 'Solicitar Auditoria Privada',
+        raptorSubmitIdle: 'Solicitar Operação Palantir Raptor',
         submitLoading: 'Enviando solicitação...',
       },
       validation: {
@@ -754,9 +984,9 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
           'Ocorreu um problema ao registrar sua solicitação. Verifique sua conexão e tente novamente.',
       },
       confirmation: {
-        title: 'Auditoria Privada Registrada',
+        title: 'Solicitação Privada Registrada',
         folioLabel: 'Código',
-        tierLabel: 'Nível atribuído',
+        tierLabel: 'Serviço atribuído',
         nameLabel: 'Nome / Alias',
         roleLabel: 'Função principal',
         refLabel: 'Link de referência',
@@ -768,7 +998,8 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         resetBtn: 'Nova solicitação',
         tierDisplayArgos: 'Tier 1: Argos',
         tierDisplayAtlas: 'Tier 2: Atlas',
-        receiptHeader: 'COTO PRIVADO — AUDITORIA PRIVADA',
+        tierDisplayRaptor: 'Palantir Raptor',
+        receiptHeader: 'COTO PRIVADO — SOLICITAÇÃO CONFIDENCIAL',
         receiptFolio: 'Código',
         receiptDate: 'Data',
         receiptName: 'Nome / Alias',
@@ -777,10 +1008,10 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptMode: 'Modalidade',
         receiptModeSolo: 'Solo',
         receiptModeTeam: 'Equipe',
-        receiptTier: 'Nível',
+        receiptTier: 'Serviço',
         receiptNotes: 'Notas',
         receiptNoNotes: 'Nenhum incidente relatado',
-        mailSubjectPrefix: 'Auditoria Privada',
+        mailSubjectPrefix: 'Solicitação Confidencial',
       },
     },
     footer: {
@@ -819,7 +1050,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       confirmDelete: 'Confirmar exclusão',
       cancelDelete: 'Cancelar',
       deleteAria: 'Excluir solicitação',
-      modeAndTier: 'Modalidade e Nível',
+      modeAndTier: 'Modalidade e Serviço',
       soloShort: 'Solo',
       teamShort: 'Equipe',
       refLink: 'Referência',
@@ -876,7 +1107,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = lang;
-    document.title = DICTIONARIES[lang].metaTitle;
+    const isRaptor = window.location.hash.replace(/^#/, '').startsWith('palantir-raptor');
+    document.title = isRaptor ? DICTIONARIES[lang].raptorMetaTitle : DICTIONARIES[lang].metaTitle;
   }, [lang]);
 
   return (

@@ -12,9 +12,9 @@ export const ADMIN_EMAIL = 'levi@coto.lat';
 
 // Verbatim schema constraints synced with firebase-blueprint.json & firestore.rules
 export const EVALUATION_SCHEMA_LIMITS = {
-  folioMin: 10,
+  folioMin: 12,
   folioMax: 16,
-  folioPattern: /^CP-[0-9]{2}-[0-9]{4}$/,
+  folioPattern: /^CTPV-[0-9]{2}-[0-9]{4}$/,
   idPattern: /^[a-zA-Z0-9_-]+$/,
   nombreAliasMin: 2,
   nombreAliasMax: 120,

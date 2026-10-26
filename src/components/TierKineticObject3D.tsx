@@ -180,7 +180,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     const w0 = container.clientWidth || 520;
     const h0 = container.clientHeight || 340;
     renderer.setSize(w0, h0);
-    renderer.domElement.className = 'block w-full h-full outline-none';
+    renderer.domElement.className = 'block w-full h-full outline-none touch-pan-y';
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
@@ -424,16 +424,81 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
     let cursorX = 0;
     let cursorY = 0;
+    let scrollYaw = 0;
+    let scrollPitch = 0;
+    let gyroX = 0;
+    let gyroY = 0;
+    let gyroBaseGamma: number | null = null;
+    let gyroBaseBeta: number | null = null;
     let smoothX = 0;
     let smoothY = 0;
     let isHovered = false;
+    let isTouchActive = false;
+    let touchActuateUntil = 0;
     let hoverFactor = 0;
     let atlasMorph = tierRef.current === 'atlas' ? 1 : 0;
 
     const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType === 'touch') return;
       cursorX = THREE.MathUtils.clamp((e.clientX / Math.max(window.innerWidth, 1)) * 2 - 1, -1, 1);
       cursorY = THREE.MathUtils.clamp(-(e.clientY / Math.max(window.innerHeight, 1)) * 2 + 1, -1, 1);
     };
+
+    const updateFromTouch = (touch: Touch) => {
+      const rect = container.getBoundingClientRect();
+      const nx = (((touch.clientX - rect.left) / Math.max(rect.width, 1)) * 2 - 1) * 1.25;
+      const ny = (-((touch.clientY - rect.top) / Math.max(rect.height, 1)) * 2 + 1) * 1.25;
+      cursorX = THREE.MathUtils.clamp(nx, -1, 1);
+      cursorY = THREE.MathUtils.clamp(ny, -1, 1);
+    };
+
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        isTouchActive = true;
+        touchActuateUntil = performance.now() + 1350;
+        updateFromTouch(e.touches[0]);
+      }
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        isTouchActive = true;
+        updateFromTouch(e.touches[0]);
+      }
+    };
+
+    const onTouchEnd = () => {
+      isTouchActive = false;
+      cursorX *= 0.35;
+      cursorY *= 0.35;
+    };
+
+    const updateScrollTilt = () => {
+      if (prefersReducedMotion) {
+        scrollYaw = 0;
+        scrollPitch = 0;
+        return;
+      }
+      const rect = container.getBoundingClientRect();
+      const vh = Math.max(window.innerHeight, 1);
+      const centerDelta = (vh * 0.5 - (rect.top + rect.height * 0.5)) / (vh * 0.65);
+      const isCompact = window.innerWidth < 1024;
+      const yawScale = isCompact ? 0.52 : 0.16;
+      const pitchScale = isCompact ? 0.34 : 0.12;
+      scrollYaw = THREE.MathUtils.clamp(-centerDelta * yawScale, -0.58, 0.58);
+      scrollPitch = THREE.MathUtils.clamp(-centerDelta * pitchScale, -0.42, 0.42);
+    };
+
+    const onDeviceOrientation = (e: DeviceOrientationEvent) => {
+      if (prefersReducedMotion || e.gamma === null || e.beta === null) return;
+      if (gyroBaseGamma === null || gyroBaseBeta === null) {
+        gyroBaseGamma = e.gamma;
+        gyroBaseBeta = e.beta;
+      }
+      gyroX = THREE.MathUtils.clamp((e.gamma - gyroBaseGamma) / 28, -0.65, 0.65);
+      gyroY = THREE.MathUtils.clamp(-(e.beta - gyroBaseBeta) / 28, -0.55, 0.55);
+    };
+
     const onEnter = () => {
       isHovered = true;
     };
@@ -441,9 +506,27 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       isHovered = false;
     };
 
+    let contextLost = false;
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      contextLost = true;
+    };
+    const onContextRestored = () => {
+      contextLost = false;
+    };
+
     window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('scroll', updateScrollTilt, { passive: true });
+    window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
     container.addEventListener('pointerenter', onEnter);
     container.addEventListener('pointerleave', onLeave);
+    container.addEventListener('touchstart', onTouchStart, { passive: true });
+    container.addEventListener('touchmove', onTouchMove, { passive: true });
+    container.addEventListener('touchend', onTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', onTouchEnd, { passive: true });
+    renderer.domElement.addEventListener('webglcontextlost', onContextLost);
+    renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
+    updateScrollTilt();
 
     let isVisible = false;
     const io = new IntersectionObserver(
@@ -498,10 +581,15 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       const dt = Math.min(clock.getDelta(), 0.05);
       const elapsed = clock.getElapsedTime();
 
-      if (isVisible) {
-        smoothX = THREE.MathUtils.damp(smoothX, cursorX, 5.2, dt);
-        smoothY = THREE.MathUtils.damp(smoothY, cursorY, 5.2, dt);
-        hoverFactor = THREE.MathUtils.damp(hoverFactor, isHovered ? 1 : 0, 5.0, dt);
+      if (isVisible && !contextLost) {
+        const activeTargetX = THREE.MathUtils.clamp(cursorX + gyroX + scrollYaw, -1.05, 1.05);
+        const activeTargetY = THREE.MathUtils.clamp(cursorY + gyroY + scrollPitch, -1.0, 1.0);
+        const shouldActuate =
+          isHovered || isTouchActive || performance.now() < touchActuateUntil;
+
+        smoothX = THREE.MathUtils.damp(smoothX, activeTargetX, 5.4, dt);
+        smoothY = THREE.MathUtils.damp(smoothY, activeTargetY, 5.4, dt);
+        hoverFactor = THREE.MathUtils.damp(hoverFactor, shouldActuate ? 1 : 0, 5.2, dt);
 
         const targetMorph = tierRef.current === 'atlas' ? 1 : 0;
         atlasMorph = THREE.MathUtils.damp(atlasMorph, targetMorph, 4.8, dt);
@@ -547,8 +635,16 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
       window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('scroll', updateScrollTilt);
+      window.removeEventListener('deviceorientation', onDeviceOrientation);
       container.removeEventListener('pointerenter', onEnter);
       container.removeEventListener('pointerleave', onLeave);
+      container.removeEventListener('touchstart', onTouchStart);
+      container.removeEventListener('touchmove', onTouchMove);
+      container.removeEventListener('touchend', onTouchEnd);
+      container.removeEventListener('touchcancel', onTouchEnd);
+      renderer.domElement.removeEventListener('webglcontextlost', onContextLost);
+      renderer.domElement.removeEventListener('webglcontextrestored', onContextRestored);
       io.disconnect();
       ro.disconnect();
       geometries.forEach((g) => g.dispose());
@@ -574,9 +670,9 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
   return (
     <div
       aria-label={t.services.shieldAria}
-      className="relative w-full aspect-[16/10] min-h-[250px] max-h-[360px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 overflow-hidden select-none"
+      className="relative w-full aspect-[16/10] min-h-[250px] max-h-[360px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 overflow-hidden select-none touch-pan-y"
     >
-      <div ref={mountRef} className="w-full h-full" />
+      <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>
   );
 }

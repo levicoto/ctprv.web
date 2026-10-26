@@ -8,9 +8,9 @@
         "folio": {
           "type": "string",
           "description": "Código único de referencia de la solicitud.",
-          "minLength": 10,
+          "minLength": 12,
           "maxLength": 16,
-          "pattern": "^CP-[0-9]{2}-[0-9]{4}$"
+          "pattern": "^CTPV-[0-9]{2}-[0-9]{4}$"
         },
         "nombreAlias": {
           "type": "string",
@@ -43,8 +43,8 @@
         },
         "tierSugerido": {
           "type": "string",
-          "description": "Arquitectura recomendada según la modalidad operativa.",
-          "enum": ["Tier 1: Argos", "Tier 2: Atlas"]
+          "description": "Arquitectura o división recomendada según la solicitud.",
+          "enum": ["Tier 1: Argos", "Tier 2: Atlas", "Palantir Raptor"]
         },
         "status": {
           "type": "string",
