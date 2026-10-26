@@ -25,6 +25,22 @@
   <body class="bg-[#FAFAFA] text-[#09090B] antialiased selection:bg-[#09090B] selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      (function () {
+        var isStaticHost = /\.(lat|io)$/i.test(window.location.hostname);
+        var hasRawTsxEntry = Boolean(document.querySelector('script[src="/src/main.tsx"]'));
+        if (isStaticHost && hasRawTsxEntry) {
+          var css = document.createElement('link');
+          css.rel = 'stylesheet';
+          css.href = './docs/assets/app.css';
+          document.head.appendChild(css);
+          var js = document.createElement('script');
+          js.type = 'module';
+          js.src = './docs/assets/app.js';
+          document.body.appendChild(js);
+        }
+      })();
+    </script>
   </body>
 </html>
 
