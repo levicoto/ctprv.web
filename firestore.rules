@@ -1,0 +1,141 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global Safety Net (Default-Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Global Primitives
+    function isValidId(id) {
+      return id is string && id.size() >= 6 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedAdmin() {
+      return isSignedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'levi@coto.lat';
+    }
+
+    // Strict Schema Blueprint synced verbatim with firebase-blueprint.json
+    function isValidEvaluation(data) {
+      let allowedKeys = [
+        'folio',
+        'nombreAlias',
+        'rolPrincipal',
+        'enlaceReferencia',
+        'modoOperacion',
+        'preocupacionReciente',
+        'tierSugerido',
+        'status',
+        'adminNotes',
+        'recipientOrg',
+        'createdAt',
+        'updatedAt'
+      ];
+      return data.keys().hasAll(allowedKeys)
+        && data.keys().hasOnly(allowedKeys)
+        && data.folio is string
+        && data.folio.size() >= 10
+        && data.folio.size() <= 16
+        && data.folio.matches('^CP-[0-9]{2}-[0-9]{4}$')
+        && data.nombreAlias is string
+        && data.nombreAlias.size() >= 2
+        && data.nombreAlias.size() <= 120
+        && data.rolPrincipal is string
+        && data.rolPrincipal.size() >= 2
+        && data.rolPrincipal.size() <= 120
+        && data.enlaceReferencia is string
+        && data.enlaceReferencia.size() >= 2
+        && data.enlaceReferencia.size() <= 300
+        && data.modoOperacion is string
+        && data.modoOperacion.size() <= 10
+        && (data.modoOperacion == 'solo' || data.modoOperacion == 'equipo')
+        && data.preocupacionReciente is string
+        && data.preocupacionReciente.size() <= 1500
+        && data.tierSugerido is string
+        && data.tierSugerido.size() <= 20
+        && (data.tierSugerido == 'Tier 1: Argos' || data.tierSugerido == 'Tier 2: Atlas')
+        && data.status is string
+        && data.status.size() <= 20
+        && (data.status == 'pendiente' || data.status == 'en_revision' || data.status == 'contactado' || data.status == 'cerrado')
+        && data.adminNotes is string
+        && data.adminNotes.size() <= 1000
+        && data.recipientOrg is string
+        && data.recipientOrg.size() == 12
+        && data.recipientOrg == 'coto_privado'
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function hasImmutableEvaluationFields() {
+      return incoming().folio == existing().folio
+        && incoming().nombreAlias == existing().nombreAlias
+        && incoming().rolPrincipal == existing().rolPrincipal
+        && incoming().enlaceReferencia == existing().enlaceReferencia
+        && incoming().modoOperacion == existing().modoOperacion
+        && incoming().preocupacionReciente == existing().preocupacionReciente
+        && incoming().tierSugerido == existing().tierSugerido
+        && incoming().recipientOrg == existing().recipientOrg
+        && incoming().createdAt == existing().createdAt;
+    }
+
+    match /evaluations/{evaluationId} {
+      // Confidential PII Isolation: Only verified Coto Privado admin may read
+      allow get: if isVerifiedAdmin() && isValidId(evaluationId);
+
+      // Query Enforcer: Zero DB lookups, enforces resource.data.recipientOrg
+      allow list: if isVerifiedAdmin() && existing().recipientOrg == 'coto_privado';
+
+      // Public Write-Only Lead Capture with strict schema, initial state & server timestamp gates
+      allow create: if isValidId(evaluationId)
+        && isValidEvaluation(incoming())
+        && incoming().status == 'pendiente'
+        && incoming().adminNotes == ''
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      // Action-Based Admin Updates with Terminal State Locking
+      allow update: if isVerifiedAdmin()
+        && isValidId(evaluationId)
+        && isValidEvaluation(incoming())
+        && hasImmutableEvaluationFields()
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Update review status on active evaluation
+          (
+            existing().status != 'cerrado'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+          ||
+          // Action 2: Update confidential admin notes on active evaluation
+          (
+            existing().status != 'cerrado'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['adminNotes', 'updatedAt'])
+          )
+          ||
+          // Action 3: Explicit reopen from closed terminal state
+          (
+            existing().status == 'cerrado'
+            && incoming().status == 'en_revision'
+            && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+        );
+
+      allow delete: if isVerifiedAdmin() && isValidId(evaluationId);
+    }
+  }
+}
