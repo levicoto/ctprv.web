@@ -294,19 +294,22 @@ export default function EvaluationForm({ preferredMode, onModeSyncTier }: Evalua
   };
 
   return (
-    <section id="evaluacion" className="relative z-10 py-24 sm:py-32 border-t border-zinc-200/80">
-      <div className="max-w-[1160px] mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Context Column */}
-          <ParallaxLayer speed={0.045} maxOffset={18} desktopOnly className="lg:col-span-5">
-            <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-950 text-balance">
-              {t.form.headline}
-            </h2>
-            <p className="mt-4 text-base text-zinc-600 leading-relaxed">{t.form.body}</p>
-          </ParallaxLayer>
+    <section id="evaluacion" className="relative z-10 py-20 sm:py-28 border-t border-zinc-200/80">
+      <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
+        <ParallaxLayer speed={0.018} maxOffset={8} desktopOnly>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left Context Column */}
+            <div className="lg:col-span-6 lg:pr-6">
+              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-950 text-balance">
+                {t.form.headline}
+              </h2>
+              <p className="mt-4 text-base text-zinc-600 leading-relaxed max-w-[52ch]">
+                {t.form.body}
+              </p>
+            </div>
 
-          {/* Right Glassmorphic Form / Confirmation Container */}
-          <ParallaxLayer speed={-0.022} maxOffset={12} desktopOnly className="lg:col-span-7">
+            {/* Right Glassmorphic Form / Confirmation Container */}
+            <div className="lg:col-span-6 w-full">
             {submittedRecord ? (
               <div className="glass-panel rounded-2xl p-8 sm:p-10">
                 <div className="flex items-center justify-between gap-4 pb-6 border-b border-zinc-200/80">
@@ -582,8 +585,9 @@ export default function EvaluationForm({ preferredMode, onModeSyncTier }: Evalua
                 </div>
               </form>
             )}
-          </ParallaxLayer>
-        </div>
+            </div>
+          </div>
+        </ParallaxLayer>
       </div>
     </section>
   );

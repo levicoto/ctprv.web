@@ -18,6 +18,7 @@ export interface TranslationDictionary {
     evaluation: string;
     cta: string;
     ariaMain: string;
+    langSelectorAria: string;
   };
   hero: {
     kicker: [string, string, string];
@@ -181,6 +182,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       evaluation: 'Evaluación',
       cta: 'Solicitar Auditoría',
       ariaMain: 'Navegación principal',
+      langSelectorAria: 'Seleccionar idioma',
     },
     hero: {
       kicker: ['Safe', 'Trust', 'Cybersecurity'],
@@ -403,6 +405,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       evaluation: 'Assessment',
       cta: 'Request Audit',
       ariaMain: 'Primary navigation',
+      langSelectorAria: 'Select language',
     },
     hero: {
       kicker: ['Safe', 'Trust', 'Cybersecurity'],
@@ -624,6 +627,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       evaluation: 'Avaliação',
       cta: 'Solicitar Auditoria',
       ariaMain: 'Navegação principal',
+      langSelectorAria: 'Selecionar idioma',
     },
     hero: {
       kicker: ['Safe', 'Trust', 'Cybersecurity'],

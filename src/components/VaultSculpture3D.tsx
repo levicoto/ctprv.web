@@ -293,9 +293,11 @@ export default function VaultSculpture3D() {
     scene.background = new THREE.Color(bgHex);
     scene.fog = new THREE.FogExp2(bgHex, 0.038);
 
-    const camera = new THREE.PerspectiveCamera(36, initialW / initialH, 0.1, 60);
-    camera.position.set(0, 0.15, 7.4);
-    camera.lookAt(0, -0.05, 0);
+    const baseCameraZ = 7.75;
+    const initialAspect = initialW / Math.max(initialH, 1);
+    const camera = new THREE.PerspectiveCamera(35, initialAspect, 0.1, 60);
+    camera.position.set(0, 0.08, baseCameraZ * Math.max(1, 1.08 / initialAspect));
+    camera.lookAt(0, -0.06, 0);
 
     // Studio Reflection Environment (critical for refractive & iridescent crystal)
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
@@ -666,7 +668,9 @@ export default function VaultSculpture3D() {
       if (!entry) return;
       const w = Math.max(1, Math.floor(entry.contentRect.width));
       const h = Math.max(1, Math.floor(entry.contentRect.height));
-      camera.aspect = w / h;
+      const aspect = w / h;
+      camera.aspect = aspect;
+      camera.position.z = baseCameraZ * Math.max(1, 1.08 / aspect);
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     });
@@ -769,7 +773,7 @@ export default function VaultSculpture3D() {
 
   if (webglFallback) {
     return (
-      <div className="relative w-full h-[440px] lg:h-[540px] rounded-2xl border border-zinc-200 bg-zinc-100 flex items-center justify-center">
+      <div className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-200 bg-zinc-100 flex items-center justify-center">
         <div className="w-20 h-20 rounded-2xl border border-zinc-300 bg-white flex items-center justify-center shadow-sm">
           <Lock className="w-9 h-9 text-zinc-900" />
         </div>
@@ -780,7 +784,7 @@ export default function VaultSculpture3D() {
   return (
     <div
       aria-label={t.hero.padlockAria}
-      className="relative w-full h-[440px] lg:h-[540px] rounded-2xl border border-zinc-200/90 bg-[#F4F4F5] overflow-hidden select-none"
+      className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-200/90 bg-[#F4F4F5] overflow-hidden select-none"
     >
       <div ref={canvasMountRef} className="w-full h-full" />
     </div>

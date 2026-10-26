@@ -47,11 +47,11 @@
         if (isStaticHost && hasRawTsxEntry) {
           var css = document.createElement('link');
           css.rel = 'stylesheet';
-          css.href = './docs/assets/app.css';
+          css.href = './docs/assets/app.css?v=3';
           document.head.appendChild(css);
           var js = document.createElement('script');
           js.type = 'module';
-          js.src = './docs/assets/app.js';
+          js.src = './docs/assets/app.js?v=3';
           document.body.appendChild(js);
         }
       })();

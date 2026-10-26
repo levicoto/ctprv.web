@@ -188,9 +188,11 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     scene.background = new THREE.Color(darkBg);
     scene.fog = new THREE.FogExp2(darkBg, 0.052);
 
-    const camera = new THREE.PerspectiveCamera(36, w0 / h0, 0.1, 50);
-    camera.position.set(0, 0.15, 6.2);
-    camera.lookAt(0, 0, 0);
+    const baseCameraZ = 7.15;
+    const initialAspect = w0 / Math.max(h0, 1);
+    const camera = new THREE.PerspectiveCamera(35, initialAspect, 0.1, 50);
+    camera.position.set(0, 0.04, baseCameraZ * Math.max(1, 1.32 / initialAspect));
+    camera.lookAt(0, 0.0, 0);
 
     const pmrem = new THREE.PMREMGenerator(renderer);
     const envRT = pmrem.fromScene(new RoomEnvironment(), 0.035);
@@ -309,7 +311,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
     // Composite Multi-Layered Dichroic Cybersecurity Shield Group
     const shieldRoot = new THREE.Group();
-    shieldRoot.position.set(0, 0.08, 0);
+    shieldRoot.position.set(0, 0.02, 0);
     scene.add(shieldRoot);
 
     // 0. Inner Sculpted Obsidian Core Crest (refracted inside the crystal shield)
@@ -457,7 +459,9 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       if (!entry) return;
       const w = Math.max(1, Math.floor(entry.contentRect.width));
       const h = Math.max(1, Math.floor(entry.contentRect.height));
-      camera.aspect = w / h;
+      const aspect = w / h;
+      camera.aspect = aspect;
+      camera.position.z = baseCameraZ * Math.max(1, 1.32 / aspect);
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
     });
@@ -504,7 +508,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
         const mScale = prefersReducedMotion ? 0.15 : 1.0;
 
-        shieldRoot.position.y = 0.08 + Math.sin(elapsed * 1.15) * 0.05 * mScale;
+        shieldRoot.position.y = 0.02 + Math.sin(elapsed * 1.15) * 0.045 * mScale;
         shieldRoot.rotation.y = smoothX * 0.56 + Math.sin(elapsed * 0.4) * 0.06 * mScale;
         shieldRoot.rotation.x = -smoothY * 0.34;
         shieldRoot.rotation.z = -smoothX * 0.05;
@@ -561,7 +565,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
   if (fallback) {
     return (
-      <div className="w-full h-[300px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 flex items-center justify-center p-6 text-zinc-300">
+      <div className="w-full aspect-[16/10] min-h-[250px] max-h-[360px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 flex items-center justify-center p-6 text-zinc-300">
         <Shield className="w-8 h-8 text-zinc-300" />
       </div>
     );
@@ -570,7 +574,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
   return (
     <div
       aria-label={t.services.shieldAria}
-      className="relative w-full h-[260px] sm:h-[300px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 overflow-hidden select-none"
+      className="relative w-full aspect-[16/10] min-h-[250px] max-h-[360px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 overflow-hidden select-none"
     >
       <div ref={mountRef} className="w-full h-full" />
     </div>

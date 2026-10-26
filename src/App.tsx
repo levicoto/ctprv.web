@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { MouseEvent, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
 import VaultSculpture3D from './components/VaultSculpture3D';
 import TierKineticObject3D, { type ServiceTierId } from './components/TierKineticObject3D';
 import TechnologyStack from './components/TechnologyStack';
@@ -16,10 +16,10 @@ import ParallaxLayer, {
 } from './components/ParallaxLayer';
 import { type Language, useI18n } from './lib/i18n';
 
-const LANGUAGES: { code: Language; label: string }[] = [
-  { code: 'es', label: 'ES' },
-  { code: 'en', label: 'EN' },
-  { code: 'pt', label: 'PT' },
+const LANGUAGES: { code: Language; short: string; name: string }[] = [
+  { code: 'es', short: 'ES', name: 'Español' },
+  { code: 'en', short: 'EN', name: 'English' },
+  { code: 'pt', short: 'PT', name: 'Português' },
 ];
 
 export default function App() {
@@ -27,6 +27,31 @@ export default function App() {
   const [activeTier, setActiveTier] = useState<ServiceTierId>('atlas');
   const [preferredMode, setPreferredMode] = useState<OperationMode>('solo');
   const [adminModalOpen, setAdminModalOpen] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const langMenuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!langMenuOpen) return;
+
+    const handlePointerDown = (e: PointerEvent) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
+        setLangMenuOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLangMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [langMenuOpen]);
 
   const handleAnchorClick = (e: MouseEvent<HTMLAnchorElement>, sectionId: string) => {
     e.preventDefault();
@@ -43,26 +68,30 @@ export default function App() {
     }, 620);
   };
 
+  const currentLangItem = LANGUAGES.find((item) => item.code === lang) ?? LANGUAGES[0];
+
   return (
     <div className="relative min-h-screen architectural-canvas text-zinc-950 flex flex-col overflow-x-clip">
       <AmbientParallaxBackdrop />
 
-      {/* Strict 3-Zone Top Bar Contract */}
+      {/* Symmetric Architectural Top Bar */}
       <header className="sticky top-0 z-40 glass-panel border-x-0 border-t-0">
-        <div className="max-w-[1160px] mx-auto px-6 py-3.5 flex items-center justify-between gap-8">
-          {/* Zone 1: Single text element wordmark */}
-          <a
-            href="#inicio"
-            onClick={(e) => handleAnchorClick(e, 'inicio')}
-            className="text-lg font-semibold tracking-tight text-zinc-950 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
-          >
-            Coto Privado
-          </a>
+        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-3.5 w-full flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-4">
+          {/* Zone 1: Brand Wordmark */}
+          <div className="flex items-center justify-self-start">
+            <a
+              href="#inicio"
+              onClick={(e) => handleAnchorClick(e, 'inicio')}
+              className="text-lg font-semibold tracking-tight text-zinc-950 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
+            >
+              Coto Privado
+            </a>
+          </div>
 
-          {/* Zone 2: 4 concise single-line text navigation links */}
+          {/* Zone 2: Mathematically Centered Primary Navigation */}
           <nav
             aria-label={t.nav.ariaMain}
-            className="hidden md:flex items-center gap-7 text-sm font-medium text-zinc-600"
+            className="hidden md:flex items-center justify-self-center gap-7 lg:gap-8 text-sm font-medium text-zinc-600"
           >
             <a
               href="#inicio"
@@ -94,12 +123,67 @@ export default function App() {
             </a>
           </nav>
 
-          {/* Zone 3: 1 primary action */}
-          <div className="flex items-center shrink-0">
+          {/* Zone 3: Globe Language Selector Dropdown + Primary Action */}
+          <div className="flex items-center justify-end justify-self-end gap-2.5 sm:gap-3 shrink-0">
+            <div ref={langMenuRef} className="relative">
+              <button
+                type="button"
+                aria-haspopup="listbox"
+                aria-expanded={langMenuOpen}
+                aria-label={t.nav.langSelectorAria}
+                onClick={() => setLangMenuOpen((prev) => !prev)}
+                className="h-9 px-2.5 rounded-lg border border-zinc-200/90 bg-white/80 hover:bg-zinc-100 hover:border-zinc-300 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+              >
+                <Globe className="w-4 h-4 text-zinc-700 shrink-0" />
+                <span>{currentLangItem.short}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-zinc-500 shrink-0 transition-transform duration-150 ${
+                    langMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {langMenuOpen && (
+                <div
+                  role="listbox"
+                  aria-label={t.nav.langSelectorAria}
+                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[164px] p-1.5 rounded-xl bg-white/95 backdrop-blur-xl border border-zinc-200/90 shadow-lg shadow-zinc-950/10"
+                >
+                  {LANGUAGES.map((item) => {
+                    const active = lang === item.code;
+                    return (
+                      <button
+                        key={item.code}
+                        type="button"
+                        role="option"
+                        aria-selected={active}
+                        onClick={() => {
+                          setLang(item.code);
+                          setLangMenuOpen(false);
+                        }}
+                        className={`w-full px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between gap-3 transition-colors cursor-pointer whitespace-nowrap ${
+                          active
+                            ? 'bg-zinc-950 text-white'
+                            : 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950'
+                        }`}
+                      >
+                        <span>{item.name}</span>
+                        {active ? (
+                          <Check className="w-3.5 h-3.5 shrink-0" />
+                        ) : (
+                          <span className="text-[11px] text-zinc-400">{item.short}</span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={() => smoothScrollToSection('evaluacion')}
-              className="px-4 py-2 rounded-lg bg-zinc-950 text-white text-xs sm:text-sm font-medium hover:bg-zinc-800 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+              className="h-9 px-4 rounded-lg bg-zinc-950 text-white text-xs sm:text-sm font-medium hover:bg-zinc-800 transition-colors inline-flex items-center justify-center whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
             >
               {t.nav.cta}
             </button>
@@ -108,58 +192,25 @@ export default function App() {
       </header>
 
       <main id="inicio" className="relative z-10 flex-1">
-        {/* Hero Section */}
+        {/* Hero Section: Unified 6 / 6 Architectural Grid */}
         <section className="pt-12 pb-20 sm:pt-20 sm:pb-28">
-          <div className="max-w-[1160px] mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-stretch">
+          <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Proposition Column */}
-              <ParallaxLayer
-                speed={-0.035}
-                maxOffset={16}
-                desktopOnly
-                className="lg:col-span-6 flex flex-col justify-center"
-              >
-                {/* Kicker + Interactive ES / EN / PT Language Switcher */}
-                <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-2.5 text-xs font-medium text-zinc-500">
-                    <span>{t.hero.kicker[0]}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{t.hero.kicker[1]}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{t.hero.kicker[2]}</span>
-                  </div>
-
-                  {/* Interactive Language Segmented Control (ES / EN / PT) */}
-                  <div
-                    role="group"
-                    aria-label="Language selector"
-                    className="inline-flex items-center gap-1 p-1 rounded-lg bg-zinc-200/70 border border-zinc-300/60"
-                  >
-                    {LANGUAGES.map((item) => {
-                      const active = lang === item.code;
-                      return (
-                        <button
-                          key={item.code}
-                          type="button"
-                          onClick={() => setLang(item.code)}
-                          className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
-                            active
-                              ? 'bg-zinc-950 text-white shadow-sm'
-                              : 'text-zinc-600 hover:text-zinc-950'
-                          }`}
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div className="lg:col-span-6 flex flex-col justify-center lg:pr-4">
+                <div className="flex items-center gap-2.5 text-xs font-medium text-zinc-500">
+                  <span>{t.hero.kicker[0]}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{t.hero.kicker[1]}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{t.hero.kicker[2]}</span>
                 </div>
 
-                <h1 className="mt-5 text-[clamp(2.25rem,4vw,3.65rem)] font-semibold leading-[1.08] tracking-tight text-zinc-950 text-balance">
+                <h1 className="mt-5 text-[clamp(2.25rem,3.6vw,3.5rem)] font-semibold leading-[1.08] tracking-tight text-zinc-950 text-balance">
                   {t.hero.headline}
                 </h1>
 
-                <p className="mt-6 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-[54ch]">
+                <p className="mt-6 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-[52ch]">
                   {t.hero.body}
                 </p>
 
@@ -173,13 +224,14 @@ export default function App() {
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
-              </ParallaxLayer>
+              </div>
 
               {/* Right Interactive 3D Iridescent Padlock Sculpture */}
               <ParallaxLayer
-                speed={0.075}
-                maxOffset={26}
-                className="lg:col-span-6 flex items-center"
+                speed={0.028}
+                maxOffset={10}
+                desktopOnly
+                className="lg:col-span-6 flex items-center w-full"
               >
                 <VaultSculpture3D />
               </ParallaxLayer>
@@ -187,138 +239,135 @@ export default function App() {
           </div>
         </section>
 
-        {/* Services Section: Tier 1 (Argos) & Tier 2 (Atlas) */}
-        <section id="servicios" className="py-24 sm:py-28 border-t border-zinc-200/80">
-          <div className="max-w-[1160px] mx-auto px-6">
+        {/* Services Section: Unified 6 / 6 Grid so 3D Shield & Atlas Share Exact Vertical Axis */}
+        <section id="servicios" className="py-20 sm:py-28 border-t border-zinc-200/80">
+          <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
+            {/* Top Row: Left Headline (6 cols) + Right 3D Shield (6 cols) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <ParallaxLayer speed={-0.028} maxOffset={14} desktopOnly className="lg:col-span-7">
+              <div className="lg:col-span-6 lg:pr-4">
                 <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-950 text-balance">
                   {t.services.headline}
                 </h2>
-                <p className="mt-3 text-base text-zinc-600 leading-relaxed max-w-[50ch]">
+                <p className="mt-3 text-base text-zinc-600 leading-relaxed max-w-[48ch]">
                   {t.services.subtitle}
                 </p>
-              </ParallaxLayer>
+              </div>
 
-              <ParallaxLayer speed={0.07} maxOffset={22} className="lg:col-span-5">
+              <ParallaxLayer speed={0.025} maxOffset={10} desktopOnly className="lg:col-span-6 w-full">
                 <TierKineticObject3D activeTier={activeTier} />
               </ParallaxLayer>
             </div>
 
-            {/* Dual Monochrome Glassmorphic Service Cards */}
-            <div className="mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-              {/* Tier 1: Argos */}
-              <ParallaxLayer
-                speed={-0.025}
-                maxOffset={16}
-                desktopOnly
-                className="lg:col-span-6 h-full"
-              >
-                <article
-                  onMouseEnter={() => setActiveTier('argos')}
-                  className="h-full glass-panel rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
-                >
-                  <div>
-                    <div className="text-xs font-medium text-zinc-500 flex items-center gap-2">
-                      <span className="tabular-nums text-zinc-700">
-                        {t.services.argos.tierTag}
-                      </span>
-                      <span aria-hidden="true">·</span>
-                      <span>{t.services.argos.subtitleTag}</span>
+            {/* Dual Monochrome Glassmorphic Service Cards: Cohesive Row for 100% Baseline Alignment */}
+            <ParallaxLayer speed={0.02} maxOffset={10} desktopOnly className="mt-10 lg:mt-12">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+                {/* Tier 1: Argos */}
+                <div className="lg:col-span-6 flex">
+                  <article
+                    onMouseEnter={() => setActiveTier('argos')}
+                    className="w-full h-full glass-panel rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+                  >
+                    <div>
+                      <div className="lg:min-h-[8.5rem] flex flex-col justify-start">
+                        <div className="text-xs font-medium text-zinc-500 flex items-center gap-2">
+                          <span className="tabular-nums text-zinc-700">
+                            {t.services.argos.tierTag}
+                          </span>
+                          <span aria-hidden="true">·</span>
+                          <span>{t.services.argos.subtitleTag}</span>
+                        </div>
+
+                        <h3 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950">
+                          {t.services.argos.name}
+                        </h3>
+
+                        <p className="mt-3 text-sm text-zinc-600 leading-relaxed">
+                          {t.services.argos.audience}
+                        </p>
+                      </div>
+
+                      <div className="my-7 border-t border-zinc-200/80" />
+
+                      <dl className="space-y-6">
+                        {t.services.argos.items.map((item) => (
+                          <div key={item.title}>
+                            <dt className="text-sm font-semibold text-zinc-950">{item.title}</dt>
+                            <dd className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
+                              {item.desc}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
                     </div>
 
-                    <h3 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950">
-                      {t.services.argos.name}
-                    </h3>
+                    <div className="mt-10 pt-6 border-t border-zinc-200/80">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTierForAudit('argos')}
+                        className="w-full py-3 px-5 rounded-xl border border-zinc-900 bg-white/80 text-zinc-950 text-sm font-medium hover:bg-zinc-950 hover:text-white transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                      >
+                        <span>{t.services.argos.cta}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </article>
+                </div>
 
-                    <p className="mt-3 text-sm text-zinc-600 leading-relaxed">
-                      {t.services.argos.audience}
-                    </p>
-
-                    <div className="my-7 border-t border-zinc-200/80" />
-
-                    <dl className="space-y-6">
-                      {t.services.argos.items.map((item) => (
-                        <div key={item.title}>
-                          <dt className="text-sm font-semibold text-zinc-950">{item.title}</dt>
-                          <dd className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
-                            {item.desc}
-                          </dd>
+                {/* Tier 2: Atlas */}
+                <div className="lg:col-span-6 flex">
+                  <article
+                    onMouseEnter={() => setActiveTier('atlas')}
+                    className="w-full h-full glass-panel-dark text-white rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+                  >
+                    <div>
+                      <div className="lg:min-h-[8.5rem] flex flex-col justify-start">
+                        <div className="text-xs font-medium text-zinc-400 flex items-center gap-2">
+                          <span className="tabular-nums text-zinc-200">
+                            {t.services.atlas.tierTag}
+                          </span>
+                          <span aria-hidden="true">·</span>
+                          <span>{t.services.atlas.subtitleTag}</span>
                         </div>
-                      ))}
-                    </dl>
-                  </div>
 
-                  <div className="mt-10 pt-6 border-t border-zinc-200/80">
-                    <button
-                      type="button"
-                      onClick={() => handleSelectTierForAudit('argos')}
-                      className="w-full py-3 px-5 rounded-xl border border-zinc-900 bg-white/80 text-zinc-950 text-sm font-medium hover:bg-zinc-950 hover:text-white transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
-                    >
-                      <span>{t.services.argos.cta}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </article>
-              </ParallaxLayer>
+                        <h3 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                          {t.services.atlas.name}
+                        </h3>
 
-              {/* Tier 2: Atlas */}
-              <ParallaxLayer
-                speed={0.04}
-                maxOffset={18}
-                desktopOnly
-                className="lg:col-span-6 h-full"
-              >
-                <article
-                  onMouseEnter={() => setActiveTier('atlas')}
-                  className="h-full glass-panel-dark text-white rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
-                >
-                  <div>
-                    <div className="text-xs font-medium text-zinc-400 flex items-center gap-2">
-                      <span className="tabular-nums text-zinc-200">
-                        {t.services.atlas.tierTag}
-                      </span>
-                      <span aria-hidden="true">·</span>
-                      <span>{t.services.atlas.subtitleTag}</span>
+                        <p className="mt-3 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
+                          {t.services.atlas.audience}
+                        </p>
+                      </div>
+
+                      <div className="my-7 border-t border-white/10" />
+
+                      <dl className="space-y-6">
+                        {t.services.atlas.items.map((item) => (
+                          <div key={item.title}>
+                            <dt className="text-sm font-semibold text-white tracking-[0.01em]">
+                              {item.title}
+                            </dt>
+                            <dd className="mt-1.5 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
+                              {item.desc}
+                            </dd>
+                          </div>
+                        ))}
+                      </dl>
                     </div>
 
-                    <h3 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-white">
-                      {t.services.atlas.name}
-                    </h3>
-
-                    <p className="mt-3 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
-                      {t.services.atlas.audience}
-                    </p>
-
-                    <div className="my-7 border-t border-white/10" />
-
-                    <dl className="space-y-6">
-                      {t.services.atlas.items.map((item) => (
-                        <div key={item.title}>
-                          <dt className="text-sm font-semibold text-white tracking-[0.01em]">
-                            {item.title}
-                          </dt>
-                          <dd className="mt-1.5 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
-                            {item.desc}
-                          </dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
-
-                  <div className="mt-10 pt-6 border-t border-white/10">
-                    <button
-                      type="button"
-                      onClick={() => handleSelectTierForAudit('atlas')}
-                      className="w-full py-3 px-5 rounded-xl bg-white text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
-                    >
-                      <span>{t.services.atlas.cta}</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </article>
-              </ParallaxLayer>
-            </div>
+                    <div className="mt-10 pt-6 border-t border-white/10">
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTierForAudit('atlas')}
+                        className="w-full py-3 px-5 rounded-xl bg-white text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                      >
+                        <span>{t.services.atlas.cta}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </article>
+                </div>
+              </div>
+            </ParallaxLayer>
           </div>
         </section>
 
@@ -334,14 +383,14 @@ export default function App() {
 
       {/* Minimalist Footer */}
       <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
-        <div className="max-w-[1160px] mx-auto px-6 py-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-xs text-zinc-500">
             <span className="text-sm font-semibold tracking-tight text-zinc-950">Coto Privado</span>
             <span aria-hidden="true">·</span>
             <span className="tabular-nums">© {new Date().getFullYear()}</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-5 text-xs text-zinc-500">
+          <div className="flex items-center text-xs text-zinc-500">
             <button
               type="button"
               onClick={() => setAdminModalOpen(true)}
@@ -349,24 +398,6 @@ export default function App() {
             >
               {t.footer.privateAccess}
             </button>
-
-            {/* Footer Language Switcher */}
-            <div className="inline-flex items-center gap-1 p-0.5 rounded-lg bg-zinc-100 border border-zinc-200">
-              {LANGUAGES.map((item) => (
-                <button
-                  key={item.code}
-                  type="button"
-                  onClick={() => setLang(item.code)}
-                  className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap ${
-                    lang === item.code
-                      ? 'bg-zinc-950 text-white'
-                      : 'text-zinc-500 hover:text-zinc-950'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
           </div>
         </div>
       </footer>
