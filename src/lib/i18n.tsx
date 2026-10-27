@@ -179,10 +179,10 @@ export interface TranslationDictionary {
     switchAccountBtn: string;
     tabs: {
       all: (count: number) => string;
-      pendiente: string;
-      en_revision: string;
-      contactado: string;
-      cerrado: string;
+      pendiente: (count: number) => string;
+      en_revision: (count: number) => string;
+      contactado: (count: number) => string;
+      cerrado: (count: number) => string;
     };
     statusLabels: {
       pendiente: string;
@@ -190,6 +190,30 @@ export interface TranslationDictionary {
       contactado: string;
       cerrado: string;
     };
+    searchPlaceholder: string;
+    clearSearchAria: string;
+    serviceFilterAria: string;
+    serviceAll: string;
+    sortNewest: string;
+    sortOldest: string;
+    queueCount: (shown: number, total: number) => string;
+    selectPrompt: string;
+    openDossier: string;
+    backToList: (count: number) => string;
+    dossierPosition: (index: number, total: number) => string;
+    prevRequest: string;
+    nextRequest: string;
+    emptyFiltered: string;
+    clearFiltersBtn: string;
+    serviceLabel: string;
+    modeLabel: string;
+    dateLabel: string;
+    copyBtn: string;
+    copiedBtn: string;
+    openLinkBtn: string;
+    deleteBtn: string;
+    unsavedNotes: string;
+    hasNotesTag: string;
     loadingDocs: string;
     emptyDocs: string;
     recentFallback: string;
@@ -466,10 +490,10 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       switchAccountBtn: 'Cambiar de cuenta Google',
       tabs: {
         all: (count) => `Todas (${count})`,
-        pendiente: 'Pendientes',
-        en_revision: 'En revisión',
-        contactado: 'Contactados',
-        cerrado: 'Cerrados',
+        pendiente: (count) => `Pendientes (${count})`,
+        en_revision: (count) => `En revisión (${count})`,
+        contactado: (count) => `Contactados (${count})`,
+        cerrado: (count) => `Cerrados (${count})`,
       },
       statusLabels: {
         pendiente: 'Pendiente',
@@ -477,6 +501,33 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         contactado: 'Contactado',
         cerrado: 'Cerrado',
       },
+      searchPlaceholder: 'Buscar por folio, nombre, rol, referencia o notas...',
+      clearSearchAria: 'Limpiar búsqueda',
+      serviceFilterAria: 'Filtrar por servicio',
+      serviceAll: 'Todos los servicios',
+      sortNewest: 'Más recientes',
+      sortOldest: 'Más antiguas',
+      queueCount: (shown, total) =>
+        shown === total
+          ? `${total} ${total === 1 ? 'solicitud' : 'solicitudes'}`
+          : `${shown} de ${total} solicitudes`,
+      selectPrompt: 'Selecciona una fila para gestionar',
+      openDossier: 'Ver detalle',
+      backToList: (count) => `Volver a la lista (${count})`,
+      dossierPosition: (index, total) => `Solicitud ${index} de ${total}`,
+      prevRequest: 'Anterior',
+      nextRequest: 'Siguiente',
+      emptyFiltered: 'Ninguna solicitud coincide con los filtros actuales.',
+      clearFiltersBtn: 'Restablecer filtros',
+      serviceLabel: 'Servicio asignado',
+      modeLabel: 'Modalidad operativa',
+      dateLabel: 'Fecha de registro',
+      copyBtn: 'Copiar',
+      copiedBtn: 'Copiado',
+      openLinkBtn: 'Abrir enlace',
+      deleteBtn: 'Eliminar',
+      unsavedNotes: 'Cambios sin guardar',
+      hasNotesTag: 'Con notas internas registradas',
       loadingDocs: 'Cargando solicitudes...',
       emptyDocs: 'No hay solicitudes registradas todavía.',
       recentFallback: 'Reciente',
@@ -486,14 +537,14 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       modeAndTier: 'Modalidad y Servicio',
       soloShort: 'Solo',
       teamShort: 'Equipo',
-      refLink: 'Referencia',
-      reportedConcern: 'Preocupación o incidente',
+      refLink: 'Enlace o perfil de referencia',
+      reportedConcern: 'Preocupación o incidente reportado',
       noComments: 'Sin comentarios adicionales.',
-      dossierStatus: 'Estado',
-      closedLockedMsg: 'Expediente cerrado.',
-      reopenBtn: 'Reabrir',
-      internalNotesLabel: 'Notas internas',
-      internalNotesPlaceholder: 'Observaciones de seguimiento...',
+      dossierStatus: 'Estado del expediente',
+      closedLockedMsg: 'Expediente cerrado (edición bloqueada).',
+      reopenBtn: 'Reabrir expediente',
+      internalNotesLabel: 'Notas internas de seguimiento',
+      internalNotesPlaceholder: 'Registra acuerdos, contexto de contacto o siguientes pasos...',
       savingBtn: 'Guardando...',
       saveNotesBtn: 'Guardar notas',
       feedbackSyncError: 'No fue posible sincronizar las solicitudes.',
@@ -751,10 +802,10 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       switchAccountBtn: 'Switch Google account',
       tabs: {
         all: (count) => `All (${count})`,
-        pendiente: 'Pending',
-        en_revision: 'In review',
-        contactado: 'Contacted',
-        cerrado: 'Closed',
+        pendiente: (count) => `Pending (${count})`,
+        en_revision: (count) => `In review (${count})`,
+        contactado: (count) => `Contacted (${count})`,
+        cerrado: (count) => `Closed (${count})`,
       },
       statusLabels: {
         pendiente: 'Pending',
@@ -762,6 +813,33 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         contactado: 'Contacted',
         cerrado: 'Closed',
       },
+      searchPlaceholder: 'Search by ID, name, role, reference, or notes...',
+      clearSearchAria: 'Clear search',
+      serviceFilterAria: 'Filter by service',
+      serviceAll: 'All services',
+      sortNewest: 'Newest first',
+      sortOldest: 'Oldest first',
+      queueCount: (shown, total) =>
+        shown === total
+          ? `${total} ${total === 1 ? 'request' : 'requests'}`
+          : `${shown} of ${total} requests`,
+      selectPrompt: 'Select a row to manage',
+      openDossier: 'View details',
+      backToList: (count) => `Back to list (${count})`,
+      dossierPosition: (index, total) => `Request ${index} of ${total}`,
+      prevRequest: 'Previous',
+      nextRequest: 'Next',
+      emptyFiltered: 'No requests match the current filters.',
+      clearFiltersBtn: 'Reset filters',
+      serviceLabel: 'Assigned service',
+      modeLabel: 'Operating mode',
+      dateLabel: 'Submitted on',
+      copyBtn: 'Copy',
+      copiedBtn: 'Copied',
+      openLinkBtn: 'Open link',
+      deleteBtn: 'Delete',
+      unsavedNotes: 'Unsaved changes',
+      hasNotesTag: 'Internal notes recorded',
       loadingDocs: 'Loading requests...',
       emptyDocs: 'No requests recorded yet.',
       recentFallback: 'Just now',
@@ -771,14 +849,14 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       modeAndTier: 'Mode & Service',
       soloShort: 'Solo',
       teamShort: 'Team',
-      refLink: 'Reference',
-      reportedConcern: 'Concern or incident',
+      refLink: 'Reference link or profile',
+      reportedConcern: 'Reported concern or incident',
       noComments: 'No additional notes.',
-      dossierStatus: 'Status',
-      closedLockedMsg: 'Closed dossier.',
-      reopenBtn: 'Reopen',
-      internalNotesLabel: 'Internal notes',
-      internalNotesPlaceholder: 'Follow-up notes...',
+      dossierStatus: 'Dossier status',
+      closedLockedMsg: 'Closed dossier (editing locked).',
+      reopenBtn: 'Reopen dossier',
+      internalNotesLabel: 'Internal follow-up notes',
+      internalNotesPlaceholder: 'Record contact context, agreements, or next steps...',
       savingBtn: 'Saving...',
       saveNotesBtn: 'Save notes',
       feedbackSyncError: 'Could not synchronize requests.',
@@ -1037,10 +1115,10 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       switchAccountBtn: 'Trocar conta do Google',
       tabs: {
         all: (count) => `Todas (${count})`,
-        pendiente: 'Pendentes',
-        en_revision: 'Em revisão',
-        contactado: 'Contatados',
-        cerrado: 'Encerrados',
+        pendiente: (count) => `Pendentes (${count})`,
+        en_revision: (count) => `Em revisão (${count})`,
+        contactado: (count) => `Contatados (${count})`,
+        cerrado: (count) => `Encerrados (${count})`,
       },
       statusLabels: {
         pendiente: 'Pendente',
@@ -1048,6 +1126,33 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         contactado: 'Contatado',
         cerrado: 'Encerrado',
       },
+      searchPlaceholder: 'Buscar por código, nome, função, referência ou notas...',
+      clearSearchAria: 'Limpar busca',
+      serviceFilterAria: 'Filtrar por serviço',
+      serviceAll: 'Todos os serviços',
+      sortNewest: 'Mais recentes',
+      sortOldest: 'Mais antigas',
+      queueCount: (shown, total) =>
+        shown === total
+          ? `${total} ${total === 1 ? 'solicitação' : 'solicitações'}`
+          : `${shown} de ${total} solicitações`,
+      selectPrompt: 'Selecione uma linha para gerenciar',
+      openDossier: 'Ver detalhes',
+      backToList: (count) => `Voltar à lista (${count})`,
+      dossierPosition: (index, total) => `Solicitação ${index} de ${total}`,
+      prevRequest: 'Anterior',
+      nextRequest: 'Próxima',
+      emptyFiltered: 'Nenhuma solicitação corresponde aos filtros atuais.',
+      clearFiltersBtn: 'Limpar filtros',
+      serviceLabel: 'Serviço atribuído',
+      modeLabel: 'Modalidade operacional',
+      dateLabel: 'Data de registro',
+      copyBtn: 'Copiar',
+      copiedBtn: 'Copiado',
+      openLinkBtn: 'Abrir link',
+      deleteBtn: 'Excluir',
+      unsavedNotes: 'Alterações não salvas',
+      hasNotesTag: 'Com notas internas registradas',
       loadingDocs: 'Carregando solicitações...',
       emptyDocs: 'Nenhuma solicitação registrada ainda.',
       recentFallback: 'Recente',
@@ -1057,14 +1162,14 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       modeAndTier: 'Modalidade e Serviço',
       soloShort: 'Solo',
       teamShort: 'Equipe',
-      refLink: 'Referência',
-      reportedConcern: 'Preocupação ou incidente',
+      refLink: 'Link ou perfil de referência',
+      reportedConcern: 'Preocupação ou incidente relatado',
       noComments: 'Sem observações adicionais.',
-      dossierStatus: 'Status',
-      closedLockedMsg: 'Expediente encerrado.',
-      reopenBtn: 'Reabrir',
-      internalNotesLabel: 'Notas internas',
-      internalNotesPlaceholder: 'Observações de acompanhamento...',
+      dossierStatus: 'Status do dossiê',
+      closedLockedMsg: 'Expediente encerrado (edição bloqueada).',
+      reopenBtn: 'Reabrir expediente',
+      internalNotesLabel: 'Notas internas de acompanhamento',
+      internalNotesPlaceholder: 'Registre contexto de contato, acordos ou próximos passos...',
       savingBtn: 'Salvando...',
       saveNotesBtn: 'Salvar notas',
       feedbackSyncError: 'Não foi possível sincronizar as solicitações.',
