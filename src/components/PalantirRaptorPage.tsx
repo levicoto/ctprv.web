@@ -2,6 +2,7 @@ import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
 import RaptorEye3D from './RaptorEye3D';
 import EvaluationForm from './EvaluationForm';
+import CotoLogoMark from './CotoLogoMark';
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -323,13 +324,14 @@ export default function PalantirRaptorPage({
       {/* Minimalist Footer */}
       <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
         <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3 text-xs text-zinc-500">
+          <div className="flex items-center gap-2.5 text-xs text-zinc-500">
             <button
               type="button"
               onClick={onBackToMain}
-              className="text-sm font-semibold tracking-tight text-zinc-950 hover:underline underline-offset-4 cursor-pointer"
+              className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-zinc-950 hover:underline underline-offset-4 cursor-pointer"
             >
-              Coto Privado
+              <CotoLogoMark className="w-[18px] h-[18px] shrink-0" />
+              <span>Coto Privado</span>
             </button>
             <span aria-hidden="true">·</span>
             <span>Palantir Raptor</span>

@@ -21,13 +21,12 @@ import {
   Download,
   ExternalLink,
   Loader2,
-  Lock,
   LogOut,
   Search,
-  ShieldCheck,
   Trash2,
   X,
 } from 'lucide-react';
+import CotoLogoMark from './CotoLogoMark';
 import {
   ADMIN_DOMAIN,
   auth,
@@ -480,7 +479,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
         {/* Top Modal Header */}
         <div className="px-5 sm:px-6 py-3.5 border-b border-zinc-200 flex items-center justify-between gap-4 bg-zinc-50/80 shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
-            <ShieldCheck className="w-5 h-5 text-zinc-900 shrink-0" />
+            <CotoLogoMark className="w-5 h-5 shrink-0" />
             <div className="min-w-0">
               <span className="font-display text-sm sm:text-base font-semibold text-zinc-950 truncate block">
                 {t.admin.headerTitle}
@@ -534,7 +533,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
         ) : !user ? (
           <div className="py-16 px-6 max-w-md mx-auto text-center">
             <div className="w-12 h-12 rounded-2xl bg-zinc-950 text-white flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-5 h-5" />
+              <CotoLogoMark variant="light" padded className="w-9 h-9" />
             </div>
             <h3 className="font-display text-xl font-semibold text-zinc-950">
               {t.admin.signInTitle}

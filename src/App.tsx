@@ -11,6 +11,7 @@ import TechnologyStack from './components/TechnologyStack';
 import EvaluationForm, { type OperationMode } from './components/EvaluationForm';
 import AdminInboxModal from './components/AdminInboxModal';
 import PalantirRaptorPage from './components/PalantirRaptorPage';
+import CotoLogoMark from './components/CotoLogoMark';
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -143,9 +144,10 @@ export default function App() {
             <a
               href="#inicio"
               onClick={(e) => handleAnchorClick(e, 'inicio')}
-              className="text-lg font-semibold tracking-tight text-zinc-950 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
+              className="inline-flex items-center gap-2.5 text-lg font-semibold tracking-tight text-zinc-950 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
             >
-              Coto Privado
+              <CotoLogoMark className="w-[21px] h-[21px] shrink-0" />
+              <span>Coto Privado</span>
             </a>
           </div>
 
@@ -472,7 +474,8 @@ export default function App() {
       {/* Minimalist Footer */}
       <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
         <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3 text-xs text-zinc-500">
+          <div className="flex items-center gap-2.5 text-xs text-zinc-500">
+            <CotoLogoMark className="w-[18px] h-[18px] shrink-0" />
             <span className="text-sm font-semibold tracking-tight text-zinc-950">Coto Privado</span>
             <span aria-hidden="true">·</span>
             <span className="tabular-nums">© {new Date().getFullYear()}</span>
