@@ -157,10 +157,43 @@ export interface TranslationDictionary {
       receiptNotes: string;
       receiptNoNotes: string;
       mailSubjectPrefix: string;
+      signalCopyBtn: string;
+      signalCopiedBtn: string;
+    };
+    signalCard: {
+      kicker: [string, string];
+      title: string;
+      body: string;
+      userLabel: string;
+      copyBtn: string;
+      copiedBtn: string;
+      emailLabel: string;
+      copyEmailBtn: string;
+      copiedEmailBtn: string;
+      privacyTrigger: string;
     };
   };
   footer: {
+    signalCopyTitle: string;
+    signalCopied: string;
+    privacyLink: string;
     privateAccess: string;
+  };
+  privacy: {
+    dialogAria: string;
+    kicker: [string, string];
+    title: string;
+    intro: string;
+    clauses: {
+      num: string;
+      title: string;
+      desc: string;
+    }[];
+    directLabel: string;
+    copySignalBtn: string;
+    copiedSignalBtn: string;
+    closeBtn: string;
+    closeAria: string;
   };
   admin: {
     dialogAria: string;
@@ -468,10 +501,61 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptNotes: 'Notas',
         receiptNoNotes: 'Sin incidentes reportados',
         mailSubjectPrefix: 'Solicitud Confidencial',
+        signalCopyBtn: 'Signal: coto.33',
+        signalCopiedBtn: 'coto.33 copiado',
+      },
+      signalCard: {
+        kicker: ['Canales directos', 'Información o emergencias'],
+        title: 'Contacto directo y emergencias',
+        body: 'Para consultas previas al diagnóstico o ante un incidente de seguridad activo, comunícate directamente por Signal o correo institucional.',
+        userLabel: 'Usuario Signal',
+        copyBtn: 'Copiar usuario',
+        copiedBtn: 'Usuario copiado',
+        emailLabel: 'Correo directo',
+        copyEmailBtn: 'Copiar correo',
+        copiedEmailBtn: 'Correo copiado',
+        privacyTrigger: 'Compromiso de privacidad y confidencialidad',
       },
     },
     footer: {
+      signalCopyTitle: 'Copiar usuario de Signal coto.33',
+      signalCopied: 'Copiado',
+      privacyLink: 'Privacidad y Confidencialidad',
       privateAccess: 'Acceso Privado',
+    },
+    privacy: {
+      dialogAria: 'Compromiso de privacidad y confidencialidad de Coto Privado',
+      kicker: ['Coto Privado', 'Protocolo de Reserva'],
+      title: 'Privacidad y Confidencialidad',
+      intro:
+        'Cada acercamiento, consulta o reporte de incidente se gestiona bajo estricta discreción operativa y minimización absoluta de información.',
+      clauses: [
+        {
+          num: '01',
+          title: 'Reserva profesional y acuerdo NDA',
+          desc: 'Toda comunicación, identidad, alias o contexto operativo compartido está protegido bajo secreto profesional desde el primer contacto. Firmamos acuerdos de no divulgación (NDA) previos a cualquier alcance técnico cuando la operación lo requiera.',
+        },
+        {
+          num: '02',
+          title: 'Minimización de datos y cero terceros',
+          desc: 'Recopilamos únicamente los datos mínimos necesarios para coordinar tu evaluación, admitiendo el uso de alias. Jamás comercializamos, cedemos ni exponemos información a terceros, anunciantes ni rastreadores externos.',
+        },
+        {
+          num: '03',
+          title: 'Comunicaciones cifradas y atención de emergencias',
+          desc: 'Nunca solicitamos contraseñas, códigos 2FA ni acceso a dispositivos mediante este sitio web. Para consultas sensibles o incidentes activos, operamos por canal cifrado de extremo a extremo en Signal (usuario: coto.33).',
+        },
+        {
+          num: '04',
+          title: 'Retención controlada y supresión inmediata',
+          desc: 'Los expedientes de evaluación se conservan únicamente durante la coordinación del servicio. Puedes solicitar la eliminación definitiva e inmediata de cualquier registro escribiendo a Signal (coto.33) o a help@coto.lat.',
+        },
+      ],
+      directLabel: 'Canal cifrado directo',
+      copySignalBtn: 'Copiar Signal: coto.33',
+      copiedSignalBtn: 'Usuario copiado',
+      closeBtn: 'Entendido',
+      closeAria: 'Cerrar aviso de privacidad y confidencialidad',
     },
     admin: {
       dialogAria: 'Panel privado de evaluaciones Coto Privado',
@@ -780,10 +864,61 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptNotes: 'Notes',
         receiptNoNotes: 'No recent incidents reported',
         mailSubjectPrefix: 'Confidential Request',
+        signalCopyBtn: 'Signal: coto.33',
+        signalCopiedBtn: 'coto.33 copied',
+      },
+      signalCard: {
+        kicker: ['Direct channels', 'Inquiries or emergencies'],
+        title: 'Direct & emergency contact',
+        body: 'For questions prior to an assessment or during an active security incident, reach us directly via Signal or institutional email.',
+        userLabel: 'Signal username',
+        copyBtn: 'Copy username',
+        copiedBtn: 'Username copied',
+        emailLabel: 'Direct email',
+        copyEmailBtn: 'Copy email',
+        copiedEmailBtn: 'Email copied',
+        privacyTrigger: 'Privacy & confidentiality commitment',
       },
     },
     footer: {
+      signalCopyTitle: 'Copy Signal username coto.33',
+      signalCopied: 'Copied',
+      privacyLink: 'Privacy & Confidentiality',
       privateAccess: 'Private Access',
+    },
+    privacy: {
+      dialogAria: 'Coto Privado privacy and confidentiality commitment',
+      kicker: ['Coto Privado', 'Discretion Protocol'],
+      title: 'Privacy & Confidentiality',
+      intro:
+        'Every inquiry, assessment, or incident report is handled under strict operational discretion and data minimization.',
+      clauses: [
+        {
+          num: '01',
+          title: 'Professional secrecy & NDA availability',
+          desc: 'All communications, identities, aliases, and operational context are treated as strictly confidential from first contact. Mutual non-disclosure agreements (NDAs) are available prior to any technical engagement.',
+        },
+        {
+          num: '02',
+          title: 'Data minimization & zero third-party sharing',
+          desc: 'We collect only the minimum details required to coordinate your assessment and fully support aliases. Information is never sold, shared, or exposed to third parties, advertisers, or external trackers.',
+        },
+        {
+          num: '03',
+          title: 'End-to-end encrypted channel & emergencies',
+          desc: 'We never ask for passwords, 2FA codes, or device access through this website. For sensitive inquiries or active security emergencies, contact us over end-to-end encrypted Signal (username: coto.33).',
+        },
+        {
+          num: '04',
+          title: 'Controlled retention & immediate deletion',
+          desc: 'Assessment records are retained solely to coordinate your case. You may request immediate, permanent deletion of any record at any time via Signal (coto.33) or help@coto.lat.',
+        },
+      ],
+      directLabel: 'Direct encrypted channel',
+      copySignalBtn: 'Copy Signal: coto.33',
+      copiedSignalBtn: 'Username copied',
+      closeBtn: 'Close',
+      closeAria: 'Close privacy and confidentiality notice',
     },
     admin: {
       dialogAria: 'Coto Privado private assessments panel',
@@ -1093,10 +1228,61 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptNotes: 'Notas',
         receiptNoNotes: 'Nenhum incidente relatado',
         mailSubjectPrefix: 'Solicitação Confidencial',
+        signalCopyBtn: 'Signal: coto.33',
+        signalCopiedBtn: 'coto.33 copiado',
+      },
+      signalCard: {
+        kicker: ['Canais diretos', 'Informações ou emergências'],
+        title: 'Contato direto e emergências',
+        body: 'Para dúvidas antes do diagnóstico ou diante de um incidente de segurança ativo, fale diretamente conosco pelo Signal ou e-mail institucional.',
+        userLabel: 'Usuário Signal',
+        copyBtn: 'Copiar usuário',
+        copiedBtn: 'Usuário copiado',
+        emailLabel: 'E-mail direto',
+        copyEmailBtn: 'Copiar e-mail',
+        copiedEmailBtn: 'E-mail copiado',
+        privacyTrigger: 'Compromisso de privacidade e confidencialidade',
       },
     },
     footer: {
+      signalCopyTitle: 'Copiar usuário do Signal coto.33',
+      signalCopied: 'Copiado',
+      privacyLink: 'Privacidade e Confidencialidade',
       privateAccess: 'Acesso Privado',
+    },
+    privacy: {
+      dialogAria: 'Compromisso de privacidade e confidencialidade da Coto Privado',
+      kicker: ['Coto Privado', 'Protocolo de Sigilo'],
+      title: 'Privacidade e Confidencialidade',
+      intro:
+        'Cada contato, avaliação ou relato de incidente é conduzido sob estrita discrição operacional e minimização absoluta de dados.',
+      clauses: [
+        {
+          num: '01',
+          title: 'Sigilo profissional e acordo NDA',
+          desc: 'Toda comunicação, identidade, alias ou contexto compartilhado é protegido por sigilo profissional desde o primeiro contato. Disponibilizamos acordo de confidencialidade (NDA) antes de qualquer escopo técnico.',
+        },
+        {
+          num: '02',
+          title: 'Minimização de dados e zero terceiros',
+          desc: 'Coletamos apenas os dados mínimos essenciais para coordenar sua avaliação, permitindo o uso de alias. Jamais comercializamos, cedemos ou expomos dados a terceiros, anunciantes ou rastreadores externos.',
+        },
+        {
+          num: '03',
+          title: 'Comunicação criptografada e emergências',
+          desc: 'Nunca solicitamos senhas, códigos 2FA ou acesso a dispositivos por este site. Para consultas sensíveis ou incidentes ativos, atendemos via canal criptografado de ponta a ponta no Signal (usuário: coto.33).',
+        },
+        {
+          num: '04',
+          title: 'Retenção controlada e exclusão imediata',
+          desc: 'Os registros de avaliação são mantidos exclusivamente para a coordenação do atendimento. Você pode solicitar a exclusão definitiva e imediata de qualquer registro via Signal (coto.33) ou help@coto.lat.',
+        },
+      ],
+      directLabel: 'Canal criptografado direto',
+      copySignalBtn: 'Copiar Signal: coto.33',
+      copiedSignalBtn: 'Usuário copiado',
+      closeBtn: 'Fechar',
+      closeAria: 'Fechar aviso de privacidade e confidencialidade',
     },
     admin: {
       dialogAria: 'Painel privado de avaliações Coto Privado',

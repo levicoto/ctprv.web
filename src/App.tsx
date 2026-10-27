@@ -4,14 +4,20 @@
  */
 
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Globe, Mail } from 'lucide-react';
 import VaultSculpture3D from './components/VaultSculpture3D';
 import TierKineticObject3D, { type ServiceTierId } from './components/TierKineticObject3D';
 import TechnologyStack from './components/TechnologyStack';
 import EvaluationForm, { type OperationMode } from './components/EvaluationForm';
 import AdminInboxModal from './components/AdminInboxModal';
+import PrivacyModal from './components/PrivacyModal';
 import PalantirRaptorPage from './components/PalantirRaptorPage';
 import CotoLogoMark from './components/CotoLogoMark';
+import SignalMark, {
+  CONTACT_EMAIL,
+  copyToClipboard,
+  SIGNAL_USERNAME,
+} from './components/SignalMark';
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -38,8 +44,18 @@ export default function App() {
   const [activeTier, setActiveTier] = useState<ServiceTierId>('atlas');
   const [preferredMode, setPreferredMode] = useState<OperationMode>('solo');
   const [adminModalOpen, setAdminModalOpen] = useState(false);
+  const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
+  const [footerSignalCopied, setFooterSignalCopied] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const handleCopyFooterSignal = async () => {
+    const ok = await copyToClipboard(SIGNAL_USERNAME);
+    if (ok) {
+      setFooterSignalCopied(true);
+      window.setTimeout(() => setFooterSignalCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     const syncRoute = () => {
@@ -124,7 +140,9 @@ export default function App() {
         <PalantirRaptorPage
           onBackToMain={handleBackToMain}
           onOpenAdmin={() => setAdminModalOpen(true)}
+          onOpenPrivacy={() => setPrivacyModalOpen(true)}
         />
+        <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
         <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
       </>
     );
@@ -468,6 +486,7 @@ export default function App() {
         <EvaluationForm
           preferredMode={preferredMode}
           onModeSyncTier={(tier) => setActiveTier(tier)}
+          onOpenPrivacy={() => setPrivacyModalOpen(true)}
         />
       </main>
 
@@ -481,7 +500,35 @@ export default function App() {
             <span className="tabular-nums">© {new Date().getFullYear()}</span>
           </div>
 
-          <div className="flex items-center text-xs text-zinc-500">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
+            <button
+              type="button"
+              title={t.footer.signalCopyTitle}
+              onClick={handleCopyFooterSignal}
+              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              <SignalMark className="w-3.5 h-3.5 shrink-0" />
+              <span className="font-mono text-[11px] text-zinc-700">
+                {footerSignalCopied ? t.footer.signalCopied : `Signal: ${SIGNAL_USERNAME}`}
+              </span>
+            </button>
+            <span aria-hidden="true">·</span>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors whitespace-nowrap"
+            >
+              <Mail className="w-3.5 h-3.5 shrink-0" />
+              <span className="font-mono text-[11px] text-zinc-700">{CONTACT_EMAIL}</span>
+            </a>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={() => setPrivacyModalOpen(true)}
+              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {t.footer.privacyLink}
+            </button>
+            <span aria-hidden="true">·</span>
             <button
               type="button"
               onClick={() => setAdminModalOpen(true)}
@@ -493,6 +540,7 @@ export default function App() {
         </div>
       </footer>
 
+      <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
       <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
     </div>
   );

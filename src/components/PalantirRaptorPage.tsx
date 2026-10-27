@@ -1,8 +1,13 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Globe, Mail } from 'lucide-react';
 import RaptorEye3D from './RaptorEye3D';
 import EvaluationForm from './EvaluationForm';
 import CotoLogoMark from './CotoLogoMark';
+import SignalMark, {
+  CONTACT_EMAIL,
+  copyToClipboard,
+  SIGNAL_USERNAME,
+} from './SignalMark';
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -18,15 +23,26 @@ const LANGUAGES: { code: Language; short: string; name: string }[] = [
 interface PalantirRaptorPageProps {
   onBackToMain: () => void;
   onOpenAdmin: () => void;
+  onOpenPrivacy: () => void;
 }
 
 export default function PalantirRaptorPage({
   onBackToMain,
   onOpenAdmin,
+  onOpenPrivacy,
 }: PalantirRaptorPageProps) {
   const { lang, setLang, t } = useI18n();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
+  const [footerSignalCopied, setFooterSignalCopied] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const handleCopyFooterSignal = async () => {
+    const ok = await copyToClipboard(SIGNAL_USERNAME);
+    if (ok) {
+      setFooterSignalCopied(true);
+      window.setTimeout(() => setFooterSignalCopied(false), 2000);
+    }
+  };
 
   useEffect(() => {
     document.title = t.raptorMetaTitle;
@@ -318,13 +334,13 @@ export default function PalantirRaptorPage({
         </section>
 
         {/* Shared Evaluation Form configured for Palantir Raptor */}
-        <EvaluationForm serviceVariant="raptor" />
+        <EvaluationForm serviceVariant="raptor" onOpenPrivacy={onOpenPrivacy} />
       </main>
 
       {/* Minimalist Footer */}
       <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
         <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5 text-xs text-zinc-500">
+          <div className="flex flex-wrap items-center gap-2.5 text-xs text-zinc-500">
             <button
               type="button"
               onClick={onBackToMain}
@@ -339,7 +355,35 @@ export default function PalantirRaptorPage({
             <span className="tabular-nums">© {new Date().getFullYear()}</span>
           </div>
 
-          <div className="flex items-center text-xs text-zinc-500">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
+            <button
+              type="button"
+              title={t.footer.signalCopyTitle}
+              onClick={handleCopyFooterSignal}
+              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              <SignalMark className="w-3.5 h-3.5 shrink-0" />
+              <span className="font-mono text-[11px] text-zinc-700">
+                {footerSignalCopied ? t.footer.signalCopied : `Signal: ${SIGNAL_USERNAME}`}
+              </span>
+            </button>
+            <span aria-hidden="true">·</span>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors whitespace-nowrap"
+            >
+              <Mail className="w-3.5 h-3.5 shrink-0" />
+              <span className="font-mono text-[11px] text-zinc-700">{CONTACT_EMAIL}</span>
+            </a>
+            <span aria-hidden="true">·</span>
+            <button
+              type="button"
+              onClick={onOpenPrivacy}
+              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {t.footer.privacyLink}
+            </button>
+            <span aria-hidden="true">·</span>
             <button
               type="button"
               onClick={onOpenAdmin}

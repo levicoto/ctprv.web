@@ -1,8 +1,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { AlertCircle, Check, Download, Loader2, Lock, Mail, RotateCcw } from 'lucide-react';
+import { AlertCircle, Check, Copy, Download, Loader2, Lock, Mail, RotateCcw } from 'lucide-react';
 import {
-  ADMIN_EMAIL,
   db,
   EVALUATION_SCHEMA_LIMITS,
   handleFirestoreError,
@@ -10,6 +9,7 @@ import {
 } from '../lib/firebase';
 import { useI18n } from '../lib/i18n';
 import ParallaxLayer from './ParallaxLayer';
+import SignalMark, { CONTACT_EMAIL, copyToClipboard, SIGNAL_USERNAME } from './SignalMark';
 import type { ServiceTierId } from './TierKineticObject3D';
 
 export type OperationMode = 'solo' | 'equipo';
@@ -30,6 +30,7 @@ interface EvaluationRecord {
 interface EvaluationFormProps {
   preferredMode?: OperationMode;
   onModeSyncTier?: (tier: ServiceTierId) => void;
+  onOpenPrivacy?: () => void;
   serviceVariant?: 'tiers' | 'raptor';
 }
 
@@ -51,6 +52,7 @@ function generateDocumentId(): string {
 export default function EvaluationForm({
   preferredMode,
   onModeSyncTier,
+  onOpenPrivacy,
   serviceVariant = 'tiers',
 }: EvaluationFormProps) {
   const { lang, t } = useI18n();
@@ -66,6 +68,24 @@ export default function EvaluationForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [signalCopied, setSignalCopied] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
+
+  const handleCopySignal = async () => {
+    const ok = await copyToClipboard(SIGNAL_USERNAME);
+    if (ok) {
+      setSignalCopied(true);
+      window.setTimeout(() => setSignalCopied(false), 2000);
+    }
+  };
+
+  const handleCopyEmail = async () => {
+    const ok = await copyToClipboard(CONTACT_EMAIL);
+    if (ok) {
+      setEmailCopied(true);
+      window.setTimeout(() => setEmailCopied(false), 2000);
+    }
+  };
 
   const [submittedRecord, setSubmittedRecord] = useState<EvaluationRecord | null>(() => {
     try {
@@ -279,7 +299,7 @@ export default function EvaluationForm({
   };
 
   const buildMailtoHref = () => {
-    if (!submittedRecord) return `mailto:${ADMIN_EMAIL}`;
+    if (!submittedRecord) return `mailto:${CONTACT_EMAIL}`;
     const c = t.form.confirmation;
     const subject = encodeURIComponent(
       `${c.mailSubjectPrefix} [${submittedRecord.folio}] — ${submittedRecord.nombreAlias}`
@@ -300,7 +320,7 @@ export default function EvaluationForm({
         .filter(Boolean)
         .join('\n')
     );
-    return `mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`;
+    return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
   };
 
   const handleResetNew = () => {
@@ -331,6 +351,109 @@ export default function EvaluationForm({
               <p className="mt-4 text-base text-zinc-600 leading-relaxed max-w-[52ch]">
                 {isRaptor ? t.form.raptorBody : t.form.body}
               </p>
+
+              {/* Direct & Emergency Encrypted Signal Channel */}
+              <div className="mt-8 glass-panel rounded-2xl p-6 sm:p-7 max-w-[52ch]">
+                <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-zinc-500">
+                  <span className="text-zinc-800">{t.form.signalCard.kicker[0]}</span>
+                  <span aria-hidden="true">·</span>
+                  <span>{t.form.signalCard.kicker[1]}</span>
+                </div>
+
+                <h3 className="mt-2.5 text-base sm:text-lg font-semibold tracking-tight text-zinc-950">
+                  {t.form.signalCard.title}
+                </h3>
+
+                <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
+                  {t.form.signalCard.body}
+                </p>
+
+                {/* Row 1: Signal (coto.33) */}
+                <div className="mt-5 pt-4 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center shrink-0">
+                      <SignalMark className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-medium text-zinc-500 leading-none">
+                        {t.form.signalCard.userLabel}
+                      </div>
+                      <div className="mt-1 font-mono text-sm font-semibold text-zinc-950 tracking-tight select-all">
+                        {SIGNAL_USERNAME}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleCopySignal}
+                    className="h-9 px-3.5 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 hover:bg-zinc-950 hover:text-white text-zinc-900 text-xs font-medium inline-flex items-center gap-2 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                  >
+                    {signalCopied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t.form.signalCard.copiedBtn}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t.form.signalCard.copyBtn}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+
+                {/* Row 2: Direct Email (help@coto.lat) */}
+                <div className="mt-3.5 pt-3.5 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg border border-zinc-200 bg-white text-zinc-900 flex items-center justify-center shrink-0">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <div className="text-[11px] font-medium text-zinc-500 leading-none">
+                        {t.form.signalCard.emailLabel}
+                      </div>
+                      <a
+                        href={`mailto:${CONTACT_EMAIL}`}
+                        className="mt-1 inline-block font-mono text-sm font-semibold text-zinc-950 tracking-tight hover:underline underline-offset-4"
+                      >
+                        {CONTACT_EMAIL}
+                      </a>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleCopyEmail}
+                    className="h-9 px-3.5 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 hover:bg-zinc-950 hover:text-white text-zinc-900 text-xs font-medium inline-flex items-center gap-2 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                  >
+                    {emailCopied ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t.form.signalCard.copiedEmailBtn}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t.form.signalCard.copyEmailBtn}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {onOpenPrivacy && (
+                <div className="mt-4">
+                  <button
+                    type="button"
+                    onClick={onOpenPrivacy}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-950 underline underline-offset-4 transition-colors cursor-pointer"
+                  >
+                    <Lock className="w-3.5 h-3.5 shrink-0" />
+                    <span>{t.form.signalCard.privacyTrigger}</span>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Right Glassmorphic Form / Confirmation Container */}
@@ -405,6 +528,23 @@ export default function EvaluationForm({
                         <Mail className="w-4 h-4" />
                         <span>{t.form.confirmation.emailBtn}</span>
                       </a>
+
+                      <button
+                        type="button"
+                        onClick={handleCopySignal}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white/90 text-zinc-800 text-sm font-medium hover:text-zinc-950 hover:border-zinc-950 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                      >
+                        {signalCopied ? (
+                          <Check className="w-4 h-4 shrink-0" />
+                        ) : (
+                          <SignalMark className="w-4 h-4 shrink-0" />
+                        )}
+                        <span>
+                          {signalCopied
+                            ? t.form.confirmation.signalCopiedBtn
+                            : t.form.confirmation.signalCopyBtn}
+                        </span>
+                      </button>
                     </div>
 
                     <button
