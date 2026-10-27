@@ -176,6 +176,7 @@ export interface TranslationDictionary {
     unauthorizedTitle: string;
     unauthorizedPrefix: string;
     unauthorizedMiddle: string;
+    switchAccountBtn: string;
     tabs: {
       all: (count: number) => string;
       pendiente: string;
@@ -456,12 +457,13 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       closeAria: 'Cerrar panel',
       verifying: 'Verificando credenciales...',
       signInTitle: 'Acceso Administrativo',
-      signInDesc: 'Inicia sesión con la cuenta autorizada para gestionar las solicitudes.',
+      signInDesc: 'Inicia sesión con tu cuenta corporativa @coto.lat para gestionar las solicitudes.',
       signInBtn: 'Autenticar con Google',
       signInFailed: 'No se pudo completar el inicio de sesión con Google.',
       unauthorizedTitle: 'Cuenta sin permisos',
       unauthorizedPrefix: 'La sesión actual',
-      unauthorizedMiddle: 'no tiene acceso. Inicia sesión con',
+      unauthorizedMiddle: 'no tiene acceso. Inicia sesión con una cuenta corporativa',
+      switchAccountBtn: 'Cambiar de cuenta Google',
       tabs: {
         all: (count) => `Todas (${count})`,
         pendiente: 'Pendientes',
@@ -740,12 +742,13 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       closeAria: 'Close panel',
       verifying: 'Verifying credentials...',
       signInTitle: 'Administrative Access',
-      signInDesc: 'Sign in with the authorized account to manage audit requests.',
+      signInDesc: 'Sign in with your @coto.lat corporate account to manage audit requests.',
       signInBtn: 'Authenticate with Google',
       signInFailed: 'Could not complete Google sign-in.',
       unauthorizedTitle: 'Unauthorized account',
       unauthorizedPrefix: 'The current session',
-      unauthorizedMiddle: 'does not have access. Sign in with',
+      unauthorizedMiddle: 'does not have access. Sign in with a corporate account',
+      switchAccountBtn: 'Switch Google account',
       tabs: {
         all: (count) => `All (${count})`,
         pendiente: 'Pending',
@@ -1025,12 +1028,13 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       closeAria: 'Fechar painel',
       verifying: 'Verificando credenciais...',
       signInTitle: 'Acesso Administrativo',
-      signInDesc: 'Entre com a conta autorizada para gerenciar as solicitações.',
+      signInDesc: 'Entre com sua conta corporativa @coto.lat para gerenciar as solicitações.',
       signInBtn: 'Autenticar com Google',
       signInFailed: 'Não foi possível concluir o login com o Google.',
       unauthorizedTitle: 'Conta sem permissão',
       unauthorizedPrefix: 'A sessão atual',
-      unauthorizedMiddle: 'não possui acesso. Entre com',
+      unauthorizedMiddle: 'não possui acesso. Entre com uma conta corporativa',
+      switchAccountBtn: 'Trocar conta do Google',
       tabs: {
         all: (count) => `Todas (${count})`,
         pendiente: 'Pendentes',

@@ -27,7 +27,14 @@ service cloud.firestore {
     function isVerifiedAdmin() {
       return isSignedIn()
         && request.auth.token.email_verified == true
-        && request.auth.token.email == 'levi@coto.lat';
+        && request.auth.token.email is string
+        && request.auth.token.email.size() >= 10
+        && request.auth.token.email.size() <= 254
+        && (
+          request.auth.token.email == 'levi@coto.lat'
+          || request.auth.token.email == 'daniel@coto.lat'
+          || request.auth.token.email.matches('^[a-zA-Z0-9._%+\\-]+@[cC][oO][tT][oO]\\.[lL][aA][tT]$')
+        );
     }
 
     // Strict Schema Blueprint synced verbatim with firebase-blueprint.json
@@ -94,7 +101,7 @@ service cloud.firestore {
     }
 
     match /evaluations/{evaluationId} {
-      // Confidential PII Isolation: Only verified Coto Privado admin may read
+      // Confidential PII Isolation: Only verified @coto.lat admin accounts may read
       allow get: if isVerifiedAdmin() && isValidId(evaluationId);
 
       // Query Enforcer: Zero DB lookups, enforces resource.data.recipientOrg

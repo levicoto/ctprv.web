@@ -7,8 +7,27 @@ const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 export const ADMIN_EMAIL = 'levi@coto.lat';
+export const ADMIN_DOMAIN = 'coto.lat';
+export const AUTHORIZED_ADMIN_EMAILS = ['levi@coto.lat', 'daniel@coto.lat'] as const;
+
+export function isAuthorizedAdminUser(
+  user: { email?: string | null; emailVerified?: boolean } | null
+): boolean {
+  if (!user || user.emailVerified !== true || typeof user.email !== 'string') {
+    return false;
+  }
+  const normalized = user.email.trim().toLowerCase();
+  if (normalized.length < 10 || normalized.length > 254) {
+    return false;
+  }
+  return (
+    (AUTHORIZED_ADMIN_EMAILS as readonly string[]).includes(normalized) ||
+    /^[a-z0-9._%+-]+@coto\.lat$/.test(normalized)
+  );
+}
 
 // Verbatim schema constraints synced with firebase-blueprint.json & firestore.rules
 export const EVALUATION_SCHEMA_LIMITS = {

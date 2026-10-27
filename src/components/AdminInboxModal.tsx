@@ -13,12 +13,13 @@ import {
 } from 'firebase/firestore';
 import { Download, Loader2, Lock, LogOut, ShieldCheck, Trash2, X } from 'lucide-react';
 import {
-  ADMIN_EMAIL,
+  ADMIN_DOMAIN,
   auth,
   db,
   EVALUATION_SCHEMA_LIMITS,
   googleProvider,
   handleFirestoreError,
+  isAuthorizedAdminUser,
   OperationType,
 } from '../lib/firebase';
 import { useI18n } from '../lib/i18n';
@@ -81,8 +82,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
     return () => unsub();
   }, []);
 
-  const isAuthorizedAdmin =
-    Boolean(user) && user?.emailVerified === true && user?.email === ADMIN_EMAIL;
+  const isAuthorizedAdmin = isAuthorizedAdminUser(user);
 
   useEffect(() => {
     if (!isOpen || !authReady || !isAuthorizedAdmin) {
@@ -369,8 +369,20 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
               <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
                 {t.admin.unauthorizedPrefix} (<span className="text-xs font-medium">{user.email}</span>){' '}
                 {t.admin.unauthorizedMiddle}{' '}
-                <span className="text-xs font-semibold text-zinc-900">{ADMIN_EMAIL}</span>.
+                <span className="text-xs font-semibold text-zinc-900">@{ADMIN_DOMAIN}</span>.
               </p>
+              {authError && (
+                <p className="mt-4 text-xs font-medium text-zinc-900 bg-zinc-100 border border-zinc-300 rounded-lg py-2 px-3">
+                  {authError}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={handleGoogleSignIn}
+                className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-zinc-950 text-white text-xs font-medium hover:bg-zinc-800 transition-colors whitespace-nowrap"
+              >
+                <span>{t.admin.switchAccountBtn}</span>
+              </button>
             </div>
           ) : (
             <div>
