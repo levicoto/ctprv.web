@@ -37,7 +37,7 @@ function createPedestalBaseGeometry(): THREE.LatheGeometry {
     new THREE.Vector2(0.56, -1.04),
     new THREE.Vector2(0.0, -1.08),
   ];
-  return new THREE.LatheGeometry(points, 72);
+  return new THREE.LatheGeometry(points, 48);
 }
 
 /**
@@ -52,7 +52,7 @@ function createPlatinumCradleGeometry(): THREE.LatheGeometry {
     new THREE.Vector2(0.72, -0.90),
     new THREE.Vector2(0.50, -0.99),
   ];
-  return new THREE.LatheGeometry(points, 72);
+  return new THREE.LatheGeometry(points, 48);
 }
 
 /**
@@ -232,7 +232,8 @@ export default function RaptorEye3D() {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.18;
-    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 1.5));
+    renderer.transmissionResolutionScale = 0.5;
 
     const w0 = container.clientWidth || 560;
     const h0 = container.clientHeight || 420;
@@ -545,7 +546,7 @@ export default function RaptorEye3D() {
     orbGroup.add(innerReticleRing);
 
     // Part 7: The Palantír Seeing-Stone Outer Refractive Dichroic Crystal Sphere
-    const palantirSphereGeo = new THREE.SphereGeometry(1.12, 64, 48);
+    const palantirSphereGeo = new THREE.SphereGeometry(1.12, 48, 36);
     geometries.push(palantirSphereGeo);
     const palantirSphere = new THREE.Mesh(palantirSphereGeo, palantirCrystalMat);
     palantirSphere.renderOrder = 5;
@@ -635,14 +636,25 @@ export default function RaptorEye3D() {
     let touchActuateUntil = 0;
     let focusFactor = 0;
 
+    let isVisible = true;
+    let cachedDocTop = 0;
+    let cachedHeight = h0;
+    let cachedVh = Math.max(window.innerHeight, 1);
+    let cachedCompact = window.innerWidth < 1024;
+    let lastScrollTime = 0;
+
+    const syncLayoutMetrics = () => {
+      const rect = container.getBoundingClientRect();
+      cachedDocTop = rect.top + window.scrollY;
+      cachedHeight = Math.max(rect.height, 1);
+      cachedVh = Math.max(window.innerHeight, 1);
+      cachedCompact = window.innerWidth < 1024;
+    };
+
     const onPointerMove = (e: PointerEvent) => {
-      if (e.pointerType === 'touch') return;
+      if (!isVisible || e.pointerType === 'touch') return;
       cursorX = THREE.MathUtils.clamp((e.clientX / Math.max(window.innerWidth, 1)) * 2 - 1, -1, 1);
-      cursorY = THREE.MathUtils.clamp(
-        -(e.clientY / Math.max(window.innerHeight, 1)) * 2 + 1,
-        -1,
-        1
-      );
+      cursorY = THREE.MathUtils.clamp(-(e.clientY / cachedVh) * 2 + 1, -1, 1);
     };
 
     const updateFromTouch = (touch: Touch) => {
@@ -674,24 +686,28 @@ export default function RaptorEye3D() {
       cursorY *= 0.35;
     };
 
-    const updateScrollTilt = () => {
+    const computeScrollTilt = () => {
       if (prefersReducedMotion) {
         scrollYaw = 0;
         scrollPitch = 0;
         return;
       }
-      const rect = container.getBoundingClientRect();
-      const vh = Math.max(window.innerHeight, 1);
-      const centerDelta = (vh * 0.5 - (rect.top + rect.height * 0.5)) / (vh * 0.65);
-      const isCompact = window.innerWidth < 1024;
-      const yawScale = isCompact ? 0.52 : 0.18;
-      const pitchScale = isCompact ? 0.34 : 0.12;
+      const viewportTop = cachedDocTop - window.scrollY;
+      const centerDelta = (cachedVh * 0.5 - (viewportTop + cachedHeight * 0.5)) / (cachedVh * 0.65);
+      const yawScale = cachedCompact ? 0.52 : 0.18;
+      const pitchScale = cachedCompact ? 0.34 : 0.12;
       scrollYaw = THREE.MathUtils.clamp(centerDelta * yawScale, -0.58, 0.58);
       scrollPitch = THREE.MathUtils.clamp(-centerDelta * pitchScale, -0.42, 0.42);
     };
 
+    const onScroll = () => {
+      lastScrollTime = performance.now();
+      if (!isVisible) return;
+      computeScrollTilt();
+    };
+
     const onDeviceOrientation = (e: DeviceOrientationEvent) => {
-      if (prefersReducedMotion || e.gamma === null || e.beta === null) return;
+      if (!isVisible || prefersReducedMotion || e.gamma === null || e.beta === null) return;
       if (gyroBaseGamma === null || gyroBaseBeta === null) {
         gyroBaseGamma = e.gamma;
         gyroBaseBeta = e.beta;
@@ -707,8 +723,11 @@ export default function RaptorEye3D() {
       isHovered = false;
     };
 
+    syncLayoutMetrics();
+    computeScrollTilt();
+
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('scroll', updateScrollTilt, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
     container.addEventListener('pointerenter', onEnter);
     container.addEventListener('pointerleave', onLeave);
@@ -716,7 +735,6 @@ export default function RaptorEye3D() {
     container.addEventListener('touchmove', onTouchMove, { passive: true });
     container.addEventListener('touchend', onTouchEnd, { passive: true });
     container.addEventListener('touchcancel', onTouchEnd, { passive: true });
-    updateScrollTilt();
 
     let contextLost = false;
     const onLost = (e: Event) => {
@@ -725,35 +743,16 @@ export default function RaptorEye3D() {
     };
     const onRestored = () => {
       contextLost = false;
+      syncLoopState();
     };
     renderer.domElement.addEventListener('webglcontextlost', onLost);
     renderer.domElement.addEventListener('webglcontextrestored', onRestored);
 
-    let isVisible = true;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]) isVisible = entries[0].isIntersecting;
-      },
-      { threshold: 0.05 }
-    );
-    io.observe(container);
-
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const w = Math.max(1, Math.floor(entry.contentRect.width));
-      const h = Math.max(1, Math.floor(entry.contentRect.height));
-      const aspect = w / h;
-      camera.aspect = aspect;
-      camera.position.z = baseCameraZ * Math.max(1, 1.24 / aspect);
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    });
-    ro.observe(container);
-
     const clock = new THREE.Clock();
     let frameId = 0;
+    let running = false;
     let disposed = false;
+    let scrollAccum = 0;
 
     function afterDraw(cb: () => void) {
       const gl = renderer.getContext() as WebGL2RenderingContext;
@@ -764,7 +763,7 @@ export default function RaptorEye3D() {
       const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
       gl.flush();
       const poll = () => {
-        if (disposed) return;
+        if (disposed || !running) return;
         const state = sync && gl.getSyncParameter(sync, gl.SYNC_STATUS);
         if (state === gl.UNSIGNALED) {
           frameId = window.setTimeout(poll, 5);
@@ -777,16 +776,29 @@ export default function RaptorEye3D() {
     }
 
     function tick() {
-      if (disposed) return;
+      if (disposed || !running) return;
 
-      const dt = Math.min(clock.getDelta(), 0.05);
+      const rawDt = Math.min(clock.getDelta(), 0.05);
+      const now = performance.now();
+      const activelyScrolling = !isSoftwareGl && now - lastScrollTime < 110;
+
+      if (activelyScrolling) {
+        scrollAccum += rawDt;
+        if (scrollAccum < 1 / 30) {
+          frameId = requestAnimationFrame(tick);
+          return;
+        }
+      }
+
+      const dt = activelyScrolling ? Math.min(scrollAccum, 0.05) : rawDt;
+      scrollAccum = 0;
       const elapsed = clock.getElapsedTime();
 
-      if (isVisible && !contextLost) {
+      if (!contextLost) {
         const activeTargetX = THREE.MathUtils.clamp(cursorX + gyroX + scrollYaw, -1.05, 1.05);
         const activeTargetY = THREE.MathUtils.clamp(cursorY + gyroY + scrollPitch, -1.0, 1.0);
         const shouldFocus =
-          isHovered || isTouchActive || performance.now() < touchActuateUntil;
+          isHovered || isTouchActive || now < touchActuateUntil;
 
         smoothX = THREE.MathUtils.damp(smoothX, activeTargetX, 5.4, dt);
         smoothY = THREE.MathUtils.damp(smoothY, activeTargetY, 5.4, dt);
@@ -794,37 +806,30 @@ export default function RaptorEye3D() {
 
         const motionScale = prefersReducedMotion ? 0.15 : 1.0;
 
-        // Subtle poise of the entire architectural Palantír monument
         sculptureRoot.rotation.y = smoothX * 0.24 + Math.sin(elapsed * 0.38) * 0.06 * motionScale;
         sculptureRoot.rotation.x = -smoothY * 0.12;
 
-        // Gentle levitation of the crystal sphere & gimbal rings within the platinum cradle
         orbGroup.position.y = orbCenterY + Math.sin(elapsed * 1.15) * 0.035 * motionScale;
 
-        // Internal Lighthouse Observation Turret sweeps smoothly when idle and locks onto cursor/touch
         const idleSweepYaw = Math.sin(elapsed * 0.72) * 0.42 * (1 - focusFactor * 0.65) * motionScale;
         const idleSweepPitch = Math.cos(elapsed * 0.54) * 0.14 * (1 - focusFactor * 0.65) * motionScale;
         beaconTurretGroup.rotation.y = smoothX * 0.62 + idleSweepYaw;
         beaconTurretGroup.rotation.x = -smoothY * 0.46 + idleSweepPitch;
 
-        // Faceted inner crystal heart spins gently & brightens on focus
         coreCrystalMesh.rotation.y = elapsed * 0.85 * motionScale;
         coreCrystalMesh.rotation.z = elapsed * 0.45 * motionScale;
         fresnelLensMat.emissiveIntensity = 1.55 + focusFactor * 0.55;
         volumetricBeamMat.opacity = 0.42 + focusFactor * 0.18;
 
-        // Beam narrows into a sharper reconnaissance lock on hover/touch
         const beamApertureScale = 1.0 - focusFactor * 0.18;
         primaryBeamMesh.scale.set(beamApertureScale, beamApertureScale, 1.0 + focusFactor * 0.12);
 
-        // Calibrated gimbal & astrolabe rings articulate with mechanical precision
         meridianGroup.rotation.y = smoothX * 0.28 - Math.sin(elapsed * 0.48) * 0.12 * motionScale;
         meridianGroup.rotation.x = -smoothY * 0.16;
 
         azimuthGroup.rotation.z = -Math.PI * 0.12 + elapsed * 0.18 * motionScale + smoothX * 0.22;
         innerReticleRing.rotation.z = -elapsed * 0.26 * motionScale - smoothX * 0.3;
 
-        // Dynamic grazing rim lights sweep thin-film iridescence across the seeing-stone
         coolRim.position.x = -4.6 + smoothX * 2.5;
         coolRim.position.y = 2.6 + smoothY * 1.7;
         pearlRim.position.x = 4.2 - smoothX * 2.3;
@@ -842,14 +847,64 @@ export default function RaptorEye3D() {
       }
     }
 
-    tick();
+    function syncLoopState() {
+      const shouldRun = !disposed && isVisible && !document.hidden && !contextLost;
+      if (shouldRun && !running) {
+        running = true;
+        clock.getDelta();
+        scrollAccum = 0;
+        tick();
+      } else if (!shouldRun && running) {
+        running = false;
+        cancelAnimationFrame(frameId);
+        clearTimeout(frameId);
+      }
+    }
+
+    const onVisibilityChange = () => {
+      syncLoopState();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]) {
+          isVisible = entries[0].isIntersecting;
+          if (isVisible) {
+            syncLayoutMetrics();
+            computeScrollTilt();
+          }
+          syncLoopState();
+        }
+      },
+      { threshold: 0.02 }
+    );
+    io.observe(container);
+
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const w = Math.max(1, Math.floor(entry.contentRect.width));
+      const h = Math.max(1, Math.floor(entry.contentRect.height));
+      const aspect = w / h;
+      camera.aspect = aspect;
+      camera.position.z = baseCameraZ * Math.max(1, 1.24 / aspect);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      syncLayoutMetrics();
+    });
+    ro.observe(container);
+
+    syncLoopState();
 
     return () => {
       disposed = true;
+      running = false;
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('scroll', updateScrollTilt);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('deviceorientation', onDeviceOrientation);
       container.removeEventListener('pointerenter', onEnter);
       container.removeEventListener('pointerleave', onLeave);

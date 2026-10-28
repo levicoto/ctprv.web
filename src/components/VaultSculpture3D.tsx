@@ -39,11 +39,11 @@ function createPadlockBodyGeometry(): THREE.ExtrudeGeometry {
   const shape = createRoundedRectPath(2.04, 1.74, 0.34);
   const geo = new THREE.ExtrudeGeometry(shape, {
     depth: 0.68,
-    curveSegments: 36,
+    curveSegments: 22,
     bevelEnabled: true,
     bevelThickness: 0.11,
     bevelSize: 0.1,
-    bevelSegments: 6,
+    bevelSegments: 3,
   });
   geo.center();
   return geo;
@@ -53,11 +53,11 @@ function createInternalCoreGeometry(): THREE.ExtrudeGeometry {
   const shape = createRoundedRectPath(1.42, 1.14, 0.22);
   const geo = new THREE.ExtrudeGeometry(shape, {
     depth: 0.34,
-    curveSegments: 28,
+    curveSegments: 18,
     bevelEnabled: true,
     bevelThickness: 0.05,
     bevelSize: 0.05,
-    bevelSegments: 4,
+    bevelSegments: 2,
   });
   geo.center();
   return geo;
@@ -84,11 +84,11 @@ function createFrontFrameGeometry(): THREE.ExtrudeGeometry {
 
   const geo = new THREE.ExtrudeGeometry(outer, {
     depth: 0.036,
-    curveSegments: 28,
+    curveSegments: 20,
     bevelEnabled: true,
     bevelThickness: 0.016,
     bevelSize: 0.016,
-    bevelSegments: 3,
+    bevelSegments: 2,
   });
   geo.center();
   return geo;
@@ -98,11 +98,11 @@ function createGlassInlayGeometry(): THREE.ExtrudeGeometry {
   const shape = createRoundedRectPath(1.56, 1.26, 0.17);
   const geo = new THREE.ExtrudeGeometry(shape, {
     depth: 0.05,
-    curveSegments: 28,
+    curveSegments: 20,
     bevelEnabled: true,
     bevelThickness: 0.012,
     bevelSize: 0.012,
-    bevelSegments: 3,
+    bevelSegments: 2,
   });
   geo.center();
   return geo;
@@ -138,7 +138,7 @@ function createShackleTubeGeometry(tubeRadius: number): THREE.TubeGeometry {
     )
   );
 
-  return new THREE.TubeGeometry(path, 96, tubeRadius, 32, false);
+  return new THREE.TubeGeometry(path, 56, tubeRadius, 20, false);
 }
 
 function createKeyholeGeometry(): THREE.ExtrudeGeometry {
@@ -278,9 +278,9 @@ export default function VaultSculpture3D() {
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.12;
-    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = !isSoftwareGl;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 1.5));
+    renderer.transmissionResolutionScale = 0.5;
+    renderer.shadowMap.enabled = false;
 
     const initialW = container.clientWidth || 600;
     const initialH = container.clientHeight || 520;
@@ -311,16 +311,6 @@ export default function VaultSculpture3D() {
 
     const keyLight = new THREE.DirectionalLight(0xfffcf7, 2.35);
     keyLight.position.set(4.2, 6.0, 5.4);
-    keyLight.castShadow = !isSoftwareGl;
-    keyLight.shadow.mapSize.set(1024, 1024);
-    keyLight.shadow.camera.near = 0.5;
-    keyLight.shadow.camera.far = 18;
-    keyLight.shadow.camera.left = -3.2;
-    keyLight.shadow.camera.right = 3.2;
-    keyLight.shadow.camera.top = 3.2;
-    keyLight.shadow.camera.bottom = -3.2;
-    keyLight.shadow.bias = -0.0005;
-    keyLight.shadow.normalBias = 0.02;
     scene.add(keyLight);
 
     const coolGrazingLight = new THREE.DirectionalLight(0xe0f2fe, 1.85);
@@ -470,7 +460,6 @@ export default function VaultSculpture3D() {
 
     const internalCoreMesh = new THREE.Mesh(coreGeo, internalObsidianCoreMat);
     internalCoreMesh.position.set(0, -0.58, 0);
-    internalCoreMesh.castShadow = !isSoftwareGl;
     internalCoreMesh.renderOrder = 0;
     padlockRoot.add(internalCoreMesh);
 
@@ -519,7 +508,6 @@ export default function VaultSculpture3D() {
     geometries.push(shackleInnerCoreGeo, shackleOuterGlassGeo);
 
     const shackleInnerCore = new THREE.Mesh(shackleInnerCoreGeo, brushedPlatinumMat);
-    shackleInnerCore.castShadow = !isSoftwareGl;
     shackleInnerCore.renderOrder = 1;
     shackleGroup.add(shackleInnerCore);
 
@@ -633,10 +621,25 @@ export default function VaultSculpture3D() {
     let touchActuateUntil = 0;
     let hoverLift = 0;
 
+    let isVisible = true;
+    let cachedDocTop = 0;
+    let cachedHeight = initialH;
+    let cachedVh = Math.max(window.innerHeight, 1);
+    let cachedCompact = window.innerWidth < 1024;
+    let lastScrollTime = 0;
+
+    const syncLayoutMetrics = () => {
+      const rect = container.getBoundingClientRect();
+      cachedDocTop = rect.top + window.scrollY;
+      cachedHeight = Math.max(rect.height, 1);
+      cachedVh = Math.max(window.innerHeight, 1);
+      cachedCompact = window.innerWidth < 1024;
+    };
+
     const onWindowPointerMove = (e: PointerEvent) => {
-      if (e.pointerType === 'touch') return;
+      if (!isVisible || e.pointerType === 'touch') return;
       const nx = (e.clientX / Math.max(window.innerWidth, 1)) * 2 - 1;
-      const ny = -(e.clientY / Math.max(window.innerHeight, 1)) * 2 + 1;
+      const ny = -(e.clientY / cachedVh) * 2 + 1;
       pointerX = THREE.MathUtils.clamp(nx, -1, 1);
       pointerY = THREE.MathUtils.clamp(ny, -1, 1);
     };
@@ -670,24 +673,28 @@ export default function VaultSculpture3D() {
       pointerY *= 0.35;
     };
 
-    const updateScrollTilt = () => {
+    const computeScrollTilt = () => {
       if (prefersReducedMotion) {
         scrollYaw = 0;
         scrollPitch = 0;
         return;
       }
-      const rect = container.getBoundingClientRect();
-      const vh = Math.max(window.innerHeight, 1);
-      const centerDelta = (vh * 0.5 - (rect.top + rect.height * 0.5)) / (vh * 0.65);
-      const isCompact = window.innerWidth < 1024;
-      const yawScale = isCompact ? 0.52 : 0.16;
-      const pitchScale = isCompact ? 0.34 : 0.12;
+      const viewportTop = cachedDocTop - window.scrollY;
+      const centerDelta = (cachedVh * 0.5 - (viewportTop + cachedHeight * 0.5)) / (cachedVh * 0.65);
+      const yawScale = cachedCompact ? 0.52 : 0.16;
+      const pitchScale = cachedCompact ? 0.34 : 0.12;
       scrollYaw = THREE.MathUtils.clamp(centerDelta * yawScale, -0.58, 0.58);
       scrollPitch = THREE.MathUtils.clamp(-centerDelta * pitchScale, -0.42, 0.42);
     };
 
+    const onScroll = () => {
+      lastScrollTime = performance.now();
+      if (!isVisible) return;
+      computeScrollTilt();
+    };
+
     const onDeviceOrientation = (e: DeviceOrientationEvent) => {
-      if (prefersReducedMotion || e.gamma === null || e.beta === null) return;
+      if (!isVisible || prefersReducedMotion || e.gamma === null || e.beta === null) return;
       if (gyroBaseGamma === null || gyroBaseBeta === null) {
         gyroBaseGamma = e.gamma;
         gyroBaseBeta = e.beta;
@@ -703,8 +710,11 @@ export default function VaultSculpture3D() {
       isCanvasHovered = false;
     };
 
+    syncLayoutMetrics();
+    computeScrollTilt();
+
     window.addEventListener('pointermove', onWindowPointerMove, { passive: true });
-    window.addEventListener('scroll', updateScrollTilt, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
     container.addEventListener('pointerenter', onPointerEnter);
     container.addEventListener('pointerleave', onPointerLeave);
@@ -712,7 +722,6 @@ export default function VaultSculpture3D() {
     container.addEventListener('touchmove', onTouchMove, { passive: true });
     container.addEventListener('touchend', onTouchEnd, { passive: true });
     container.addEventListener('touchcancel', onTouchEnd, { passive: true });
-    updateScrollTilt();
 
     let contextLost = false;
     const onContextLost = (e: Event) => {
@@ -721,35 +730,16 @@ export default function VaultSculpture3D() {
     };
     const onContextRestored = () => {
       contextLost = false;
+      syncLoopState();
     };
     renderer.domElement.addEventListener('webglcontextlost', onContextLost);
     renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
 
-    let isVisible = true;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]) isVisible = entries[0].isIntersecting;
-      },
-      { threshold: 0.05 }
-    );
-    io.observe(container);
-
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const w = Math.max(1, Math.floor(entry.contentRect.width));
-      const h = Math.max(1, Math.floor(entry.contentRect.height));
-      const aspect = w / h;
-      camera.aspect = aspect;
-      camera.position.z = baseCameraZ * Math.max(1, 1.08 / aspect);
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    });
-    ro.observe(container);
-
     const clock = new THREE.Clock();
     let frameId = 0;
+    let running = false;
     let disposed = false;
+    let scrollAccum = 0;
 
     function afterDraw(cb: () => void) {
       const gl = renderer.getContext() as WebGL2RenderingContext;
@@ -760,7 +750,7 @@ export default function VaultSculpture3D() {
       const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
       gl.flush();
       const poll = () => {
-        if (disposed) return;
+        if (disposed || !running) return;
         const state = sync && gl.getSyncParameter(sync, gl.SYNC_STATUS);
         if (state === gl.UNSIGNALED) {
           frameId = window.setTimeout(poll, 5);
@@ -773,16 +763,29 @@ export default function VaultSculpture3D() {
     }
 
     function tick() {
-      if (disposed) return;
+      if (disposed || !running) return;
 
-      const dt = Math.min(clock.getDelta(), 0.05);
+      const rawDt = Math.min(clock.getDelta(), 0.05);
+      const now = performance.now();
+      const activelyScrolling = !isSoftwareGl && now - lastScrollTime < 110;
+
+      if (activelyScrolling) {
+        scrollAccum += rawDt;
+        if (scrollAccum < 1 / 30) {
+          frameId = requestAnimationFrame(tick);
+          return;
+        }
+      }
+
+      const dt = activelyScrolling ? Math.min(scrollAccum, 0.05) : rawDt;
+      scrollAccum = 0;
       const elapsed = clock.getElapsedTime();
 
-      if (isVisible && !contextLost) {
+      if (!contextLost) {
         const activeTargetX = THREE.MathUtils.clamp(pointerX + gyroX + scrollYaw, -1.05, 1.05);
         const activeTargetY = THREE.MathUtils.clamp(pointerY + gyroY + scrollPitch, -1.0, 1.0);
         const shouldActuate =
-          isCanvasHovered || isTouchActive || performance.now() < touchActuateUntil;
+          isCanvasHovered || isTouchActive || now < touchActuateUntil;
 
         smoothX = THREE.MathUtils.damp(smoothX, activeTargetX, 5.4, dt);
         smoothY = THREE.MathUtils.damp(smoothY, activeTargetY, 5.4, dt);
@@ -790,23 +793,19 @@ export default function VaultSculpture3D() {
 
         const motionScale = prefersReducedMotion ? 0.15 : 1.0;
 
-        // Smooth floating poise + responsive cursor tilt
         padlockRoot.position.y = -0.05 + Math.sin(elapsed * 1.1) * 0.055 * motionScale;
         padlockRoot.rotation.y = smoothX * 0.58 + Math.sin(elapsed * 0.45) * 0.08 * motionScale;
         padlockRoot.rotation.x = -smoothY * 0.34;
         padlockRoot.rotation.z = -smoothX * 0.06;
 
-        // Subtle mechanical response on mouse hover: shackle & internal pins glide smoothly
         shackleGroup.position.y = hoverLift * 0.22;
         leftInternalPin.position.y = -0.36 + hoverLift * 0.08;
         rightInternalPin.position.y = -0.36 + hoverLift * 0.08;
         dialTicks.rotation.z = smoothX * 0.45 + hoverLift * (Math.PI * 0.25);
 
-        // Counter-tilting orbital iridescent ring
         haloRing.rotation.x = Math.PI * 0.38 - smoothY * 0.28;
         haloRing.rotation.y = -Math.PI * 0.14 - smoothX * 0.35 + elapsed * 0.14 * motionScale;
 
-        // Dynamic grazing highlights sweeping thin-film spectrum as cursor moves
         coolGrazingLight.position.x = -5.0 + smoothX * 2.8;
         coolGrazingLight.position.y = 2.8 + smoothY * 2.0;
         pearlGrazingLight.position.x = 4.6 - smoothX * 2.4;
@@ -822,14 +821,64 @@ export default function VaultSculpture3D() {
       }
     }
 
-    tick();
+    function syncLoopState() {
+      const shouldRun = !disposed && isVisible && !document.hidden && !contextLost;
+      if (shouldRun && !running) {
+        running = true;
+        clock.getDelta();
+        scrollAccum = 0;
+        tick();
+      } else if (!shouldRun && running) {
+        running = false;
+        cancelAnimationFrame(frameId);
+        clearTimeout(frameId);
+      }
+    }
+
+    const onVisibilityChange = () => {
+      syncLoopState();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]) {
+          isVisible = entries[0].isIntersecting;
+          if (isVisible) {
+            syncLayoutMetrics();
+            computeScrollTilt();
+          }
+          syncLoopState();
+        }
+      },
+      { threshold: 0.02 }
+    );
+    io.observe(container);
+
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const w = Math.max(1, Math.floor(entry.contentRect.width));
+      const h = Math.max(1, Math.floor(entry.contentRect.height));
+      const aspect = w / h;
+      camera.aspect = aspect;
+      camera.position.z = baseCameraZ * Math.max(1, 1.08 / aspect);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      syncLayoutMetrics();
+    });
+    ro.observe(container);
+
+    syncLoopState();
 
     return () => {
       disposed = true;
+      running = false;
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('pointermove', onWindowPointerMove);
-      window.removeEventListener('scroll', updateScrollTilt);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('deviceorientation', onDeviceOrientation);
       container.removeEventListener('pointerenter', onPointerEnter);
       container.removeEventListener('pointerleave', onPointerLeave);

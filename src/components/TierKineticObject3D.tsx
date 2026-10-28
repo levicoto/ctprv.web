@@ -58,11 +58,11 @@ function createShieldRimGeometry(): THREE.ExtrudeGeometry {
 
   const geo = new THREE.ExtrudeGeometry(outer, {
     depth: 0.045,
-    curveSegments: 32,
+    curveSegments: 20,
     bevelEnabled: true,
     bevelThickness: 0.018,
     bevelSize: 0.018,
-    bevelSegments: 3,
+    bevelSegments: 2,
   });
   geo.center();
   return geo;
@@ -175,7 +175,8 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.18;
-    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 1.5));
+    renderer.transmissionResolutionScale = 0.5;
 
     const w0 = container.clientWidth || 520;
     const h0 = container.clientHeight || 340;
@@ -317,11 +318,11 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     // 0. Inner Sculpted Obsidian Core Crest (refracted inside the crystal shield)
     const innerCoreGeo = new THREE.ExtrudeGeometry(buildShieldPath(0.7), {
       depth: 0.14,
-      curveSegments: 32,
+      curveSegments: 20,
       bevelEnabled: true,
       bevelThickness: 0.04,
       bevelSize: 0.04,
-      bevelSegments: 4,
+      bevelSegments: 2,
     });
     innerCoreGeo.center();
     geometries.push(innerCoreGeo);
@@ -341,11 +342,11 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     // 2. Primary Sculpted Dichroic Iridescent Crystal Shield Body
     const mainShieldGeo = new THREE.ExtrudeGeometry(buildShieldPath(1.0), {
       depth: 0.24,
-      curveSegments: 36,
+      curveSegments: 22,
       bevelEnabled: true,
       bevelThickness: 0.085,
       bevelSize: 0.075,
-      bevelSegments: 6,
+      bevelSegments: 3,
     });
     mainShieldGeo.center();
     geometries.push(mainShieldGeo);
@@ -357,11 +358,11 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     // 3. Floating Front Prismatic Glass Shield Layer (separates smoothly on hover / Atlas)
     const glassPlateGeo = new THREE.ExtrudeGeometry(buildShieldPath(0.76), {
       depth: 0.05,
-      curveSegments: 32,
+      curveSegments: 20,
       bevelEnabled: true,
       bevelThickness: 0.016,
       bevelSize: 0.016,
-      bevelSegments: 4,
+      bevelSegments: 2,
     });
     glassPlateGeo.center();
     geometries.push(glassPlateGeo);
@@ -438,10 +439,25 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     let hoverFactor = 0;
     let atlasMorph = tierRef.current === 'atlas' ? 1 : 0;
 
+    let isVisible = false;
+    let cachedDocTop = 0;
+    let cachedHeight = h0;
+    let cachedVh = Math.max(window.innerHeight, 1);
+    let cachedCompact = window.innerWidth < 1024;
+    let lastScrollTime = 0;
+
+    const syncLayoutMetrics = () => {
+      const rect = container.getBoundingClientRect();
+      cachedDocTop = rect.top + window.scrollY;
+      cachedHeight = Math.max(rect.height, 1);
+      cachedVh = Math.max(window.innerHeight, 1);
+      cachedCompact = window.innerWidth < 1024;
+    };
+
     const onPointerMove = (e: PointerEvent) => {
-      if (e.pointerType === 'touch') return;
+      if (!isVisible || e.pointerType === 'touch') return;
       cursorX = THREE.MathUtils.clamp((e.clientX / Math.max(window.innerWidth, 1)) * 2 - 1, -1, 1);
-      cursorY = THREE.MathUtils.clamp(-(e.clientY / Math.max(window.innerHeight, 1)) * 2 + 1, -1, 1);
+      cursorY = THREE.MathUtils.clamp(-(e.clientY / cachedVh) * 2 + 1, -1, 1);
     };
 
     const updateFromTouch = (touch: Touch) => {
@@ -473,24 +489,28 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       cursorY *= 0.35;
     };
 
-    const updateScrollTilt = () => {
+    const computeScrollTilt = () => {
       if (prefersReducedMotion) {
         scrollYaw = 0;
         scrollPitch = 0;
         return;
       }
-      const rect = container.getBoundingClientRect();
-      const vh = Math.max(window.innerHeight, 1);
-      const centerDelta = (vh * 0.5 - (rect.top + rect.height * 0.5)) / (vh * 0.65);
-      const isCompact = window.innerWidth < 1024;
-      const yawScale = isCompact ? 0.52 : 0.16;
-      const pitchScale = isCompact ? 0.34 : 0.12;
+      const viewportTop = cachedDocTop - window.scrollY;
+      const centerDelta = (cachedVh * 0.5 - (viewportTop + cachedHeight * 0.5)) / (cachedVh * 0.65);
+      const yawScale = cachedCompact ? 0.52 : 0.16;
+      const pitchScale = cachedCompact ? 0.34 : 0.12;
       scrollYaw = THREE.MathUtils.clamp(-centerDelta * yawScale, -0.58, 0.58);
       scrollPitch = THREE.MathUtils.clamp(-centerDelta * pitchScale, -0.42, 0.42);
     };
 
+    const onScroll = () => {
+      lastScrollTime = performance.now();
+      if (!isVisible) return;
+      computeScrollTilt();
+    };
+
     const onDeviceOrientation = (e: DeviceOrientationEvent) => {
-      if (prefersReducedMotion || e.gamma === null || e.beta === null) return;
+      if (!isVisible || prefersReducedMotion || e.gamma === null || e.beta === null) return;
       if (gyroBaseGamma === null || gyroBaseBeta === null) {
         gyroBaseGamma = e.gamma;
         gyroBaseBeta = e.beta;
@@ -513,10 +533,14 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     };
     const onContextRestored = () => {
       contextLost = false;
+      syncLoopState();
     };
 
+    syncLayoutMetrics();
+    computeScrollTilt();
+
     window.addEventListener('pointermove', onPointerMove, { passive: true });
-    window.addEventListener('scroll', updateScrollTilt, { passive: true });
+    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('deviceorientation', onDeviceOrientation, { passive: true });
     container.addEventListener('pointerenter', onEnter);
     container.addEventListener('pointerleave', onLeave);
@@ -526,33 +550,12 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     container.addEventListener('touchcancel', onTouchEnd, { passive: true });
     renderer.domElement.addEventListener('webglcontextlost', onContextLost);
     renderer.domElement.addEventListener('webglcontextrestored', onContextRestored);
-    updateScrollTilt();
-
-    let isVisible = false;
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]) isVisible = entries[0].isIntersecting;
-      },
-      { threshold: 0.05 }
-    );
-    io.observe(container);
-
-    const ro = new ResizeObserver((entries) => {
-      const entry = entries[0];
-      if (!entry) return;
-      const w = Math.max(1, Math.floor(entry.contentRect.width));
-      const h = Math.max(1, Math.floor(entry.contentRect.height));
-      const aspect = w / h;
-      camera.aspect = aspect;
-      camera.position.z = baseCameraZ * Math.max(1, 1.32 / aspect);
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    });
-    ro.observe(container);
 
     const clock = new THREE.Clock();
     let frameId = 0;
+    let running = false;
     let disposed = false;
+    let scrollAccum = 0;
 
     function afterDraw(cb: () => void) {
       const gl = renderer.getContext() as WebGL2RenderingContext;
@@ -563,7 +566,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       const sync = gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0);
       gl.flush();
       const poll = () => {
-        if (disposed) return;
+        if (disposed || !running) return;
         const state = sync && gl.getSyncParameter(sync, gl.SYNC_STATUS);
         if (state === gl.UNSIGNALED) {
           frameId = window.setTimeout(poll, 5);
@@ -576,16 +579,29 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     }
 
     function tick() {
-      if (disposed) return;
+      if (disposed || !running) return;
 
-      const dt = Math.min(clock.getDelta(), 0.05);
+      const rawDt = Math.min(clock.getDelta(), 0.05);
+      const now = performance.now();
+      const activelyScrolling = !isSoftwareGl && now - lastScrollTime < 110;
+
+      if (activelyScrolling) {
+        scrollAccum += rawDt;
+        if (scrollAccum < 1 / 30) {
+          frameId = requestAnimationFrame(tick);
+          return;
+        }
+      }
+
+      const dt = activelyScrolling ? Math.min(scrollAccum, 0.05) : rawDt;
+      scrollAccum = 0;
       const elapsed = clock.getElapsedTime();
 
-      if (isVisible && !contextLost) {
+      if (!contextLost) {
         const activeTargetX = THREE.MathUtils.clamp(cursorX + gyroX + scrollYaw, -1.05, 1.05);
         const activeTargetY = THREE.MathUtils.clamp(cursorY + gyroY + scrollPitch, -1.0, 1.0);
         const shouldActuate =
-          isHovered || isTouchActive || performance.now() < touchActuateUntil;
+          isHovered || isTouchActive || now < touchActuateUntil;
 
         smoothX = THREE.MathUtils.damp(smoothX, activeTargetX, 5.4, dt);
         smoothY = THREE.MathUtils.damp(smoothY, activeTargetY, 5.4, dt);
@@ -601,7 +617,6 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
         shieldRoot.rotation.x = -smoothY * 0.34;
         shieldRoot.rotation.z = -smoothX * 0.05;
 
-        // Layered dichroic depth expansion on mouse hover or Atlas tier
         const depthBoost = hoverFactor * 0.15 + atlasMorph * 0.13;
         glassShield.position.z = 0.26 + depthBoost;
         medallionGroup.position.z = 0.32 + depthBoost * 1.25;
@@ -612,7 +627,6 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
         leftWing.rotation.y = smoothX * 0.22;
         rightWing.rotation.y = smoothX * 0.22;
 
-        // Sweep grazing lights across beveled crystal faces for organic iridescence shifts
         coolRim.position.x = -4.4 + smoothX * 2.6;
         coolRim.position.y = 2.4 + smoothY * 1.8;
         pearlRim.position.x = 4.0 - smoothX * 2.2;
@@ -628,14 +642,66 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       }
     }
 
-    tick();
+    function syncLoopState() {
+      const shouldRun = !disposed && isVisible && !document.hidden && !contextLost;
+      if (shouldRun && !running) {
+        running = true;
+        clock.getDelta();
+        scrollAccum = 0;
+        tick();
+      } else if (!shouldRun && running) {
+        running = false;
+        cancelAnimationFrame(frameId);
+        clearTimeout(frameId);
+      }
+    }
+
+    const onVisibilityChange = () => {
+      syncLoopState();
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]) {
+          isVisible = entries[0].isIntersecting;
+          if (isVisible) {
+            syncLayoutMetrics();
+            computeScrollTilt();
+          }
+          syncLoopState();
+        }
+      },
+      { threshold: 0.02 }
+    );
+    io.observe(container);
+
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const w = Math.max(1, Math.floor(entry.contentRect.width));
+      const h = Math.max(1, Math.floor(entry.contentRect.height));
+      const aspect = w / h;
+      camera.aspect = aspect;
+      camera.position.z = baseCameraZ * Math.max(1, 1.32 / aspect);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      syncLayoutMetrics();
+    });
+    ro.observe(container);
+
+    // Render initial static frame once so the canvas is never blank on entry
+    renderer.render(scene, camera);
+    syncLoopState();
 
     return () => {
       disposed = true;
+      running = false;
       cancelAnimationFrame(frameId);
       clearTimeout(frameId);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
       window.removeEventListener('pointermove', onPointerMove);
-      window.removeEventListener('scroll', updateScrollTilt);
+      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('deviceorientation', onDeviceOrientation);
       container.removeEventListener('pointerenter', onEnter);
       container.removeEventListener('pointerleave', onLeave);

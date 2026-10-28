@@ -77,7 +77,7 @@ export default function PalantirRaptorPage({
       <AmbientParallaxBackdrop />
 
       {/* Symmetric Architectural Top Bar */}
-      <header className="sticky top-0 z-40 glass-panel border-x-0 border-t-0">
+      <header className="sticky top-0 z-40 header-glass">
         <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-3.5 w-full flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-6 lg:gap-8">
           {/* Zone 1: Compact Back Navigation */}
           <div className="flex items-center justify-self-start min-w-0">

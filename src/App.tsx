@@ -3,16 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { lazy, MouseEvent, Suspense, useEffect, useRef, useState } from 'react';
 import { ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
 import VaultSculpture3D from './components/VaultSculpture3D';
 import TierKineticObject3D, { type ServiceTierId } from './components/TierKineticObject3D';
 import TechnologyStack from './components/TechnologyStack';
 import EvaluationForm, { type OperationMode } from './components/EvaluationForm';
-import AdminInboxModal from './components/AdminInboxModal';
 import PrivacyModal from './components/PrivacyModal';
-import PalantirRaptorPage from './components/PalantirRaptorPage';
 import CotoLogoMark from './components/CotoLogoMark';
+
+const PalantirRaptorPage = lazy(() => import('./components/PalantirRaptorPage'));
+const AdminInboxModal = lazy(() => import('./components/AdminInboxModal'));
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -122,15 +123,17 @@ export default function App() {
 
   if (activeView === 'raptor') {
     return (
-      <>
+      <Suspense fallback={<div className="min-h-screen architectural-canvas" />}>
         <PalantirRaptorPage
           onBackToMain={handleBackToMain}
           onOpenAdmin={() => setAdminModalOpen(true)}
           onOpenPrivacy={() => setPrivacyModalOpen(true)}
         />
         <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
-        <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
-      </>
+        {adminModalOpen && (
+          <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
+        )}
+      </Suspense>
     );
   }
 
@@ -141,7 +144,7 @@ export default function App() {
       <AmbientParallaxBackdrop />
 
       {/* Symmetric Architectural Top Bar */}
-      <header className="sticky top-0 z-40 glass-panel border-x-0 border-t-0">
+      <header className="sticky top-0 z-40 header-glass">
         <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-3.5 w-full flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-4">
           {/* Zone 1: Brand Wordmark */}
           <div className="flex items-center justify-self-start">
@@ -515,7 +518,11 @@ export default function App() {
       </footer>
 
       <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
-      <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
+      {adminModalOpen && (
+        <Suspense fallback={null}>
+          <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
+        </Suspense>
+      )}
     </div>
   );
 }
