@@ -4,7 +4,7 @@
  */
 
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, ChevronDown, Globe, Mail } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
 import VaultSculpture3D from './components/VaultSculpture3D';
 import TierKineticObject3D, { type ServiceTierId } from './components/TierKineticObject3D';
 import TechnologyStack from './components/TechnologyStack';
@@ -13,11 +13,6 @@ import AdminInboxModal from './components/AdminInboxModal';
 import PrivacyModal from './components/PrivacyModal';
 import PalantirRaptorPage from './components/PalantirRaptorPage';
 import CotoLogoMark from './components/CotoLogoMark';
-import SignalMark, {
-  CONTACT_EMAIL,
-  copyToClipboard,
-  SIGNAL_USERNAME,
-} from './components/SignalMark';
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -45,17 +40,8 @@ export default function App() {
   const [preferredMode, setPreferredMode] = useState<OperationMode>('solo');
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
-  const [footerSignalCopied, setFooterSignalCopied] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
-
-  const handleCopyFooterSignal = async () => {
-    const ok = await copyToClipboard(SIGNAL_USERNAME);
-    if (ok) {
-      setFooterSignalCopied(true);
-      window.setTimeout(() => setFooterSignalCopied(false), 2000);
-    }
-  };
 
   useEffect(() => {
     const syncRoute = () => {
@@ -164,7 +150,7 @@ export default function App() {
               onClick={(e) => handleAnchorClick(e, 'inicio')}
               className="inline-flex items-center gap-2.5 text-lg font-semibold tracking-tight text-zinc-950 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
             >
-              <CotoLogoMark className="w-[21px] h-[21px] shrink-0" />
+              <CotoLogoMark className="w-6 h-6 shrink-0" />
               <span>Coto Privado</span>
             </a>
           </div>
@@ -494,7 +480,7 @@ export default function App() {
       <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
         <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-xs text-zinc-500">
-            <CotoLogoMark className="w-[18px] h-[18px] shrink-0" />
+            <CotoLogoMark className="w-5 h-5 shrink-0" />
             <span className="text-sm font-semibold tracking-tight text-zinc-950">Coto Privado</span>
             <span aria-hidden="true">·</span>
             <span className="tabular-nums">© {new Date().getFullYear()}</span>
@@ -503,23 +489,11 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
             <button
               type="button"
-              title={t.footer.signalCopyTitle}
-              onClick={handleCopyFooterSignal}
-              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+              onClick={() => smoothScrollToSection('evaluacion')}
+              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
             >
-              <SignalMark className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-mono text-[11px] text-zinc-700">
-                {footerSignalCopied ? t.footer.signalCopied : `Signal: ${SIGNAL_USERNAME}`}
-              </span>
+              {t.footer.contactTrigger}
             </button>
-            <span aria-hidden="true">·</span>
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors whitespace-nowrap"
-            >
-              <Mail className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-mono text-[11px] text-zinc-700">{CONTACT_EMAIL}</span>
-            </a>
             <span aria-hidden="true">·</span>
             <button
               type="button"

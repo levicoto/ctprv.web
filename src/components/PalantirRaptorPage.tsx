@@ -1,13 +1,8 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Globe, Mail } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
 import RaptorEye3D from './RaptorEye3D';
 import EvaluationForm from './EvaluationForm';
 import CotoLogoMark from './CotoLogoMark';
-import SignalMark, {
-  CONTACT_EMAIL,
-  copyToClipboard,
-  SIGNAL_USERNAME,
-} from './SignalMark';
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
@@ -33,16 +28,7 @@ export default function PalantirRaptorPage({
 }: PalantirRaptorPageProps) {
   const { lang, setLang, t } = useI18n();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const [footerSignalCopied, setFooterSignalCopied] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
-
-  const handleCopyFooterSignal = async () => {
-    const ok = await copyToClipboard(SIGNAL_USERNAME);
-    if (ok) {
-      setFooterSignalCopied(true);
-      window.setTimeout(() => setFooterSignalCopied(false), 2000);
-    }
-  };
 
   useEffect(() => {
     document.title = t.raptorMetaTitle;
@@ -346,7 +332,7 @@ export default function PalantirRaptorPage({
               onClick={onBackToMain}
               className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight text-zinc-950 hover:underline underline-offset-4 cursor-pointer"
             >
-              <CotoLogoMark className="w-[18px] h-[18px] shrink-0" />
+              <CotoLogoMark className="w-5 h-5 shrink-0" />
               <span>Coto Privado</span>
             </button>
             <span aria-hidden="true">·</span>
@@ -358,23 +344,11 @@ export default function PalantirRaptorPage({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
             <button
               type="button"
-              title={t.footer.signalCopyTitle}
-              onClick={handleCopyFooterSignal}
-              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+              onClick={() => smoothScrollToSection('evaluacion')}
+              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
             >
-              <SignalMark className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-mono text-[11px] text-zinc-700">
-                {footerSignalCopied ? t.footer.signalCopied : `Signal: ${SIGNAL_USERNAME}`}
-              </span>
+              {t.footer.contactTrigger}
             </button>
-            <span aria-hidden="true">·</span>
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="inline-flex items-center gap-1.5 hover:text-zinc-950 transition-colors whitespace-nowrap"
-            >
-              <Mail className="w-3.5 h-3.5 shrink-0" />
-              <span className="font-mono text-[11px] text-zinc-700">{CONTACT_EMAIL}</span>
-            </a>
             <span aria-hidden="true">·</span>
             <button
               type="button"

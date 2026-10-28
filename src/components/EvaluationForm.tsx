@@ -1,6 +1,18 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
-import { AlertCircle, Check, Copy, Download, Loader2, Lock, Mail, RotateCcw } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowUpRight,
+  Check,
+  ChevronDown,
+  Copy,
+  Download,
+  Loader2,
+  Lock,
+  Mail,
+  RotateCcw,
+  ShieldAlert,
+} from 'lucide-react';
 import {
   db,
   EVALUATION_SCHEMA_LIMITS,
@@ -9,7 +21,14 @@ import {
 } from '../lib/firebase';
 import { useI18n } from '../lib/i18n';
 import ParallaxLayer from './ParallaxLayer';
-import SignalMark, { CONTACT_EMAIL, copyToClipboard, SIGNAL_USERNAME } from './SignalMark';
+import SignalMark, {
+  buildGmailComposeUrl,
+  buildMailtoComposeUrl,
+  buildOutlookComposeUrl,
+  CONTACT_EMAIL,
+  copyToClipboard,
+  SIGNAL_DIRECT_URL,
+} from './SignalMark';
 import type { ServiceTierId } from './TierKineticObject3D';
 
 export type OperationMode = 'solo' | 'equipo';
@@ -68,16 +87,8 @@ export default function EvaluationForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const [signalCopied, setSignalCopied] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
-
-  const handleCopySignal = async () => {
-    const ok = await copyToClipboard(SIGNAL_USERNAME);
-    if (ok) {
-      setSignalCopied(true);
-      window.setTimeout(() => setSignalCopied(false), 2000);
-    }
-  };
+  const [emergencyOpen, setEmergencyOpen] = useState(false);
 
   const handleCopyEmail = async () => {
     const ok = await copyToClipboard(CONTACT_EMAIL);
@@ -242,6 +253,7 @@ export default function EvaluationForm({
         // Ignore private browsing localStorage restrictions
       }
 
+      setEmergencyOpen(false);
       setSubmittedRecord(record);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -298,30 +310,34 @@ export default function EvaluationForm({
     URL.revokeObjectURL(url);
   };
 
-  const buildMailtoHref = () => {
-    if (!submittedRecord) return `mailto:${CONTACT_EMAIL}`;
+  const getEmailComposePayload = () => {
+    if (!submittedRecord) {
+      return { to: CONTACT_EMAIL };
+    }
     const c = t.form.confirmation;
-    const subject = encodeURIComponent(
-      `${c.mailSubjectPrefix} [${submittedRecord.folio}] — ${submittedRecord.nombreAlias}`
-    );
-    const body = encodeURIComponent(
-      [
-        `${c.receiptFolio}: ${submittedRecord.folio}`,
-        `${c.receiptName}: ${submittedRecord.nombreAlias}`,
-        `${c.receiptRole}: ${submittedRecord.rolPrincipal}`,
-        `${c.receiptRef}: ${submittedRecord.enlaceReferencia}`,
-        `${c.receiptMode}: ${
-          submittedRecord.modoOperacion === 'solo' ? c.receiptModeSolo : c.receiptModeTeam
-        } (${localizedTierLabel(submittedRecord.tierSugerido)})`,
-        submittedRecord.preocupacionReciente
-          ? `${c.receiptNotes}: ${submittedRecord.preocupacionReciente}`
-          : '',
-      ]
-        .filter(Boolean)
-        .join('\n')
-    );
-    return `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
+    const subject = `${c.mailSubjectPrefix} [${submittedRecord.folio}] — ${submittedRecord.nombreAlias}`;
+    const body = [
+      `${c.receiptFolio}: ${submittedRecord.folio}`,
+      `${c.receiptName}: ${submittedRecord.nombreAlias}`,
+      `${c.receiptRole}: ${submittedRecord.rolPrincipal}`,
+      `${c.receiptRef}: ${submittedRecord.enlaceReferencia}`,
+      `${c.receiptMode}: ${
+        submittedRecord.modoOperacion === 'solo' ? c.receiptModeSolo : c.receiptModeTeam
+      } (${localizedTierLabel(submittedRecord.tierSugerido)})`,
+      submittedRecord.preocupacionReciente
+        ? `${c.receiptNotes}: ${submittedRecord.preocupacionReciente}`
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    return { to: CONTACT_EMAIL, subject, body };
   };
+
+  const emailPayload = getEmailComposePayload();
+  const mailtoHref = buildMailtoComposeUrl(emailPayload);
+  const gmailHref = buildGmailComposeUrl(emailPayload);
+  const outlookHref = buildOutlookComposeUrl(emailPayload);
 
   const handleResetNew = () => {
     try {
@@ -330,12 +346,33 @@ export default function EvaluationForm({
       // Ignore
     }
     setSubmittedRecord(null);
+    setEmergencyOpen(false);
     setNombreAlias('');
     setRolPrincipal('');
     setEnlaceReferencia('');
     setPreocupacionReciente('');
     setErrors({});
     setSubmitError(null);
+  };
+
+  const renderSignalLaunchLink = (label: string, variant: 'solid' | 'outline' = 'solid') => {
+    const baseClasses =
+      variant === 'solid'
+        ? 'h-9 px-3.5 rounded-lg bg-zinc-950 text-white hover:bg-zinc-800 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950'
+        : 'inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white/90 text-zinc-800 text-sm font-medium hover:text-zinc-950 hover:border-zinc-950 transition-colors whitespace-nowrap shrink-0';
+
+    return (
+      <a
+        href={SIGNAL_DIRECT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={baseClasses}
+      >
+        <SignalMark className="w-3.5 h-3.5 shrink-0" />
+        <span>{label}</span>
+        <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+      </a>
+    );
   };
 
   return (
@@ -352,94 +389,162 @@ export default function EvaluationForm({
                 {isRaptor ? t.form.raptorBody : t.form.body}
               </p>
 
-              {/* Direct & Emergency Encrypted Signal Channel */}
-              <div className="mt-8 glass-panel rounded-2xl p-6 sm:p-7 max-w-[52ch]">
-                <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-zinc-500">
-                  <span className="text-zinc-800">{t.form.signalCard.kicker[0]}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{t.form.signalCard.kicker[1]}</span>
-                </div>
-
-                <h3 className="mt-2.5 text-base sm:text-lg font-semibold tracking-tight text-zinc-950">
-                  {t.form.signalCard.title}
-                </h3>
-
-                <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
-                  {t.form.signalCard.body}
-                </p>
-
-                {/* Row 1: Signal (coto.33) */}
-                <div className="mt-5 pt-4 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center shrink-0">
-                      <SignalMark className="w-4 h-4" />
+              {/* Unlocked Direct Contact (Post-Folio) & Discreet Emergency Protocol Card */}
+              <div
+                className={`mt-8 glass-panel rounded-2xl max-w-[52ch] ${
+                  submittedRecord ? 'p-6 sm:p-7' : 'px-5 py-4'
+                }`}
+              >
+                {submittedRecord ? (
+                  <>
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-zinc-500">
+                      <span className="text-zinc-900">
+                        {t.form.signalCard.unlockedKicker(submittedRecord.folio)[0]}
+                      </span>
+                      <span aria-hidden="true">·</span>
+                      <span className="font-mono text-zinc-700">
+                        {t.form.signalCard.unlockedKicker(submittedRecord.folio)[1]}
+                      </span>
                     </div>
-                    <div>
-                      <div className="text-[11px] font-medium text-zinc-500 leading-none">
-                        {t.form.signalCard.userLabel}
+
+                    <h3 className="mt-2.5 text-base sm:text-lg font-semibold tracking-tight text-zinc-950">
+                      {t.form.signalCard.unlockedTitle}
+                    </h3>
+
+                    <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
+                      {t.form.signalCard.unlockedBody(submittedRecord.folio)}
+                    </p>
+
+                    {/* Unlocked Row 1: Direct Signal Encrypted Bridge */}
+                    <div className="mt-5 pt-4 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center shrink-0">
+                          <SignalMark className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-[11px] font-medium text-zinc-500 leading-none">
+                            {t.form.signalCard.userLabel}
+                          </div>
+                          <div className="mt-1 text-xs font-medium text-zinc-900">
+                            {t.form.signalCard.signalSubtitle}
+                          </div>
+                        </div>
                       </div>
-                      <div className="mt-1 font-mono text-sm font-semibold text-zinc-950 tracking-tight select-all">
-                        {SIGNAL_USERNAME}
+
+                      {renderSignalLaunchLink(t.form.signalCard.openSignalBtn, 'solid')}
+                    </div>
+
+                    {/* Unlocked Row 2: Direct Email (help@coto.lat) with Native App + Webmail Launchers */}
+                    <div className="mt-4 pt-4 border-t border-zinc-200/80 space-y-3">
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg border border-zinc-200 bg-white text-zinc-900 flex items-center justify-center shrink-0">
+                            <Mail className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <div className="text-[11px] font-medium text-zinc-500 leading-none">
+                              {t.form.signalCard.emailLabel}
+                            </div>
+                            <div className="mt-1 font-mono text-sm font-semibold text-zinc-950 tracking-tight select-all">
+                              {CONTACT_EMAIL}
+                            </div>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={handleCopyEmail}
+                          className="h-8 px-3 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                        >
+                          {emailCopied ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 shrink-0" />
+                              <span>{t.form.signalCard.copiedEmailBtn}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5 shrink-0" />
+                              <span>{t.form.signalCard.copyEmailBtn}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        <a
+                          href={mailtoHref}
+                          className="h-9 px-3.5 rounded-lg bg-zinc-950 text-white hover:bg-zinc-800 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                        >
+                          <Mail className="w-3.5 h-3.5 shrink-0" />
+                          <span>{t.form.signalCard.openMailAppBtn}</span>
+                        </a>
+                        <a
+                          href={gmailHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-9 px-3 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                        >
+                          <span>{t.form.signalCard.openGmailBtn}</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                        </a>
+                        <a
+                          href={outlookHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="h-9 px-3 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                        >
+                          <span>{t.form.signalCard.openOutlookBtn}</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                        </a>
                       </div>
                     </div>
-                  </div>
+                  </>
+                ) : (
+                  <div>
+                    <button
+                      type="button"
+                      aria-expanded={emergencyOpen}
+                      onClick={() => setEmergencyOpen((prev) => !prev)}
+                      className="w-full flex items-center justify-between gap-3 text-left text-xs font-medium text-zinc-700 hover:text-zinc-950 transition-colors cursor-pointer py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <ShieldAlert className="w-4 h-4 text-zinc-700 shrink-0" />
+                        <span>{t.form.signalCard.emergencyToggle}</span>
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-zinc-500 shrink-0 transition-transform duration-200 ${
+                          emergencyOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </button>
 
-                  <button
-                    type="button"
-                    onClick={handleCopySignal}
-                    className="h-9 px-3.5 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 hover:bg-zinc-950 hover:text-white text-zinc-900 text-xs font-medium inline-flex items-center gap-2 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
-                  >
-                    {signalCopied ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 shrink-0" />
-                        <span>{t.form.signalCard.copiedBtn}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5 shrink-0" />
-                        <span>{t.form.signalCard.copyBtn}</span>
-                      </>
+                    {emergencyOpen && (
+                      <div className="mt-4 pt-4 border-t border-zinc-200/80 space-y-3.5">
+                        <p className="text-xs text-zinc-600 leading-relaxed">
+                          {t.form.signalCard.emergencyNotice}
+                        </p>
+
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center shrink-0">
+                              <SignalMark className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <div className="text-[11px] font-medium text-zinc-500 leading-none">
+                                {t.form.signalCard.emergencySignalLabel}
+                              </div>
+                              <div className="mt-1 text-xs font-medium text-zinc-900">
+                                {t.form.signalCard.emergencySignalSubtitle}
+                              </div>
+                            </div>
+                          </div>
+
+                          {renderSignalLaunchLink(t.form.signalCard.openSignalBtn, 'solid')}
+                        </div>
+                      </div>
                     )}
-                  </button>
-                </div>
-
-                {/* Row 2: Direct Email (help@coto.lat) */}
-                <div className="mt-3.5 pt-3.5 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg border border-zinc-200 bg-white text-zinc-900 flex items-center justify-center shrink-0">
-                      <Mail className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="text-[11px] font-medium text-zinc-500 leading-none">
-                        {t.form.signalCard.emailLabel}
-                      </div>
-                      <a
-                        href={`mailto:${CONTACT_EMAIL}`}
-                        className="mt-1 inline-block font-mono text-sm font-semibold text-zinc-950 tracking-tight hover:underline underline-offset-4"
-                      >
-                        {CONTACT_EMAIL}
-                      </a>
-                    </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={handleCopyEmail}
-                    className="h-9 px-3.5 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 hover:bg-zinc-950 hover:text-white text-zinc-900 text-xs font-medium inline-flex items-center gap-2 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
-                  >
-                    {emailCopied ? (
-                      <>
-                        <Check className="w-3.5 h-3.5 shrink-0" />
-                        <span>{t.form.signalCard.copiedEmailBtn}</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-3.5 h-3.5 shrink-0" />
-                        <span>{t.form.signalCard.copyEmailBtn}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                )}
               </div>
 
               {onOpenPrivacy && (
@@ -522,29 +627,24 @@ export default function EvaluationForm({
                       </button>
 
                       <a
-                        href={buildMailtoHref()}
+                        href={mailtoHref}
                         className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white/90 text-zinc-800 text-sm font-medium hover:text-zinc-950 hover:border-zinc-400 transition-colors whitespace-nowrap shrink-0"
                       >
                         <Mail className="w-4 h-4" />
                         <span>{t.form.confirmation.emailBtn}</span>
                       </a>
 
-                      <button
-                        type="button"
-                        onClick={handleCopySignal}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white/90 text-zinc-800 text-sm font-medium hover:text-zinc-950 hover:border-zinc-950 transition-colors cursor-pointer whitespace-nowrap shrink-0"
+                      <a
+                        href={gmailHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white/90 text-zinc-800 text-sm font-medium hover:text-zinc-950 hover:border-zinc-400 transition-colors whitespace-nowrap shrink-0"
                       >
-                        {signalCopied ? (
-                          <Check className="w-4 h-4 shrink-0" />
-                        ) : (
-                          <SignalMark className="w-4 h-4 shrink-0" />
-                        )}
-                        <span>
-                          {signalCopied
-                            ? t.form.confirmation.signalCopiedBtn
-                            : t.form.confirmation.signalCopyBtn}
-                        </span>
-                      </button>
+                        <span>{t.form.confirmation.gmailBtn}</span>
+                        <ArrowUpRight className="w-4 h-4 text-zinc-500 shrink-0" />
+                      </a>
+
+                      {renderSignalLaunchLink(t.form.confirmation.openSignalBtn, 'outline')}
                     </div>
 
                     <button

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Check, Copy, Mail, X } from 'lucide-react';
+import { useEffect } from 'react';
+import { ArrowUpRight, Mail, X } from 'lucide-react';
 import { useI18n } from '../lib/i18n';
 import CotoLogoMark from './CotoLogoMark';
-import SignalMark, { CONTACT_EMAIL, copyToClipboard, SIGNAL_USERNAME } from './SignalMark';
+import SignalMark, { CONTACT_EMAIL, SIGNAL_DIRECT_URL } from './SignalMark';
 
 interface PrivacyModalProps {
   isOpen: boolean;
@@ -11,7 +11,6 @@ interface PrivacyModalProps {
 
 export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
   const { t } = useI18n();
-  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -34,14 +33,6 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
 
   if (!isOpen) return null;
 
-  const handleCopySignal = async () => {
-    const ok = await copyToClipboard(SIGNAL_USERNAME);
-    if (ok) {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
   return (
     <div
       role="dialog"
@@ -57,7 +48,7 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
         <div className="px-6 sm:px-8 py-5 border-b border-zinc-200/80 flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-zinc-500">
-              <CotoLogoMark className="w-4 h-4 shrink-0" />
+              <CotoLogoMark className="w-[18px] h-[18px] shrink-0" />
               <span className="text-zinc-800">{t.privacy.kicker[0]}</span>
               <span aria-hidden="true">·</span>
               <span>{t.privacy.kicker[1]}</span>
@@ -101,19 +92,16 @@ export default function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
         {/* Modal Footer with Direct Encrypted Contact */}
         <div className="px-6 sm:px-8 py-4 border-t border-zinc-200/80 bg-zinc-50/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={handleCopySignal}
-              className="h-9 px-3.5 rounded-lg border border-zinc-300 bg-white hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-2 transition-colors cursor-pointer whitespace-nowrap"
+            <a
+              href={SIGNAL_DIRECT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-9 px-3.5 rounded-lg border border-zinc-300 bg-white hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-2 transition-colors whitespace-nowrap"
             >
               <SignalMark className="w-3.5 h-3.5 text-zinc-900 shrink-0" />
-              <span>{copied ? t.privacy.copiedSignalBtn : t.privacy.copySignalBtn}</span>
-              {copied ? (
-                <Check className="w-3.5 h-3.5 text-zinc-950 shrink-0" />
-              ) : (
-                <Copy className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-              )}
-            </button>
+              <span>{t.privacy.openSignalBtn}</span>
+              <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+            </a>
 
             <a
               href={`mailto:${CONTACT_EMAIL}`}

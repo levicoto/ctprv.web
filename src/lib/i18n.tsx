@@ -140,6 +140,7 @@ export interface TranslationDictionary {
       modeTeamDesc: string;
       downloadBtn: string;
       emailBtn: string;
+      gmailBtn: string;
       resetBtn: string;
       tierDisplayArgos: string;
       tierDisplayAtlas: string;
@@ -157,25 +158,30 @@ export interface TranslationDictionary {
       receiptNotes: string;
       receiptNoNotes: string;
       mailSubjectPrefix: string;
-      signalCopyBtn: string;
-      signalCopiedBtn: string;
+      openSignalBtn: string;
     };
     signalCard: {
-      kicker: [string, string];
-      title: string;
-      body: string;
+      emergencyToggle: string;
+      emergencyNotice: string;
+      emergencySignalLabel: string;
+      emergencySignalSubtitle: string;
+      unlockedKicker: (folio: string) => [string, string];
+      unlockedTitle: string;
+      unlockedBody: (folio: string) => string;
       userLabel: string;
-      copyBtn: string;
-      copiedBtn: string;
+      signalSubtitle: string;
+      openSignalBtn: string;
       emailLabel: string;
+      openMailAppBtn: string;
+      openGmailBtn: string;
+      openOutlookBtn: string;
       copyEmailBtn: string;
       copiedEmailBtn: string;
       privacyTrigger: string;
     };
   };
   footer: {
-    signalCopyTitle: string;
-    signalCopied: string;
+    contactTrigger: string;
     privacyLink: string;
     privateAccess: string;
   };
@@ -190,8 +196,7 @@ export interface TranslationDictionary {
       desc: string;
     }[];
     directLabel: string;
-    copySignalBtn: string;
-    copiedSignalBtn: string;
+    openSignalBtn: string;
     closeBtn: string;
     closeAria: string;
   };
@@ -483,7 +488,8 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         modeSoloDesc: 'Solo',
         modeTeamDesc: 'Equipo',
         downloadBtn: 'Descargar comprobante',
-        emailBtn: 'Notificar por correo',
+        emailBtn: 'App de correo',
+        gmailBtn: 'Gmail Web',
         resetBtn: 'Nueva solicitud',
         tierDisplayArgos: 'Tier 1: Argos',
         tierDisplayAtlas: 'Tier 2: Atlas',
@@ -501,25 +507,32 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptNotes: 'Notas',
         receiptNoNotes: 'Sin incidentes reportados',
         mailSubjectPrefix: 'Solicitud Confidencial',
-        signalCopyBtn: 'Signal: coto.33',
-        signalCopiedBtn: 'coto.33 copiado',
+        openSignalBtn: 'Abrir Signal',
       },
       signalCard: {
-        kicker: ['Canales directos', 'Información o emergencias'],
-        title: 'Contacto directo y emergencias',
-        body: 'Para consultas previas al diagnóstico o ante un incidente de seguridad activo, comunícate directamente por Signal o correo institucional.',
-        userLabel: 'Usuario Signal',
-        copyBtn: 'Copiar usuario',
-        copiedBtn: 'Usuario copiado',
-        emailLabel: 'Correo directo',
+        emergencyToggle: '¿Incidente de seguridad activo?',
+        emergencyNotice:
+          'Vía exclusiva para brechas en curso, secuestro de cuentas o extorsión activa. Para diagnósticos preventivos o dudas generales, completa la evaluación.',
+        emergencySignalLabel: 'Línea de emergencia',
+        emergencySignalSubtitle: 'Canal cifrado en Signal',
+        unlockedKicker: (folio) => ['Canales habilitados', `Folio ${folio}`],
+        unlockedTitle: 'Contacto directo habilitado',
+        unlockedBody: (folio) =>
+          `Tu expediente está registrado. Puedes escribirnos directamente por Signal o correo con tu referencia ${folio} prellenada.`,
+        userLabel: 'Canal cifrado Signal',
+        signalSubtitle: 'Mensajería directa de extremo a extremo',
+        openSignalBtn: 'Abrir Signal',
+        emailLabel: 'Correo institucional',
+        openMailAppBtn: 'App de correo',
+        openGmailBtn: 'Gmail Web',
+        openOutlookBtn: 'Outlook Web',
         copyEmailBtn: 'Copiar correo',
         copiedEmailBtn: 'Correo copiado',
         privacyTrigger: 'Compromiso de privacidad y confidencialidad',
       },
     },
     footer: {
-      signalCopyTitle: 'Copiar usuario de Signal coto.33',
-      signalCopied: 'Copiado',
+      contactTrigger: 'Contacto y Emergencias',
       privacyLink: 'Privacidad y Confidencialidad',
       privateAccess: 'Acceso Privado',
     },
@@ -543,17 +556,16 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         {
           num: '03',
           title: 'Comunicaciones cifradas y atención de emergencias',
-          desc: 'Nunca solicitamos contraseñas, códigos 2FA ni acceso a dispositivos mediante este sitio web. Para consultas sensibles o incidentes activos, operamos por canal cifrado de extremo a extremo en Signal (usuario: coto.33).',
+          desc: 'Nunca solicitamos contraseñas, códigos 2FA ni acceso a dispositivos mediante este sitio web. Para consultas sensibles o incidentes activos, operamos mediante nuestro canal oficial cifrado de extremo a extremo en Signal.',
         },
         {
           num: '04',
           title: 'Retención controlada y supresión inmediata',
-          desc: 'Los expedientes de evaluación se conservan únicamente durante la coordinación del servicio. Puedes solicitar la eliminación definitiva e inmediata de cualquier registro escribiendo a Signal (coto.33) o a help@coto.lat.',
+          desc: 'Los expedientes de evaluación se conservan únicamente durante la coordinación del servicio. Puedes solicitar la eliminación definitiva e inmediata de cualquier registro a través de nuestro canal en Signal o escribiendo a help@coto.lat.',
         },
       ],
       directLabel: 'Canal cifrado directo',
-      copySignalBtn: 'Copiar Signal: coto.33',
-      copiedSignalBtn: 'Usuario copiado',
+      openSignalBtn: 'Abrir canal en Signal',
       closeBtn: 'Entendido',
       closeAria: 'Cerrar aviso de privacidad y confidencialidad',
     },
@@ -846,7 +858,8 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         modeSoloDesc: 'Solo',
         modeTeamDesc: 'Team',
         downloadBtn: 'Download receipt',
-        emailBtn: 'Notify via email',
+        emailBtn: 'Mail app',
+        gmailBtn: 'Gmail Web',
         resetBtn: 'New request',
         tierDisplayArgos: 'Tier 1: Argos',
         tierDisplayAtlas: 'Tier 2: Atlas',
@@ -864,25 +877,32 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptNotes: 'Notes',
         receiptNoNotes: 'No recent incidents reported',
         mailSubjectPrefix: 'Confidential Request',
-        signalCopyBtn: 'Signal: coto.33',
-        signalCopiedBtn: 'coto.33 copied',
+        openSignalBtn: 'Open Signal',
       },
       signalCard: {
-        kicker: ['Direct channels', 'Inquiries or emergencies'],
-        title: 'Direct & emergency contact',
-        body: 'For questions prior to an assessment or during an active security incident, reach us directly via Signal or institutional email.',
-        userLabel: 'Signal username',
-        copyBtn: 'Copy username',
-        copiedBtn: 'Username copied',
-        emailLabel: 'Direct email',
+        emergencyToggle: 'Active security incident?',
+        emergencyNotice:
+          'Strictly reserved for ongoing breaches, account takeovers, or active extortion. For preventive audits or general inquiries, complete the assessment form.',
+        emergencySignalLabel: 'Emergency line',
+        emergencySignalSubtitle: 'Encrypted Signal channel',
+        unlockedKicker: (folio) => ['Channels enabled', `Ref ${folio}`],
+        unlockedTitle: 'Direct contact enabled',
+        unlockedBody: (folio) =>
+          `Your dossier is registered. Reach us directly via Signal or email with your reference ${folio} prefilled.`,
+        userLabel: 'Encrypted Signal channel',
+        signalSubtitle: 'Direct end-to-end encrypted messaging',
+        openSignalBtn: 'Open Signal',
+        emailLabel: 'Institutional email',
+        openMailAppBtn: 'Mail app',
+        openGmailBtn: 'Gmail Web',
+        openOutlookBtn: 'Outlook Web',
         copyEmailBtn: 'Copy email',
         copiedEmailBtn: 'Email copied',
         privacyTrigger: 'Privacy & confidentiality commitment',
       },
     },
     footer: {
-      signalCopyTitle: 'Copy Signal username coto.33',
-      signalCopied: 'Copied',
+      contactTrigger: 'Contact & Emergencies',
       privacyLink: 'Privacy & Confidentiality',
       privateAccess: 'Private Access',
     },
@@ -906,17 +926,16 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         {
           num: '03',
           title: 'End-to-end encrypted channel & emergencies',
-          desc: 'We never ask for passwords, 2FA codes, or device access through this website. For sensitive inquiries or active security emergencies, contact us over end-to-end encrypted Signal (username: coto.33).',
+          desc: 'We never ask for passwords, 2FA codes, or device access through this website. For sensitive inquiries or active security emergencies, contact us through our official end-to-end encrypted Signal channel.',
         },
         {
           num: '04',
           title: 'Controlled retention & immediate deletion',
-          desc: 'Assessment records are retained solely to coordinate your case. You may request immediate, permanent deletion of any record at any time via Signal (coto.33) or help@coto.lat.',
+          desc: 'Assessment records are retained solely to coordinate your case. You may request immediate, permanent deletion of any record at any time via our official Signal channel or help@coto.lat.',
         },
       ],
       directLabel: 'Direct encrypted channel',
-      copySignalBtn: 'Copy Signal: coto.33',
-      copiedSignalBtn: 'Username copied',
+      openSignalBtn: 'Open Signal channel',
       closeBtn: 'Close',
       closeAria: 'Close privacy and confidentiality notice',
     },
@@ -1210,7 +1229,8 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         modeSoloDesc: 'Solo',
         modeTeamDesc: 'Equipe',
         downloadBtn: 'Baixar comprovante',
-        emailBtn: 'Notificar por e-mail',
+        emailBtn: 'App de e-mail',
+        gmailBtn: 'Gmail Web',
         resetBtn: 'Nova solicitação',
         tierDisplayArgos: 'Tier 1: Argos',
         tierDisplayAtlas: 'Tier 2: Atlas',
@@ -1228,25 +1248,32 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         receiptNotes: 'Notas',
         receiptNoNotes: 'Nenhum incidente relatado',
         mailSubjectPrefix: 'Solicitação Confidencial',
-        signalCopyBtn: 'Signal: coto.33',
-        signalCopiedBtn: 'coto.33 copiado',
+        openSignalBtn: 'Abrir Signal',
       },
       signalCard: {
-        kicker: ['Canais diretos', 'Informações ou emergências'],
-        title: 'Contato direto e emergências',
-        body: 'Para dúvidas antes do diagnóstico ou diante de um incidente de segurança ativo, fale diretamente conosco pelo Signal ou e-mail institucional.',
-        userLabel: 'Usuário Signal',
-        copyBtn: 'Copiar usuário',
-        copiedBtn: 'Usuário copiado',
-        emailLabel: 'E-mail direto',
+        emergencyToggle: 'Incidente de segurança ativo?',
+        emergencyNotice:
+          'Via exclusiva para invasões em andamento, sequestro de contas ou extorsão ativa. Para auditorias preventivas ou dúvidas gerais, preencha a avaliação.',
+        emergencySignalLabel: 'Linha de emergência',
+        emergencySignalSubtitle: 'Canal criptografado no Signal',
+        unlockedKicker: (folio) => ['Canais habilitados', `Código ${folio}`],
+        unlockedTitle: 'Contato direto habilitado',
+        unlockedBody: (folio) =>
+          `Seu dossiê está registrado. Fale diretamente pelo Signal ou e-mail com sua referência ${folio} preenchida.`,
+        userLabel: 'Canal criptografado Signal',
+        signalSubtitle: 'Mensagens diretas de ponta a ponta',
+        openSignalBtn: 'Abrir Signal',
+        emailLabel: 'E-mail institucional',
+        openMailAppBtn: 'App de e-mail',
+        openGmailBtn: 'Gmail Web',
+        openOutlookBtn: 'Outlook Web',
         copyEmailBtn: 'Copiar e-mail',
         copiedEmailBtn: 'E-mail copiado',
         privacyTrigger: 'Compromisso de privacidade e confidencialidade',
       },
     },
     footer: {
-      signalCopyTitle: 'Copiar usuário do Signal coto.33',
-      signalCopied: 'Copiado',
+      contactTrigger: 'Contato e Emergências',
       privacyLink: 'Privacidade e Confidencialidade',
       privateAccess: 'Acesso Privado',
     },
@@ -1270,17 +1297,16 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         {
           num: '03',
           title: 'Comunicação criptografada e emergências',
-          desc: 'Nunca solicitamos senhas, códigos 2FA ou acesso a dispositivos por este site. Para consultas sensíveis ou incidentes ativos, atendemos via canal criptografado de ponta a ponta no Signal (usuário: coto.33).',
+          desc: 'Nunca solicitamos senhas, códigos 2FA ou acesso a dispositivos por este site. Para consultas sensíveis ou incidentes ativos, atendemos pelo nosso canal oficial criptografado de ponta a ponta no Signal.',
         },
         {
           num: '04',
           title: 'Retenção controlada e exclusão imediata',
-          desc: 'Os registros de avaliação são mantidos exclusivamente para a coordenação do atendimento. Você pode solicitar a exclusão definitiva e imediata de qualquer registro via Signal (coto.33) ou help@coto.lat.',
+          desc: 'Os registros de avaliação são mantidos exclusivamente para a coordenação do atendimento. Você pode solicitar a exclusão definitiva e imediata de qualquer registro pelo nosso canal no Signal ou pelo e-mail help@coto.lat.',
         },
       ],
       directLabel: 'Canal criptografado direto',
-      copySignalBtn: 'Copiar Signal: coto.33',
-      copiedSignalBtn: 'Usuário copiado',
+      openSignalBtn: 'Abrir canal no Signal',
       closeBtn: 'Fechar',
       closeAria: 'Fechar aviso de privacidade e confidencialidade',
     },
