@@ -4,12 +4,13 @@
  */
 
 import { lazy, MouseEvent, Suspense, useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
+import { ArrowRight, Check, ChevronDown, Globe, ShieldAlert } from 'lucide-react';
 import VaultSculpture3D from './components/VaultSculpture3D';
 import TierKineticObject3D, { type ServiceTierId } from './components/TierKineticObject3D';
 import TechnologyStack from './components/TechnologyStack';
 import EvaluationForm, { type OperationMode } from './components/EvaluationForm';
 import PrivacyModal from './components/PrivacyModal';
+import EmergencyModal from './components/EmergencyModal';
 import CotoLogoMark from './components/CotoLogoMark';
 
 const PalantirRaptorPage = lazy(() => import('./components/PalantirRaptorPage'));
@@ -41,6 +42,7 @@ export default function App() {
   const [preferredMode, setPreferredMode] = useState<OperationMode>('solo');
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
+  const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const langMenuRef = useRef<HTMLDivElement | null>(null);
 
@@ -128,8 +130,15 @@ export default function App() {
           onBackToMain={handleBackToMain}
           onOpenAdmin={() => setAdminModalOpen(true)}
           onOpenPrivacy={() => setPrivacyModalOpen(true)}
+          onOpenEmergency={() => setEmergencyModalOpen(true)}
         />
         <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
+        <EmergencyModal
+          isOpen={emergencyModalOpen}
+          onClose={() => setEmergencyModalOpen(false)}
+          onGoToEvaluation={() => smoothScrollToSection('evaluacion')}
+          onOpenPrivacy={() => setPrivacyModalOpen(true)}
+        />
         {adminModalOpen && (
           <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
         )}
@@ -284,7 +293,7 @@ export default function App() {
                   {t.hero.body}
                 </p>
 
-                <div className="mt-9 flex items-center">
+                <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <button
                     type="button"
                     onClick={() => smoothScrollToSection('evaluacion')}
@@ -292,6 +301,17 @@ export default function App() {
                   >
                     <span>{t.hero.primaryCta}</span>
                     <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEmergencyModalOpen(true)}
+                    className="inline-flex items-center gap-2 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
+                  >
+                    <ShieldAlert className="w-4 h-4 text-zinc-500 shrink-0" />
+                    <span className="underline decoration-zinc-300 hover:decoration-zinc-950 underline-offset-4 transition-colors">
+                      {t.hero.emergencyTrigger}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -492,7 +512,7 @@ export default function App() {
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
             <button
               type="button"
-              onClick={() => smoothScrollToSection('evaluacion')}
+              onClick={() => setEmergencyModalOpen(true)}
               className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.contactTrigger}
@@ -518,6 +538,12 @@ export default function App() {
       </footer>
 
       <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
+      <EmergencyModal
+        isOpen={emergencyModalOpen}
+        onClose={() => setEmergencyModalOpen(false)}
+        onGoToEvaluation={() => smoothScrollToSection('evaluacion')}
+        onOpenPrivacy={() => setPrivacyModalOpen(true)}
+      />
       {adminModalOpen && (
         <Suspense fallback={null}>
           <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />

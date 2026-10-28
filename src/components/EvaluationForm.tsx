@@ -546,19 +546,6 @@ export default function EvaluationForm({
                   </div>
                 )}
               </div>
-
-              {onOpenPrivacy && (
-                <div className="mt-4">
-                  <button
-                    type="button"
-                    onClick={onOpenPrivacy}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-950 underline underline-offset-4 transition-colors cursor-pointer"
-                  >
-                    <Lock className="w-3.5 h-3.5 shrink-0" />
-                    <span>{t.form.signalCard.privacyTrigger}</span>
-                  </button>
-                </div>
-              )}
             </div>
 
             {/* Right Glassmorphic Form / Confirmation Container */}
@@ -851,6 +838,19 @@ export default function EvaluationForm({
                     </button>
                   </div>
                 </form>
+              )}
+
+              {onOpenPrivacy && (
+                <div className="mt-4 flex items-center justify-center sm:justify-start px-1">
+                  <button
+                    type="button"
+                    onClick={onOpenPrivacy}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-zinc-950 underline underline-offset-4 transition-colors cursor-pointer"
+                  >
+                    <Lock className="w-3.5 h-3.5 shrink-0" />
+                    <span>{t.form.signalCard.privacyTrigger}</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>

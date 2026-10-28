@@ -1,5 +1,5 @@
 import { MouseEvent, useEffect, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Globe } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Globe, ShieldAlert } from 'lucide-react';
 import RaptorEye3D from './RaptorEye3D';
 import EvaluationForm from './EvaluationForm';
 import CotoLogoMark from './CotoLogoMark';
@@ -19,12 +19,14 @@ interface PalantirRaptorPageProps {
   onBackToMain: () => void;
   onOpenAdmin: () => void;
   onOpenPrivacy: () => void;
+  onOpenEmergency: () => void;
 }
 
 export default function PalantirRaptorPage({
   onBackToMain,
   onOpenAdmin,
   onOpenPrivacy,
+  onOpenEmergency,
 }: PalantirRaptorPageProps) {
   const { lang, setLang, t } = useI18n();
   const [langMenuOpen, setLangMenuOpen] = useState(false);
@@ -219,7 +221,7 @@ export default function PalantirRaptorPage({
                   {t.raptor.hero.body}
                 </p>
 
-                <div className="mt-9 flex items-center">
+                <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <button
                     type="button"
                     onClick={handleScrollToForm}
@@ -227,6 +229,17 @@ export default function PalantirRaptorPage({
                   >
                     <span>{t.raptor.hero.primaryCta}</span>
                     <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={onOpenEmergency}
+                    className="inline-flex items-center gap-2 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
+                  >
+                    <ShieldAlert className="w-4 h-4 text-zinc-500 shrink-0" />
+                    <span className="underline decoration-zinc-300 hover:decoration-zinc-950 underline-offset-4 transition-colors">
+                      {t.hero.emergencyTrigger}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -344,7 +357,7 @@ export default function PalantirRaptorPage({
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
             <button
               type="button"
-              onClick={() => smoothScrollToSection('evaluacion')}
+              onClick={onOpenEmergency}
               className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.contactTrigger}

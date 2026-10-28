@@ -32,6 +32,7 @@ export interface TranslationDictionary {
     headline: string;
     body: string;
     primaryCta: string;
+    emergencyTrigger: string;
     padlockAria: string;
   };
   services: {
@@ -200,6 +201,19 @@ export interface TranslationDictionary {
     closeBtn: string;
     closeAria: string;
   };
+  emergencyModal: {
+    dialogAria: string;
+    kicker: [string, string];
+    title: string;
+    body: string;
+    signalLabel: string;
+    signalSubtitle: string;
+    openSignalBtn: string;
+    preventivePrompt: string;
+    preventiveCta: string;
+    privacyLink: string;
+    closeAria: string;
+  };
   admin: {
     dialogAria: string;
     headerTitle: string;
@@ -298,6 +312,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       headline: 'Seguridad de grado corporativo simplificada para ti.',
       body: 'Protegemos el patrimonio digital, la identidad y las operaciones de fundadores, creadores y figuras públicas, para que te concentres en lo que mejor sabes hacer.',
       primaryCta: 'Solicitar Auditoría Privada',
+      emergencyTrigger: '¿Incidente activo?',
       padlockAria: 'Candado de seguridad',
     },
     services: {
@@ -569,6 +584,19 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       closeBtn: 'Entendido',
       closeAria: 'Cerrar aviso de privacidad y confidencialidad',
     },
+    emergencyModal: {
+      dialogAria: 'Protocolo de atención a incidentes de seguridad activos',
+      kicker: ['Coto Privado', 'Atención de Crisis'],
+      title: '¿Incidente de seguridad activo?',
+      body: 'Vía exclusiva para brechas en curso, secuestro de cuentas o extorsión activa. Comunicación directa cifrada de extremo a extremo sin intermediarios.',
+      signalLabel: 'Línea de emergencia',
+      signalSubtitle: 'Canal oficial cifrado en Signal',
+      openSignalBtn: 'Abrir Signal',
+      preventivePrompt: '¿Buscas una auditoría preventiva o tienes dudas generales?',
+      preventiveCta: 'Ir al formulario de evaluación',
+      privacyLink: 'Privacidad y confidencialidad',
+      closeAria: 'Cerrar protocolo de emergencia',
+    },
     admin: {
       dialogAria: 'Panel privado de evaluaciones Coto Privado',
       headerTitle: 'Solicitudes — Coto Privado',
@@ -669,6 +697,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       headline: 'Corporate-grade security simplified for you.',
       body: 'We protect the digital wealth, identity, and operations of founders, creators, and public figures, so you can focus on what you do best.',
       primaryCta: 'Request Private Audit',
+      emergencyTrigger: 'Active incident?',
       padlockAria: 'Security padlock',
     },
     services: {
@@ -939,6 +968,19 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       closeBtn: 'Close',
       closeAria: 'Close privacy and confidentiality notice',
     },
+    emergencyModal: {
+      dialogAria: 'Active security incident response protocol',
+      kicker: ['Coto Privado', 'Crisis Response'],
+      title: 'Active security incident?',
+      body: 'Strictly reserved for ongoing breaches, account takeovers, or active extortion. Direct end-to-end encrypted communication with zero intermediaries.',
+      signalLabel: 'Emergency line',
+      signalSubtitle: 'Official encrypted Signal channel',
+      openSignalBtn: 'Open Signal',
+      preventivePrompt: 'Looking for a preventive audit or general inquiry?',
+      preventiveCta: 'Go to assessment form',
+      privacyLink: 'Privacy & confidentiality',
+      closeAria: 'Close emergency protocol',
+    },
     admin: {
       dialogAria: 'Coto Privado private assessments panel',
       headerTitle: 'Requests — Coto Privado',
@@ -1039,6 +1081,7 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       headline: 'Segurança de nível corporativo simplificada para você.',
       body: 'Protegemos o patrimônio digital, a identidade e as operações de fundadores, criadores e figuras públicas, para que você se concentre no que sabe fazer de melhor.',
       primaryCta: 'Solicitar Auditoria Privada',
+      emergencyTrigger: 'Incidente ativo?',
       padlockAria: 'Cadeado de segurança',
     },
     services: {
@@ -1309,6 +1352,19 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       openSignalBtn: 'Abrir canal no Signal',
       closeBtn: 'Fechar',
       closeAria: 'Fechar aviso de privacidade e confidencialidade',
+    },
+    emergencyModal: {
+      dialogAria: 'Protocolo de resposta a incidentes de segurança ativos',
+      kicker: ['Coto Privado', 'Resposta a Crises'],
+      title: 'Incidente de segurança ativo?',
+      body: 'Via exclusiva para invasões em andamento, sequestro de contas ou extorsão ativa. Comunicação direta criptografada de ponta a ponta sem intermediários.',
+      signalLabel: 'Linha de emergência',
+      signalSubtitle: 'Canal oficial criptografado no Signal',
+      openSignalBtn: 'Abrir Signal',
+      preventivePrompt: 'Busca uma auditoria preventiva ou tem dúvidas gerais?',
+      preventiveCta: 'Ir ao formulário de avaliação',
+      privacyLink: 'Privacidade e confidencialidade',
+      closeAria: 'Fechar protocolo de emergência',
     },
     admin: {
       dialogAria: 'Painel privado de avaliações Coto Privado',
