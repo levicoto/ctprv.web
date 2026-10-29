@@ -14,6 +14,7 @@ import EmergencyModal from './components/EmergencyModal';
 import CotoLogoMark from './components/CotoLogoMark';
 
 const PalantirRaptorPage = lazy(() => import('./components/PalantirRaptorPage'));
+const CrisisPlaybookPage = lazy(() => import('./components/CrisisPlaybookPage'));
 const AdminInboxModal = lazy(() => import('./components/AdminInboxModal'));
 import ParallaxLayer, {
   AmbientParallaxBackdrop,
@@ -27,12 +28,14 @@ const LANGUAGES: { code: Language; short: string; name: string }[] = [
   { code: 'pt', short: 'PT', name: 'Português' },
 ];
 
-type ActiveView = 'main' | 'raptor';
+type ActiveView = 'main' | 'raptor' | 'crisis';
 
 function readViewFromHash(): ActiveView {
   if (typeof window === 'undefined') return 'main';
   const raw = window.location.hash.replace(/^#/, '').trim().toLowerCase();
-  return raw === 'palantir-raptor' || raw.startsWith('raptor-') ? 'raptor' : 'main';
+  if (raw === 'palantir-raptor' || raw.startsWith('raptor-')) return 'raptor';
+  if (raw === 'protocolo-crisis' || raw.startsWith('crisis-')) return 'crisis';
+  return 'main';
 }
 
 export default function App() {
@@ -66,8 +69,13 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.title = activeView === 'raptor' ? t.raptorMetaTitle : t.metaTitle;
-  }, [activeView, t.metaTitle, t.raptorMetaTitle]);
+    document.title =
+      activeView === 'raptor'
+        ? t.raptorMetaTitle
+        : activeView === 'crisis'
+          ? t.crisisMetaTitle
+          : t.metaTitle;
+  }, [activeView, t.metaTitle, t.raptorMetaTitle, t.crisisMetaTitle]);
 
   useEffect(() => {
     if (!langMenuOpen) return;
@@ -101,6 +109,15 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
+  const handleOpenCrisisPage = () => {
+    setLangMenuOpen(false);
+    if (window.location.hash !== '#protocolo-crisis') {
+      window.history.pushState(null, '', '#protocolo-crisis');
+    }
+    setActiveView('crisis');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
   const handleBackToMain = () => {
     setLangMenuOpen(false);
     window.history.pushState(null, '', window.location.pathname + window.location.search);
@@ -128,6 +145,32 @@ export default function App() {
       <Suspense fallback={<div className="min-h-screen architectural-canvas" />}>
         <PalantirRaptorPage
           onBackToMain={handleBackToMain}
+          onOpenCrisis={handleOpenCrisisPage}
+          onOpenAdmin={() => setAdminModalOpen(true)}
+          onOpenPrivacy={() => setPrivacyModalOpen(true)}
+          onOpenEmergency={() => setEmergencyModalOpen(true)}
+        />
+        <PrivacyModal isOpen={privacyModalOpen} onClose={() => setPrivacyModalOpen(false)} />
+        <EmergencyModal
+          isOpen={emergencyModalOpen}
+          onClose={() => setEmergencyModalOpen(false)}
+          onGoToEvaluation={() => smoothScrollToSection('evaluacion')}
+          onOpenPrivacy={() => setPrivacyModalOpen(true)}
+          onOpenCrisisGuide={handleOpenCrisisPage}
+        />
+        {adminModalOpen && (
+          <AdminInboxModal isOpen={adminModalOpen} onClose={() => setAdminModalOpen(false)} />
+        )}
+      </Suspense>
+    );
+  }
+
+  if (activeView === 'crisis') {
+    return (
+      <Suspense fallback={<div className="min-h-screen architectural-canvas" />}>
+        <CrisisPlaybookPage
+          onBackToMain={handleBackToMain}
+          onOpenRaptor={handleOpenRaptorPage}
           onOpenAdmin={() => setAdminModalOpen(true)}
           onOpenPrivacy={() => setPrivacyModalOpen(true)}
           onOpenEmergency={() => setEmergencyModalOpen(true)}
@@ -170,7 +213,7 @@ export default function App() {
           {/* Zone 2: Mathematically Centered Primary Navigation */}
           <nav
             aria-label={t.nav.ariaMain}
-            className="hidden md:flex items-center justify-self-center gap-7 lg:gap-8 text-sm font-medium text-zinc-600"
+            className="hidden md:flex items-center justify-self-center gap-6 lg:gap-7 text-sm font-medium text-zinc-600"
           >
             <a
               href="#inicio"
@@ -192,6 +235,16 @@ export default function App() {
               className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               {t.nav.backing}
+            </a>
+            <a
+              href="#protocolo-crisis"
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpenCrisisPage();
+              }}
+              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+            >
+              {t.nav.crisis}
             </a>
             <a
               href="#evaluacion"
@@ -460,28 +513,56 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Off-Tier Editorial Horizontal Strip: Palantir Raptor (OSINT) */}
-              <div className="mt-6 lg:mt-8 glass-panel rounded-2xl p-6 sm:px-10 sm:py-7 flex flex-col lg:flex-row lg:items-center justify-between gap-6 transition-transform duration-200 hover:-translate-y-0.5">
-                <div className="max-w-[64ch]">
-                  <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
-                    <span className="text-zinc-800">{t.services.raptorCallout.kicker[0]}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{t.services.raptorCallout.kicker[1]}</span>
+              {/* Symmetric 6 / 6 Off-Tier Editorial Pair: Palantir Raptor (OSINT) + Crisis Playbook */}
+              <div className="mt-6 lg:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+                {/* Palantir Raptor Callout */}
+                <div className="lg:col-span-6 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 transition-transform duration-200 hover:-translate-y-0.5">
+                  <div>
+                    <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
+                      <span className="text-zinc-800">{t.services.raptorCallout.kicker[0]}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{t.services.raptorCallout.kicker[1]}</span>
+                    </div>
+                    <p className="mt-2.5 text-base font-medium text-zinc-950 leading-snug text-balance">
+                      {t.services.raptorCallout.hook}
+                    </p>
                   </div>
-                  <p className="mt-2 text-base sm:text-lg font-medium text-zinc-950 leading-snug text-balance">
-                    {t.services.raptorCallout.hook}
-                  </p>
+
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      onClick={handleOpenRaptorPage}
+                      className="w-full sm:w-auto py-2.5 px-4 rounded-xl border border-zinc-900 bg-zinc-950 text-white text-xs sm:text-sm font-medium hover:bg-zinc-800 transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    >
+                      <span>{t.services.raptorCallout.cta}</span>
+                      <ArrowRight className="w-4 h-4 shrink-0" />
+                    </button>
+                  </div>
                 </div>
 
-                <div className="flex items-center shrink-0">
-                  <button
-                    type="button"
-                    onClick={handleOpenRaptorPage}
-                    className="w-full sm:w-auto py-3 px-5 rounded-xl border border-zinc-900 bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
-                  >
-                    <span>{t.services.raptorCallout.cta}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
+                {/* Crisis & Reputation Playbook Callout */}
+                <div className="lg:col-span-6 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 transition-transform duration-200 hover:-translate-y-0.5">
+                  <div>
+                    <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
+                      <span className="text-zinc-800">{t.services.crisisCallout.kicker[0]}</span>
+                      <span aria-hidden="true">·</span>
+                      <span>{t.services.crisisCallout.kicker[1]}</span>
+                    </div>
+                    <p className="mt-2.5 text-base font-medium text-zinc-950 leading-snug text-balance">
+                      {t.services.crisisCallout.hook}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center">
+                    <button
+                      type="button"
+                      onClick={handleOpenCrisisPage}
+                      className="w-full sm:w-auto py-2.5 px-4 rounded-xl border border-zinc-900 bg-white/80 text-zinc-950 text-xs sm:text-sm font-medium hover:bg-zinc-950 hover:text-white transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    >
+                      <span>{t.services.crisisCallout.cta}</span>
+                      <ArrowRight className="w-4 h-4 shrink-0" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </ParallaxLayer>
@@ -510,6 +591,14 @@ export default function App() {
           </div>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
+            <button
+              type="button"
+              onClick={handleOpenCrisisPage}
+              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {t.footer.crisisLink}
+            </button>
+            <span aria-hidden="true">·</span>
             <button
               type="button"
               onClick={() => setEmergencyModalOpen(true)}
@@ -543,6 +632,7 @@ export default function App() {
         onClose={() => setEmergencyModalOpen(false)}
         onGoToEvaluation={() => smoothScrollToSection('evaluacion')}
         onOpenPrivacy={() => setPrivacyModalOpen(true)}
+        onOpenCrisisGuide={handleOpenCrisisPage}
       />
       {adminModalOpen && (
         <Suspense fallback={null}>

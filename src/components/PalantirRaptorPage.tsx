@@ -17,6 +17,7 @@ const LANGUAGES: { code: Language; short: string; name: string }[] = [
 
 interface PalantirRaptorPageProps {
   onBackToMain: () => void;
+  onOpenCrisis: () => void;
   onOpenAdmin: () => void;
   onOpenPrivacy: () => void;
   onOpenEmergency: () => void;
@@ -24,6 +25,7 @@ interface PalantirRaptorPageProps {
 
 export default function PalantirRaptorPage({
   onBackToMain,
+  onOpenCrisis,
   onOpenAdmin,
   onOpenPrivacy,
   onOpenEmergency,
@@ -355,6 +357,14 @@ export default function PalantirRaptorPage({
           </div>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
+            <button
+              type="button"
+              onClick={onOpenCrisis}
+              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {t.footer.crisisLink}
+            </button>
+            <span aria-hidden="true">·</span>
             <button
               type="button"
               onClick={onOpenEmergency}

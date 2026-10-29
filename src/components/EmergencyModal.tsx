@@ -9,6 +9,7 @@ interface EmergencyModalProps {
   onClose: () => void;
   onGoToEvaluation: () => void;
   onOpenPrivacy: () => void;
+  onOpenCrisisGuide?: () => void;
 }
 
 export default function EmergencyModal({
@@ -16,6 +17,7 @@ export default function EmergencyModal({
   onClose,
   onGoToEvaluation,
   onOpenPrivacy,
+  onOpenCrisisGuide,
 }: EmergencyModalProps) {
   const { t } = useI18n();
 
@@ -105,6 +107,20 @@ export default function EmergencyModal({
               <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
             </a>
           </div>
+
+          {onOpenCrisisGuide && (
+            <button
+              type="button"
+              onClick={() => {
+                onClose();
+                onOpenCrisisGuide();
+              }}
+              className="w-full py-2.5 px-4 rounded-xl border border-zinc-200/90 bg-white hover:border-zinc-950 text-xs font-medium text-zinc-800 hover:text-zinc-950 flex items-center justify-between gap-3 transition-colors cursor-pointer"
+            >
+              <span>{t.emergencyModal.crisisGuideCta}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+            </button>
+          )}
         </div>
 
         {/* Subtle Preventive Redirect & Privacy Commitment */}

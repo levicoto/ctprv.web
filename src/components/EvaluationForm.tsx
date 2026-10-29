@@ -50,11 +50,13 @@ interface EvaluationFormProps {
   preferredMode?: OperationMode;
   onModeSyncTier?: (tier: ServiceTierId) => void;
   onOpenPrivacy?: () => void;
-  serviceVariant?: 'tiers' | 'raptor';
+  serviceVariant?: 'tiers' | 'raptor' | 'crisis';
+  prefillConcern?: { text: string; seq: number } | null;
 }
 
 const STORAGE_KEY_TIERS = 'coto_privado_evaluacion_ultima_v3';
 const STORAGE_KEY_RAPTOR = 'coto_privado_evaluacion_raptor_v1';
+const STORAGE_KEY_CRISIS = 'coto_privado_evaluacion_crisis_v1';
 
 function generateFolio(): string {
   const randomDigits = Math.floor(1000 + Math.random() * 9000);
@@ -73,22 +75,28 @@ export default function EvaluationForm({
   onModeSyncTier,
   onOpenPrivacy,
   serviceVariant = 'tiers',
+  prefillConcern = null,
 }: EvaluationFormProps) {
   const { lang, t } = useI18n();
   const isRaptor = serviceVariant === 'raptor';
-  const storageKey = isRaptor ? STORAGE_KEY_RAPTOR : STORAGE_KEY_TIERS;
+  const isCrisis = serviceVariant === 'crisis';
+  const storageKey = isRaptor
+    ? STORAGE_KEY_RAPTOR
+    : isCrisis
+      ? STORAGE_KEY_CRISIS
+      : STORAGE_KEY_TIERS;
 
   const [nombreAlias, setNombreAlias] = useState('');
   const [rolPrincipal, setRolPrincipal] = useState('');
   const [enlaceReferencia, setEnlaceReferencia] = useState('');
-  const [modoOperacion, setModoOperacion] = useState<OperationMode>('solo');
+  const [modoOperacion, setModoOperacion] = useState<OperationMode>(isCrisis ? 'equipo' : 'solo');
   const [preocupacionReciente, setPreocupacionReciente] = useState('');
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [emailCopied, setEmailCopied] = useState(false);
-  const [emergencyOpen, setEmergencyOpen] = useState(false);
+  const [emergencyOpen, setEmergencyOpen] = useState(isCrisis);
 
   const handleCopyEmail = async () => {
     const ok = await copyToClipboard(CONTACT_EMAIL);
@@ -121,6 +129,19 @@ export default function EvaluationForm({
       setModoOperacion(preferredMode);
     }
   }, [preferredMode]);
+
+  useEffect(() => {
+    if (!prefillConcern) return;
+    if (submittedRecord) {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch {
+        // Ignore
+      }
+      setSubmittedRecord(null);
+    }
+    setPreocupacionReciente(prefillConcern.text);
+  }, [prefillConcern?.seq]);
 
   const handleModeChange = (mode: OperationMode) => {
     setModoOperacion(mode);
@@ -383,10 +404,14 @@ export default function EvaluationForm({
             {/* Left Context Column */}
             <div className="lg:col-span-6 lg:pr-6">
               <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-950 text-balance">
-                {isRaptor ? t.form.raptorHeadline : t.form.headline}
+                {isRaptor
+                  ? t.form.raptorHeadline
+                  : isCrisis
+                    ? t.form.crisisHeadline
+                    : t.form.headline}
               </h2>
               <p className="mt-4 text-base text-zinc-600 leading-relaxed max-w-[52ch]">
-                {isRaptor ? t.form.raptorBody : t.form.body}
+                {isRaptor ? t.form.raptorBody : isCrisis ? t.form.crisisBody : t.form.body}
               </p>
 
               {/* Unlocked Direct Contact (Post-Folio) & Discreet Emergency Protocol Card */}
@@ -831,7 +856,11 @@ export default function EvaluationForm({
                         <>
                           <Lock className="w-4 h-4" />
                           <span>
-                            {isRaptor ? t.form.fields.raptorSubmitIdle : t.form.fields.submitIdle}
+                            {isRaptor
+                              ? t.form.fields.raptorSubmitIdle
+                              : isCrisis
+                                ? t.form.fields.crisisSubmitIdle
+                                : t.form.fields.submitIdle}
                           </span>
                         </>
                       )}
