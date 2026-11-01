@@ -21,14 +21,22 @@ export default function ParallaxLayer({
 }
 
 /**
- * Static zero-cost ambient monochrome light-field backdrop.
+ * Fixed zero-cost ambient Electric Yellow (#E6FF00) light-field + tactile noise grain.
+ * Because this layer stays fixed in the viewport while frosted glass panels scroll over it,
+ * the Electric Yellow spheres naturally refract through backdrop-filter blur during scroll.
  */
 export function AmbientParallaxBackdrop() {
   return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none ambient-light-field"
-    />
+    <>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none ambient-light-field"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none noise-grain"
+      />
+    </>
   );
 }
 

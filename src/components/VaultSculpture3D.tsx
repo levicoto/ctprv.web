@@ -216,11 +216,16 @@ function createDialTexture(maxAnisotropy: number): THREE.CanvasTexture {
     const cy = size / 2;
     for (let i = 0; i < 48; i++) {
       const a = (i / 48) * Math.PI * 2;
+      const cardinal = i % 12 === 0;
       const major = i % 4 === 0;
-      const r1 = major ? size * 0.38 : size * 0.41;
+      const r1 = cardinal ? size * 0.36 : major ? size * 0.38 : size * 0.41;
       const r2 = size * 0.46;
-      ctx.strokeStyle = major ? 'rgba(9, 9, 11, 0.68)' : 'rgba(82, 82, 91, 0.36)';
-      ctx.lineWidth = major ? 2.5 : 1.4;
+      ctx.strokeStyle = cardinal
+        ? 'rgba(230, 255, 0, 0.92)'
+        : major
+          ? 'rgba(255, 255, 255, 0.72)'
+          : 'rgba(255, 255, 255, 0.28)';
+      ctx.lineWidth = cardinal ? 2.8 : major ? 2.2 : 1.3;
       ctx.beginPath();
       ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
       ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2);
@@ -241,9 +246,9 @@ function createContactShadowTexture(): THREE.CanvasTexture {
   const ctx = canvas.getContext('2d');
   if (ctx) {
     const grad = ctx.createRadialGradient(size / 2, size / 2, 10, size / 2, size / 2, size / 2);
-    grad.addColorStop(0, 'rgba(9, 9, 11, 0.32)');
-    grad.addColorStop(0.48, 'rgba(9, 9, 11, 0.12)');
-    grad.addColorStop(1, 'rgba(9, 9, 11, 0)');
+    grad.addColorStop(0, 'rgba(0, 0, 0, 0.76)');
+    grad.addColorStop(0.48, 'rgba(0, 0, 0, 0.28)');
+    grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, size, size);
   }
@@ -289,9 +294,9 @@ export default function VaultSculpture3D() {
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const bgHex = 0xf4f4f5;
+    const bgHex = 0x060608;
     scene.background = new THREE.Color(bgHex);
-    scene.fog = new THREE.FogExp2(bgHex, 0.038);
+    scene.fog = new THREE.FogExp2(bgHex, 0.044);
 
     const baseCameraZ = 7.75;
     const initialAspect = initialW / Math.max(initialH, 1);
@@ -305,19 +310,19 @@ export default function VaultSculpture3D() {
     scene.environment = envRT.texture;
     pmremGenerator.dispose();
 
-    // Studio Rig with Subtle Grazing Highlights for Thin-Film Dichroic Interference
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x71717a, 0.95);
+    // Studio Rig: Pure White Key + Grazing Rim + Electric Yellow (#E6FF00) Backlight Caustic
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.92);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfffcf7, 2.35);
+    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
     keyLight.position.set(4.2, 6.0, 5.4);
     scene.add(keyLight);
 
-    const coolGrazingLight = new THREE.DirectionalLight(0xe0f2fe, 1.85);
+    const coolGrazingLight = new THREE.DirectionalLight(0xffffff, 1.85);
     coolGrazingLight.position.set(-5.0, 2.8, -3.6);
     scene.add(coolGrazingLight);
 
-    const pearlGrazingLight = new THREE.DirectionalLight(0xf5f3ff, 1.45);
+    const pearlGrazingLight = new THREE.DirectionalLight(0xe6ff00, 1.45);
     pearlGrazingLight.position.set(4.6, -2.4, -3.8);
     scene.add(pearlGrazingLight);
 
@@ -904,9 +909,9 @@ export default function VaultSculpture3D() {
 
   if (webglFallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-200 bg-zinc-100 flex items-center justify-center">
-        <div className="w-20 h-20 rounded-2xl border border-zinc-300 bg-white flex items-center justify-center shadow-sm">
-          <Lock className="w-9 h-9 text-zinc-900" />
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] flex items-center justify-center">
+        <div className="w-20 h-20 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center">
+          <Lock className="w-9 h-9 text-[#E6FF00]" />
         </div>
       </div>
     );
@@ -915,7 +920,7 @@ export default function VaultSculpture3D() {
   return (
     <div
       aria-label={t.hero.padlockAria}
-      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-200/90 bg-[#F4F4F5] overflow-hidden select-none touch-pan-y"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
     >
       <div ref={canvasMountRef} className="w-full h-full touch-pan-y" />
     </div>

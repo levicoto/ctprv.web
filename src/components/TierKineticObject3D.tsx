@@ -185,7 +185,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const darkBg = 0x0c0c0e;
+    const darkBg = 0x060608;
     scene.background = new THREE.Color(darkBg);
     scene.fog = new THREE.FogExp2(darkBg, 0.052);
 
@@ -200,18 +200,18 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     scene.environment = envRT.texture;
     pmrem.dispose();
 
-    const hemi = new THREE.HemisphereLight(0xf8fafc, 0x18181b, 0.9);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.9);
     scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xfffcf5, 2.55);
+    const key = new THREE.DirectionalLight(0xffffff, 2.55);
     key.position.set(3.8, 4.8, 4.6);
     scene.add(key);
 
-    const coolRim = new THREE.DirectionalLight(0xdbeafe, 2.05);
+    const coolRim = new THREE.DirectionalLight(0xffffff, 1.95);
     coolRim.position.set(-4.4, 2.4, -3.6);
     scene.add(coolRim);
 
-    const pearlRim = new THREE.DirectionalLight(0xf3e8ff, 1.55);
+    const pearlRim = new THREE.DirectionalLight(0xe6ff00, 1.45);
     pearlRim.position.set(4.0, -2.2, -3.4);
     scene.add(pearlRim);
 
@@ -221,7 +221,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
     // 1. Primary Dichroic Iridescent Crystal Shield Body
     const dichroicShieldBodyMat = new THREE.MeshPhysicalMaterial({
-      color: 0xf8fafc,
+      color: 0xffffff,
       metalness: 0.05,
       roughness: 0.05,
       transmission: isSoftwareGl ? 0 : 0.92,
@@ -230,7 +230,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       ior: 1.72,
       thickness: 1.65,
       dispersion: isSoftwareGl ? 0 : 0.88,
-      attenuationColor: new THREE.Color(0xdbeafe),
+      attenuationColor: new THREE.Color(0xe4e4e7),
       attenuationDistance: 2.35,
       iridescence: 1.0,
       iridescenceIOR: 1.48,
@@ -727,8 +727,8 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
   if (fallback) {
     return (
-      <div className="w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 flex items-center justify-center p-6 text-zinc-300">
-        <Shield className="w-8 h-8 text-zinc-300" />
+      <div className="w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#060608] border border-white/12 flex items-center justify-center p-6 text-white">
+        <Shield className="w-8 h-8 text-[#E6FF00]" />
       </div>
     );
   }
@@ -736,7 +736,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
   return (
     <div
       aria-label={t.services.shieldAria}
-      className="relative w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 overflow-hidden select-none touch-pan-y"
+      className="relative w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#060608] border border-white/12 overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

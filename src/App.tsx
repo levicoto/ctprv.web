@@ -39,6 +39,21 @@ function readViewFromHash(): ActiveView {
   return 'main';
 }
 
+function renderPowerHeadline(text: string, tailWords = 3) {
+  const words = text.trim().split(/\s+/);
+  if (words.length <= tailWords) {
+    return <span className="text-[#E6FF00]">{text}</span>;
+  }
+  const lead = words.slice(0, -tailWords).join(' ');
+  const tail = words.slice(-tailWords).join(' ');
+  return (
+    <>
+      <span>{lead} </span>
+      <span className="text-[#E6FF00]">{tail}</span>
+    </>
+  );
+}
+
 export default function App() {
   const { lang, setLang, t } = useI18n();
   const [activeView, setActiveView] = useState<ActiveView>(() => readViewFromHash());
@@ -206,7 +221,7 @@ export default function App() {
   const currentLangItem = LANGUAGES.find((item) => item.code === lang) ?? LANGUAGES[0];
 
   return (
-    <div className="relative min-h-screen architectural-canvas text-zinc-950 flex flex-col overflow-x-clip">
+    <div className="relative min-h-screen architectural-canvas text-white flex flex-col overflow-x-clip">
       <AmbientParallaxBackdrop />
 
       {/* Symmetric Architectural Top Bar */}
@@ -217,7 +232,7 @@ export default function App() {
             <a
               href="#inicio"
               onClick={(e) => handleAnchorClick(e, 'inicio')}
-              className="inline-flex items-center gap-2.5 text-lg font-semibold tracking-tight text-zinc-950 whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
+              className="inline-flex items-center gap-2.5 text-lg font-semibold tracking-tight text-white whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E6FF00]"
             >
               <CotoLogoMark className="w-6 h-6 shrink-0" />
               <span>Coto Privado</span>
@@ -227,26 +242,26 @@ export default function App() {
           {/* Zone 2: Mathematically Centered Primary Navigation */}
           <nav
             aria-label={t.nav.ariaMain}
-            className="hidden md:flex items-center justify-self-center gap-6 lg:gap-7 text-sm font-medium text-zinc-600"
+            className="hidden md:flex items-center justify-self-center gap-6 lg:gap-7 text-sm font-medium text-white/65"
           >
             <a
               href="#servicios"
               onClick={(e) => handleAnchorClick(e, 'servicios')}
-              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               {t.nav.services}
             </a>
             <a
               href="#exposicion-publica"
               onClick={(e) => handleAnchorClick(e, 'exposicion-publica')}
-              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               {t.nav.pep}
             </a>
             <a
               href="#respaldo"
               onClick={(e) => handleAnchorClick(e, 'respaldo')}
-              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               {t.nav.backing}
             </a>
@@ -256,14 +271,14 @@ export default function App() {
                 e.preventDefault();
                 handleOpenCrisisPage();
               }}
-              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               {t.nav.crisis}
             </a>
             <a
               href="#evaluacion"
               onClick={(e) => handleAnchorClick(e, 'evaluacion')}
-              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               {t.nav.evaluation}
             </a>
@@ -278,12 +293,12 @@ export default function App() {
                 aria-expanded={langMenuOpen}
                 aria-label={t.nav.langSelectorAria}
                 onClick={() => setLangMenuOpen((prev) => !prev)}
-                className="h-9 px-2.5 rounded-lg border border-zinc-200/90 bg-white/80 hover:bg-zinc-100 hover:border-zinc-300 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                className="h-9 px-2.5 rounded-lg border border-white/12 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/25 text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
               >
-                <Globe className="w-4 h-4 text-zinc-700 shrink-0" />
+                <Globe className="w-4 h-4 text-white/80 shrink-0" />
                 <span>{currentLangItem.short}</span>
                 <ChevronDown
-                  className={`w-3.5 h-3.5 text-zinc-500 shrink-0 transition-transform duration-150 ${
+                  className={`w-3.5 h-3.5 text-white/55 shrink-0 transition-transform duration-150 ${
                     langMenuOpen ? 'rotate-180' : ''
                   }`}
                 />
@@ -293,7 +308,7 @@ export default function App() {
                 <div
                   role="listbox"
                   aria-label={t.nav.langSelectorAria}
-                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[164px] p-1.5 rounded-xl bg-white/95 backdrop-blur-xl border border-zinc-200/90 shadow-lg shadow-zinc-950/10"
+                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[164px] p-1.5 rounded-xl glass-modal"
                 >
                   {LANGUAGES.map((item) => {
                     const active = lang === item.code;
@@ -309,15 +324,15 @@ export default function App() {
                         }}
                         className={`w-full px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between gap-3 transition-colors cursor-pointer whitespace-nowrap ${
                           active
-                            ? 'bg-zinc-950 text-white'
-                            : 'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950'
+                            ? 'bg-[#E6FF00] text-[#060608] font-semibold'
+                            : 'text-white/75 hover:bg-white/[0.06] hover:text-white'
                         }`}
                       >
                         <span>{item.name}</span>
                         {active ? (
                           <Check className="w-3.5 h-3.5 shrink-0" />
                         ) : (
-                          <span className="text-[11px] text-zinc-400">{item.short}</span>
+                          <span className="text-[11px] text-white/40">{item.short}</span>
                         )}
                       </button>
                     );
@@ -329,7 +344,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => smoothScrollToSection('evaluacion')}
-              className="h-9 px-4 rounded-lg bg-zinc-950 text-white text-xs sm:text-sm font-medium hover:bg-zinc-800 transition-colors inline-flex items-center justify-center whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+              className="h-9 px-4 rounded-lg btn-electric text-xs sm:text-sm font-semibold transition-all inline-flex items-center justify-center whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
             >
               {t.nav.cta}
             </button>
@@ -344,19 +359,19 @@ export default function App() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Proposition Column */}
               <div className="lg:col-span-6 flex flex-col justify-center lg:pr-4">
-                <div className="flex items-center gap-2.5 text-xs font-medium text-zinc-500">
-                  <span>{t.hero.kicker[0]}</span>
+                <div className="flex items-center gap-2.5 text-xs font-medium text-white/55">
+                  <span className="text-[#E6FF00]">{t.hero.kicker[0]}</span>
                   <span aria-hidden="true">·</span>
                   <span>{t.hero.kicker[1]}</span>
                   <span aria-hidden="true">·</span>
                   <span>{t.hero.kicker[2]}</span>
                 </div>
 
-                <h1 className="mt-4 text-[clamp(2.15rem,3.4vw,3.35rem)] font-semibold leading-[1.08] tracking-tight text-zinc-950 text-balance">
-                  {t.hero.headline}
+                <h1 className="mt-4 text-[clamp(2.15rem,3.4vw,3.35rem)] font-semibold leading-[1.08] tracking-tight text-white text-balance">
+                  {renderPowerHeadline(t.hero.headline, 3)}
                 </h1>
 
-                <p className="mt-4 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-[52ch]">
+                <p className="mt-4 text-base sm:text-lg text-white/70 leading-relaxed tracking-[0.01em] max-w-[52ch]">
                   {t.hero.body}
                 </p>
 
@@ -364,7 +379,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => smoothScrollToSection('evaluacion')}
-                    className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 active:scale-[0.99] transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl btn-electric text-sm font-semibold active:scale-[0.99] transition-all whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
                   >
                     <span>{t.hero.primaryCta}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -373,39 +388,45 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setEmergencyModalOpen(true)}
-                    className="inline-flex items-center gap-2 py-2 text-sm font-medium text-zinc-600 hover:text-zinc-950 transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-950"
+                    className="inline-flex items-center gap-2 py-2 text-sm font-medium text-white/75 hover:text-[#E6FF00] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E6FF00]"
                   >
-                    <ShieldAlert className="w-4 h-4 text-zinc-500 shrink-0" />
-                    <span className="underline decoration-zinc-300 hover:decoration-zinc-950 underline-offset-4 transition-colors">
+                    <ShieldAlert className="w-4 h-4 text-[#E6FF00] shrink-0" />
+                    <span className="underline decoration-white/25 hover:decoration-[#E6FF00] underline-offset-4 transition-colors">
                       {t.hero.emergencyTrigger}
                     </span>
                   </button>
                 </div>
               </div>
 
-              {/* Right Interactive 3D Iridescent Padlock Sculpture */}
+              {/* Right Interactive 3D Iridescent Padlock Sculpture with Diffused Backlight */}
               <ParallaxLayer
                 speed={0.022}
                 maxOffset={8}
                 desktopOnly
-                className="lg:col-span-6 flex items-center w-full"
+                className="relative lg:col-span-6 flex items-center w-full"
               >
-                <VaultSculpture3D />
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -inset-4 rounded-full electric-backlight-soft opacity-80"
+                />
+                <div className="relative z-10 w-full">
+                  <VaultSculpture3D />
+                </div>
               </ParallaxLayer>
             </div>
           </div>
         </section>
 
         {/* Services Section: Unified 6 / 6 Grid */}
-        <section id="servicios" className="py-12 sm:py-16 border-t border-zinc-200/80">
+        <section id="servicios" className="py-12 sm:py-16 border-t border-white/10">
           <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
             {/* Top Row: Left Headline (6 cols) + Right Compact 3D Shield (6 cols) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
               <div className="lg:col-span-6 lg:pr-4">
-                <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950 text-balance">
+                <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white text-balance">
                   {t.services.headline}
                 </h2>
-                <p className="mt-2 text-sm sm:text-base text-zinc-600 leading-relaxed max-w-[48ch]">
+                <p className="mt-2 text-sm sm:text-base text-white/65 leading-relaxed tracking-[0.01em] max-w-[48ch]">
                   {t.services.subtitle}
                 </p>
               </div>
@@ -415,9 +436,23 @@ export default function App() {
               </ParallaxLayer>
             </div>
 
-            {/* Dual Monochrome Service Cards: Crisp Rhythm Without Artificial Empty Gaps */}
-            <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly className="mt-7 lg:mt-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch">
+            {/* Dual Cut-Glass Service Cards Fed by Electric Yellow Backlight Spheres */}
+            <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly className="relative mt-7 lg:mt-8">
+              {/* Electric Yellow Backlight Halos Refracting Through Frosted Glass */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -top-10 left-[8%] w-72 h-72 rounded-full electric-backlight-soft"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/4 right-[6%] w-80 h-80 rounded-full electric-backlight"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-8 left-1/3 w-96 h-48 rounded-full electric-backlight-soft"
+              />
+
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch">
                 {/* Tier 1: Argos */}
                 <div className="lg:col-span-6 flex">
                   <article
@@ -427,30 +462,32 @@ export default function App() {
                   >
                     <div>
                       <div>
-                        <div className="text-xs font-medium text-zinc-500 flex items-center gap-2">
-                          <span className="tabular-nums text-zinc-700">
+                        <div className="text-xs font-medium text-white/55 flex items-center gap-2">
+                          <span className="tabular-nums text-white">
                             {t.services.argos.tierTag}
                           </span>
                           <span aria-hidden="true">·</span>
                           <span>{t.services.argos.subtitleTag}</span>
                         </div>
 
-                        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-950">
+                        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">
                           {t.services.argos.name}
                         </h3>
 
-                        <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
+                        <p className="mt-2 text-sm text-white/65 leading-relaxed tracking-[0.01em]">
                           {t.services.argos.audience}
                         </p>
                       </div>
 
-                      <div className="my-5 border-t border-zinc-200/80" />
+                      <div className="my-5 border-t border-white/10" />
 
                       <dl className="space-y-4">
                         {t.services.argos.items.map((item) => (
                           <div key={item.title}>
-                            <dt className="text-sm font-semibold text-zinc-950">{item.title}</dt>
-                            <dd className="mt-1 text-sm text-zinc-600 leading-relaxed">
+                            <dt className="text-sm font-semibold text-white tracking-[0.01em]">
+                              {item.title}
+                            </dt>
+                            <dd className="mt-1 text-sm text-white/65 leading-relaxed tracking-[0.01em]">
                               {item.desc}
                             </dd>
                           </div>
@@ -458,11 +495,11 @@ export default function App() {
                       </dl>
                     </div>
 
-                    <div className="mt-6 pt-5 border-t border-zinc-200/80">
+                    <div className="mt-6 pt-5 border-t border-white/10">
                       <button
                         type="button"
                         onClick={() => handleSelectTierForAudit('argos')}
-                        className="w-full py-2.5 px-5 rounded-xl border border-zinc-900 bg-white/80 text-zinc-950 text-sm font-medium hover:bg-zinc-950 hover:text-white transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
+                        className="w-full py-2.5 px-5 rounded-xl border border-white/18 bg-white/[0.04] text-white text-sm font-medium hover:border-[#E6FF00] hover:text-[#E6FF00] hover:bg-white/[0.06] transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
                       >
                         <span>{t.services.argos.cta}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -476,12 +513,12 @@ export default function App() {
                   <article
                     onMouseEnter={() => setActiveTier('atlas')}
                     onTouchStart={() => setActiveTier('atlas')}
-                    className="w-full h-full glass-panel-dark text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+                    className="w-full h-full glass-panel-electric text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
                   >
                     <div>
                       <div>
-                        <div className="text-xs font-medium text-zinc-400 flex items-center gap-2">
-                          <span className="tabular-nums text-zinc-200">
+                        <div className="text-xs font-medium text-white/60 flex items-center gap-2">
+                          <span className="tabular-nums text-[#E6FF00] font-semibold">
                             {t.services.atlas.tierTag}
                           </span>
                           <span aria-hidden="true">·</span>
@@ -492,7 +529,7 @@ export default function App() {
                           {t.services.atlas.name}
                         </h3>
 
-                        <p className="mt-2 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
+                        <p className="mt-2 text-sm text-white/70 leading-relaxed tracking-[0.01em]">
                           {t.services.atlas.audience}
                         </p>
                       </div>
@@ -505,7 +542,7 @@ export default function App() {
                             <dt className="text-sm font-semibold text-white tracking-[0.01em]">
                               {item.title}
                             </dt>
-                            <dd className="mt-1 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
+                            <dd className="mt-1 text-sm text-white/70 leading-relaxed tracking-[0.01em]">
                               {item.desc}
                             </dd>
                           </div>
@@ -517,7 +554,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => handleSelectTierForAudit('atlas')}
-                        className="w-full py-2.5 px-5 rounded-xl bg-white text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
+                        className="w-full py-2.5 px-5 rounded-xl btn-electric text-sm font-semibold transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
                       >
                         <span>{t.services.atlas.cta}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -527,17 +564,17 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Unified Architectural Index Strip: Palantir Raptor (OSINT) + Crisis Playbook */}
-              <div className="mt-5 rounded-2xl border border-zinc-200/90 overflow-hidden bg-zinc-200/80 grid grid-cols-1 lg:grid-cols-2 gap-px shadow-sm shadow-zinc-950/[0.03]">
+              {/* Unified Cut-Glass Index Strip: Palantir Raptor (OSINT) + Crisis Playbook */}
+              <div className="relative z-10 mt-5 glass-panel rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
                 {/* Palantir Raptor Index Cell */}
-                <div className="bg-white/95 p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
                   <div className="min-w-0">
-                    <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
-                      <span className="text-zinc-800">{t.services.raptorCallout.kicker[0]}</span>
+                    <div className="text-xs font-medium text-white/55 flex flex-wrap items-center gap-2">
+                      <span className="text-[#E6FF00]">{t.services.raptorCallout.kicker[0]}</span>
                       <span aria-hidden="true">·</span>
                       <span>{t.services.raptorCallout.kicker[1]}</span>
                     </div>
-                    <p className="mt-1.5 text-sm text-zinc-700 leading-relaxed">
+                    <p className="mt-1.5 text-sm text-white/75 leading-relaxed tracking-[0.01em]">
                       {t.services.raptorCallout.hook}
                     </p>
                   </div>
@@ -545,7 +582,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleOpenRaptorPage}
-                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-zinc-300 bg-white text-zinc-950 text-xs font-medium hover:border-zinc-950 hover:bg-zinc-950 hover:text-white transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-white/15 bg-white/[0.04] text-white text-xs font-medium hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
                   >
                     <span>{t.services.raptorCallout.cta}</span>
                     <ArrowRight className="w-3.5 h-3.5 shrink-0" />
@@ -553,14 +590,14 @@ export default function App() {
                 </div>
 
                 {/* Crisis Playbook Index Cell */}
-                <div className="bg-white/95 p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
                   <div className="min-w-0">
-                    <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
-                      <span className="text-zinc-800">{t.services.crisisCallout.kicker[0]}</span>
+                    <div className="text-xs font-medium text-white/55 flex flex-wrap items-center gap-2">
+                      <span className="text-[#E6FF00]">{t.services.crisisCallout.kicker[0]}</span>
                       <span aria-hidden="true">·</span>
                       <span>{t.services.crisisCallout.kicker[1]}</span>
                     </div>
-                    <p className="mt-1.5 text-sm text-zinc-700 leading-relaxed">
+                    <p className="mt-1.5 text-sm text-white/75 leading-relaxed tracking-[0.01em]">
                       {t.services.crisisCallout.hook}
                     </p>
                   </div>
@@ -568,7 +605,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleOpenCrisisPage}
-                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-zinc-300 bg-white text-zinc-950 text-xs font-medium hover:border-zinc-950 hover:bg-zinc-950 hover:text-white transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-white/15 bg-white/[0.04] text-white text-xs font-medium hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
                   >
                     <span>{t.services.crisisCallout.cta}</span>
                     <ArrowRight className="w-3.5 h-3.5 shrink-0" />
@@ -598,21 +635,21 @@ export default function App() {
         />
       </main>
 
-      {/* Minimalist Footer */}
-      <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
+      {/* Minimalist Frosted Footer */}
+      <footer className="relative z-10 border-t border-white/10 bg-black/45 backdrop-blur-md">
         <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-6 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5 text-xs text-zinc-500">
+          <div className="flex items-center gap-2.5 text-xs text-white/50">
             <CotoLogoMark className="w-5 h-5 shrink-0" />
-            <span className="text-sm font-semibold tracking-tight text-zinc-950">Coto Privado</span>
+            <span className="text-sm font-semibold tracking-tight text-white">Coto Privado</span>
             <span aria-hidden="true">·</span>
             <span className="tabular-nums">© {new Date().getFullYear()}</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-zinc-500">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-white/55">
             <button
               type="button"
               onClick={handleOpenCrisisPage}
-              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-[#E6FF00] transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.crisisLink}
             </button>
@@ -620,7 +657,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setEmergencyModalOpen(true)}
-              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-[#E6FF00] transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.contactTrigger}
             </button>
@@ -628,7 +665,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setPrivacyModalOpen(true)}
-              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-white transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.privacyLink}
             </button>
@@ -636,7 +673,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setAdminModalOpen(true)}
-              className="hover:text-zinc-950 transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-white transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.privateAccess}
             </button>

@@ -83,10 +83,10 @@ function createFresnelLensTexture(maxAnisotropy: number): THREE.CanvasTexture {
 
     const coreGrad = ctx.createRadialGradient(cx, cy, size * 0.02, cx, cy, size * 0.5);
     coreGrad.addColorStop(0, '#ffffff');
-    coreGrad.addColorStop(0.18, '#e0f2fe');
-    coreGrad.addColorStop(0.42, '#93c5fd');
-    coreGrad.addColorStop(0.72, '#1e293b');
-    coreGrad.addColorStop(1, '#09090b');
+    coreGrad.addColorStop(0.18, '#f6ff8a');
+    coreGrad.addColorStop(0.42, '#e6ff00');
+    coreGrad.addColorStop(0.72, '#1f2205');
+    coreGrad.addColorStop(1, '#060608');
     ctx.fillStyle = coreGrad;
     ctx.fillRect(0, 0, size, size);
 
@@ -94,7 +94,7 @@ function createFresnelLensTexture(maxAnisotropy: number): THREE.CanvasTexture {
     const rings = [0.14, 0.22, 0.30, 0.38, 0.45];
     rings.forEach((r, idx) => {
       ctx.strokeStyle =
-        idx < 2 ? 'rgba(255, 255, 255, 0.85)' : 'rgba(224, 242, 254, 0.48)';
+        idx < 2 ? 'rgba(255, 255, 255, 0.9)' : 'rgba(230, 255, 0, 0.52)';
       ctx.lineWidth = idx === 0 ? 3.0 : 2.0;
       ctx.beginPath();
       ctx.arc(cx, cy, size * r, 0, Math.PI * 2);
@@ -107,7 +107,7 @@ function createFresnelLensTexture(maxAnisotropy: number): THREE.CanvasTexture {
       const major = i % 9 === 0;
       const r0 = size * (major ? 0.16 : 0.34);
       const r1 = size * 0.47;
-      ctx.strokeStyle = major ? 'rgba(255, 255, 255, 0.65)' : 'rgba(186, 230, 253, 0.28)';
+      ctx.strokeStyle = major ? 'rgba(255, 255, 255, 0.72)' : 'rgba(230, 255, 0, 0.32)';
       ctx.lineWidth = major ? 2.0 : 1.1;
       ctx.beginPath();
       ctx.moveTo(cx + Math.cos(angle) * r0, cy + Math.sin(angle) * r0);
@@ -136,10 +136,10 @@ function createVolumetricBeamTexture(): THREE.CanvasTexture {
     // Canvas y=0 corresponds to UV.y=1 (apex), y=h corresponds to UV.y=0 (outer open end)
     const grad = ctx.createLinearGradient(0, 0, 0, h);
     grad.addColorStop(0.0, 'rgba(255, 255, 255, 0.92)');
-    grad.addColorStop(0.18, 'rgba(224, 242, 254, 0.56)');
-    grad.addColorStop(0.52, 'rgba(186, 230, 253, 0.20)');
-    grad.addColorStop(0.85, 'rgba(147, 197, 253, 0.05)');
-    grad.addColorStop(1.0, 'rgba(147, 197, 253, 0.0)');
+    grad.addColorStop(0.2, 'rgba(230, 255, 0, 0.54)');
+    grad.addColorStop(0.55, 'rgba(230, 255, 0, 0.18)');
+    grad.addColorStop(0.85, 'rgba(230, 255, 0, 0.04)');
+    grad.addColorStop(1.0, 'rgba(230, 255, 0, 0.0)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
   }
@@ -242,7 +242,7 @@ export default function RaptorEye3D() {
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const darkBg = 0x0c0c0e;
+    const darkBg = 0x060608;
     scene.background = new THREE.Color(darkBg);
     scene.fog = new THREE.FogExp2(darkBg, 0.045);
 
@@ -258,23 +258,23 @@ export default function RaptorEye3D() {
     scene.environment = envRT.texture;
     pmrem.dispose();
 
-    const hemi = new THREE.HemisphereLight(0xf8fafc, 0x18181b, 0.92);
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.92);
     scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xfffcf5, 2.55);
+    const key = new THREE.DirectionalLight(0xffffff, 2.55);
     key.position.set(4.1, 5.2, 5.1);
     scene.add(key);
 
-    const coolRim = new THREE.DirectionalLight(0xdbeafe, 2.2);
+    const coolRim = new THREE.DirectionalLight(0xffffff, 2.1);
     coolRim.position.set(-4.6, 2.6, -3.6);
     scene.add(coolRim);
 
-    const pearlRim = new THREE.DirectionalLight(0xf3e8ff, 1.65);
+    const pearlRim = new THREE.DirectionalLight(0xe6ff00, 1.55);
     pearlRim.position.set(4.2, -2.2, -3.5);
     scene.add(pearlRim);
 
-    // Internal point light representing the seeing-stone's active optical beacon
-    const beaconPointLight = new THREE.PointLight(0xe0f2fe, 2.4, 5.5, 1.6);
+    // Internal point light representing the seeing-stone's active Electric Yellow optical beacon
+    const beaconPointLight = new THREE.PointLight(0xe6ff00, 2.3, 5.5, 1.6);
     beaconPointLight.position.set(0, 0.16, 0.15);
     scene.add(beaconPointLight);
 
@@ -329,7 +329,7 @@ export default function RaptorEye3D() {
       ior: 1.78,
       thickness: 2.15,
       dispersion: isSoftwareGl ? 0 : 0.94,
-      attenuationColor: new THREE.Color(0xdbeafe),
+      attenuationColor: new THREE.Color(0xe4e4e7),
       attenuationDistance: 2.6,
       iridescence: 1.0,
       iridescenceIOR: 1.52,
@@ -345,7 +345,7 @@ export default function RaptorEye3D() {
 
     // 5. Vapor-Deposited Iridescent Astrolabe Ring Material
     const iridescentAstrolabeMat = new THREE.MeshPhysicalMaterial({
-      color: 0xe2e8f0,
+      color: 0xf4f4f5,
       metalness: 0.78,
       roughness: 0.14,
       iridescence: 1.0,
@@ -360,9 +360,9 @@ export default function RaptorEye3D() {
     const fresnelLensMat = new THREE.MeshPhysicalMaterial({
       map: fresnelTex,
       color: 0xffffff,
-      emissive: new THREE.Color(0xe0f2fe),
+      emissive: new THREE.Color(0xe6ff00),
       emissiveMap: fresnelTex,
-      emissiveIntensity: 1.55,
+      emissiveIntensity: 1.45,
       metalness: 0.25,
       roughness: 0.12,
       clearcoat: 1.0,
@@ -371,8 +371,8 @@ export default function RaptorEye3D() {
 
     const coreCrystalMat = new THREE.MeshStandardMaterial({
       color: 0xffffff,
-      emissive: new THREE.Color(0xbae6fd),
-      emissiveIntensity: 2.35,
+      emissive: new THREE.Color(0xe6ff00),
+      emissiveIntensity: 2.25,
       metalness: 0.1,
       roughness: 0.15,
     });
@@ -380,9 +380,9 @@ export default function RaptorEye3D() {
     // 7. Volumetric Lighthouse Observation Cone Material
     const volumetricBeamMat = new THREE.MeshBasicMaterial({
       map: beamTex,
-      color: 0xe0f2fe,
+      color: 0xe6ff00,
       transparent: true,
-      opacity: 0.44,
+      opacity: 0.4,
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       depthWrite: false,
@@ -390,9 +390,9 @@ export default function RaptorEye3D() {
 
     const secondaryBeamMat = new THREE.MeshBasicMaterial({
       map: beamTex,
-      color: 0xc7d2fe,
+      color: 0xffffff,
       transparent: true,
-      opacity: 0.18,
+      opacity: 0.16,
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       depthWrite: false,
@@ -930,9 +930,9 @@ export default function RaptorEye3D() {
 
   if (fallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
-        <div className="w-20 h-20 rounded-2xl border border-zinc-800 bg-zinc-900 flex items-center justify-center shadow-sm">
-          <Compass className="w-9 h-9 text-white" />
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] flex items-center justify-center">
+        <div className="w-20 h-20 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center">
+          <Compass className="w-9 h-9 text-[#E6FF00]" />
         </div>
       </div>
     );
@@ -941,7 +941,7 @@ export default function RaptorEye3D() {
   return (
     <div
       aria-label={t.raptor.hero.eyeAria}
-      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-900/90 bg-[#0C0C0E] overflow-hidden select-none touch-pan-y shadow-xl shadow-zinc-950/15"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

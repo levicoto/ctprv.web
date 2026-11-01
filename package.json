@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build",
+    "build": "vite build && npm run sync:docs",
+    "sync:docs": "cp dist/assets/app.css docs/assets/app.css && esbuild src/main.tsx --bundle --format=esm --minify --jsx=automatic --loader:.css=empty --external:react --external:react/jsx-runtime --external:react-dom/client --external:lucide-react --external:three --external:three/addons/environments/RoomEnvironment.js --external:firebase/app --external:firebase/auth --external:firebase/firestore --outfile=docs/assets/app.js",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"

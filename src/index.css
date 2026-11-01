@@ -4,6 +4,8 @@
   --font-display: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-electric: #e6ff00;
+  --color-obsidian: #060608;
 }
 
 @layer base {
@@ -16,8 +18,9 @@
   html,
   body {
     font-family: var(--font-sans);
-    color: #09090b;
-    background-color: #fafafa;
+    color: #ffffff;
+    background-color: #060608;
+    color-scheme: dark;
   }
 
   section[id] {
@@ -25,51 +28,120 @@
   }
 }
 
-/* Subtle monochrome architectural grid backdrop */
+/* Deep obsidian canvas (#060608) with subtle precision grid */
 .architectural-canvas {
-  background-color: #fafafa;
+  background-color: #060608;
   background-image:
-    linear-gradient(to right, rgba(9, 9, 11, 0.028) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(9, 9, 11, 0.028) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
   background-size: 64px 64px;
 }
 
+/* Fixed viewport Electric Yellow (#E6FF00) ambient light spheres that refract as glass scrolls */
 .ambient-light-field {
   background-image:
-    radial-gradient(circle at 18% 18%, rgba(9, 9, 11, 0.045) 0%, transparent 38%),
-    radial-gradient(circle at 82% 44%, rgba(9, 9, 11, 0.035) 0%, transparent 42%),
-    radial-gradient(circle at 26% 78%, rgba(9, 9, 11, 0.032) 0%, transparent 40%);
+    radial-gradient(circle at 16% 22%, rgba(230, 255, 0, 0.11) 0%, rgba(230, 255, 0, 0.03) 24%, transparent 48%),
+    radial-gradient(circle at 84% 46%, rgba(230, 255, 0, 0.095) 0%, rgba(230, 255, 0, 0.025) 26%, transparent 50%),
+    radial-gradient(circle at 28% 82%, rgba(230, 255, 0, 0.085) 0%, rgba(230, 255, 0, 0.02) 24%, transparent 46%);
 }
 
-/* Frosted glass reserved strictly for the single sticky navigation header */
+/* Tactile procedural noise grain so the black canvas never feels flat */
+.noise-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  opacity: 0.034;
+  mix-blend-mode: overlay;
+}
+
+/* Diffused Electric Yellow backlight sphere placed directly behind glass cards */
+.electric-backlight {
+  background: radial-gradient(
+    circle,
+    rgba(230, 255, 0, 0.22) 0%,
+    rgba(230, 255, 0, 0.075) 42%,
+    rgba(230, 255, 0, 0) 72%
+  );
+  filter: blur(36px);
+}
+
+.electric-backlight-soft {
+  background: radial-gradient(
+    circle,
+    rgba(230, 255, 0, 0.15) 0%,
+    rgba(230, 255, 0, 0.045) 45%,
+    rgba(230, 255, 0, 0) 74%
+  );
+  filter: blur(42px);
+}
+
+/* Sticky navigation frosted obsidian glass */
 .header-glass {
-  background: rgba(250, 250, 250, 0.84);
-  backdrop-filter: blur(12px) saturate(120%);
-  -webkit-backdrop-filter: blur(12px) saturate(120%);
-  border-bottom: 1px solid rgba(9, 9, 11, 0.08);
+  background: rgba(6, 6, 8, 0.72);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
 }
 
-/* Zero-blur architectural surfaces: identical luminous finish without GPU framebuffer readback */
+/* Cut-glass dark panel: ultra-sheer white alpha + 20px blur + 1px razor edge */
 .glass-panel {
   background: linear-gradient(
     145deg,
-    rgba(255, 255, 255, 0.95) 0%,
-    rgba(250, 250, 250, 0.88) 100%
+    rgba(255, 255, 255, 0.048) 0%,
+    rgba(255, 255, 255, 0.02) 100%
   );
-  border: 1px solid rgba(9, 9, 11, 0.08);
+  backdrop-filter: blur(20px) saturate(145%);
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   box-shadow:
-    0 12px 36px -16px rgba(9, 9, 11, 0.06),
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+    0 20px 48px -18px rgba(0, 0, 0, 0.76),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
 }
 
-.glass-panel-dark {
+/* Featured cut-glass monolith with subtle Electric Yellow edge refraction */
+.glass-panel-dark,
+.glass-panel-electric {
   background: linear-gradient(
     145deg,
-    #141417 0%,
-    #09090b 100%
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(230, 255, 0, 0.028) 52%,
+    rgba(255, 255, 255, 0.02) 100%
   );
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(230, 255, 0, 0.24);
+  box-shadow:
+    0 24px 56px -18px rgba(0, 0, 0, 0.82),
+    inset 0 1px 0 0 rgba(230, 255, 0, 0.22);
+}
+
+/* Deep frosted glass surface for modal dialogs */
+.glass-modal {
+  background: linear-gradient(
+    145deg,
+    rgba(15, 15, 19, 0.88) 0%,
+    rgba(8, 8, 11, 0.93) 100%
+  );
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow:
-    0 20px 44px -18px rgba(0, 0, 0, 0.32),
+    0 28px 72px -16px rgba(0, 0, 0, 0.9),
     inset 0 1px 0 0 rgba(255, 255, 255, 0.14);
+}
+
+/* Primary Electric Yellow (#E6FF00) power button */
+.btn-electric {
+  background-color: #e6ff00;
+  color: #060608;
+  box-shadow:
+    0 0 26px -7px rgba(230, 255, 0, 0.48),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.5);
+}
+
+.btn-electric:hover {
+  background-color: #f0ff4d;
+  box-shadow:
+    0 0 32px -5px rgba(230, 255, 0, 0.65),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.65);
 }

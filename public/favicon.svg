@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" shape-rendering="geometricPrecision">
-  <rect x="1" y="1" width="30" height="30" rx="7.5" fill="#09090B" />
+  <rect x="1" y="1" width="30" height="30" rx="7.5" fill="#060608" stroke="#FFFFFF" stroke-opacity="0.14" stroke-width="1" />
   <g transform="translate(4 4)">
     <path
       d="M 20 9 L 20 11.2 C 20 16.4 16.8708 19.5646 12.6708 21.6646 A 1.5 1.5 0 0 1 11.3292 21.6646 C 7.1292 19.5646 4 16.4 4 11.2 L 4 6.8652 A 1.4 1.4 0 0 1 4.7739 5.613 L 11.2845 2.3578 A 1.6 1.6 0 0 1 12.7155 2.3578 L 19.2261 5.613 A 1.4 1.4 0 0 1 20 6.8652 Z"
@@ -13,6 +13,6 @@
       stroke-width="2"
       stroke-linecap="round"
     />
-    <circle cx="12" cy="11.75" r="1.35" fill="#D4D4D8" />
+    <circle cx="12" cy="11.75" r="1.4" fill="#E6FF00" />
   </g>
 </svg>

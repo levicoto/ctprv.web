@@ -210,10 +210,10 @@ function createSoftShadowMap(): THREE.CanvasTexture {
 }
 
 // Pre-allocated color instances outside render loop (zero GC per frame)
-const ALERT_EMISSIVE = new THREE.Color(0xfde68a);
-const SEALED_EMISSIVE = new THREE.Color(0xbae6fd);
-const ALERT_LIGHT = new THREE.Color(0xfef3c7);
-const SEALED_LIGHT = new THREE.Color(0xe0f2fe);
+const ALERT_EMISSIVE = new THREE.Color(0xe6ff00);
+const SEALED_EMISSIVE = new THREE.Color(0xffffff);
+const ALERT_LIGHT = new THREE.Color(0xe6ff00);
+const SEALED_LIGHT = new THREE.Color(0xffffff);
 const _workEmissive = new THREE.Color();
 const _workLight = new THREE.Color();
 
@@ -264,7 +264,7 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const darkBg = 0x0c0c0e;
+    const darkBg = 0x060608;
     scene.background = new THREE.Color(darkBg);
     scene.fog = new THREE.FogExp2(darkBg, 0.044);
 
@@ -280,23 +280,23 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
     scene.environment = envRT.texture;
     pmrem.dispose();
 
-    // Warm/Cool 3-Point Studio Rig
-    const hemi = new THREE.HemisphereLight(0xf8fafc, 0x18181b, 0.94);
+    // Pure White + Electric Yellow (#E6FF00) 3-Point Studio Rig
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.94);
     scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xfffcf5, 2.5);
+    const key = new THREE.DirectionalLight(0xffffff, 2.5);
     key.position.set(4.2, 5.4, 5.0);
     scene.add(key);
 
-    const coolRim = new THREE.DirectionalLight(0xdbeafe, 2.15);
+    const coolRim = new THREE.DirectionalLight(0xffffff, 2.05);
     coolRim.position.set(-4.6, 2.7, -3.5);
     scene.add(coolRim);
 
-    const pearlRim = new THREE.DirectionalLight(0xf3e8ff, 1.55);
+    const pearlRim = new THREE.DirectionalLight(0xe6ff00, 1.48);
     pearlRim.position.set(4.1, -2.1, -3.6);
     scene.add(pearlRim);
 
-    const corePointLight = new THREE.PointLight(0xfef3c7, 2.35, 5.2, 1.6);
+    const corePointLight = new THREE.PointLight(0xe6ff00, 2.25, 5.2, 1.6);
     corePointLight.position.set(0, 0.18, 0.1);
     scene.add(corePointLight);
 
@@ -350,7 +350,7 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
       ior: 1.76,
       thickness: 1.95,
       dispersion: isSoftwareGl ? 0 : 0.92,
-      attenuationColor: new THREE.Color(0xdbeafe),
+      attenuationColor: new THREE.Color(0xe4e4e7),
       attenuationDistance: 2.5,
       iridescence: 1.0,
       iridescenceIOR: 1.52,
@@ -954,9 +954,9 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
 
   if (fallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
-        <div className="w-20 h-20 rounded-2xl border border-zinc-800 bg-zinc-900 flex items-center justify-center shadow-sm">
-          <Shield className="w-9 h-9 text-white" />
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] flex items-center justify-center">
+        <div className="w-20 h-20 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center">
+          <Shield className="w-9 h-9 text-[#E6FF00]" />
         </div>
       </div>
     );
@@ -965,7 +965,7 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
   return (
     <div
       aria-label={t.crisisPage.hero.chamberAria}
-      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-900/90 bg-[#0C0C0E] overflow-hidden select-none touch-pan-y shadow-xl shadow-zinc-950/15"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>
