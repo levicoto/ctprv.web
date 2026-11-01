@@ -727,7 +727,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
   if (fallback) {
     return (
-      <div className="w-full aspect-[16/10] min-h-[250px] max-h-[360px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 flex items-center justify-center p-6 text-zinc-300">
+      <div className="w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 flex items-center justify-center p-6 text-zinc-300">
         <Shield className="w-8 h-8 text-zinc-300" />
       </div>
     );
@@ -736,7 +736,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
   return (
     <div
       aria-label={t.services.shieldAria}
-      className="relative w-full aspect-[16/10] min-h-[250px] max-h-[360px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 overflow-hidden select-none touch-pan-y"
+      className="relative w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#0C0C0E] border border-zinc-800 overflow-hidden select-none touch-pan-y"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

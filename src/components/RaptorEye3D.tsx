@@ -930,7 +930,7 @@ export default function RaptorEye3D() {
 
   if (fallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
         <div className="w-20 h-20 rounded-2xl border border-zinc-800 bg-zinc-900 flex items-center justify-center shadow-sm">
           <Compass className="w-9 h-9 text-white" />
         </div>
@@ -941,7 +941,7 @@ export default function RaptorEye3D() {
   return (
     <div
       aria-label={t.raptor.hero.eyeAria}
-      className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-900/90 bg-[#0C0C0E] overflow-hidden select-none touch-pan-y shadow-xl shadow-zinc-950/15"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-900/90 bg-[#0C0C0E] overflow-hidden select-none touch-pan-y shadow-xl shadow-zinc-950/15"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

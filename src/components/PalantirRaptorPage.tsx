@@ -200,7 +200,7 @@ export default function PalantirRaptorPage({
 
       <main id="raptor-resumen" className="relative z-10 flex-1">
         {/* Hero Section: Unified 6 / 6 Architectural Grid with 3D Iridescent Glass Eye */}
-        <section className="pt-12 pb-20 sm:pt-20 sm:pb-28">
+        <section className="pt-8 pb-12 sm:pt-12 sm:pb-16">
           <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Proposition Column */}
@@ -211,23 +211,23 @@ export default function PalantirRaptorPage({
                   <span>{t.raptor.hero.kicker[1]}</span>
                 </div>
 
-                <h1 className="mt-5 text-[clamp(2.35rem,3.8vw,3.65rem)] font-semibold leading-[1.06] tracking-tight text-zinc-950 text-balance">
+                <h1 className="mt-4 text-[clamp(2.2rem,3.5vw,3.4rem)] font-semibold leading-[1.06] tracking-tight text-zinc-950 text-balance">
                   {t.raptor.hero.name}
                 </h1>
 
-                <p className="mt-2.5 text-lg sm:text-xl font-medium text-zinc-800 tracking-tight">
+                <p className="mt-2 text-lg font-medium text-zinc-800 tracking-tight">
                   {t.raptor.hero.subtitle}
                 </p>
 
-                <p className="mt-5 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-[54ch]">
+                <p className="mt-4 text-base text-zinc-600 leading-relaxed max-w-[54ch]">
                   {t.raptor.hero.body}
                 </p>
 
-                <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <button
                     type="button"
                     onClick={handleScrollToForm}
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 active:scale-[0.99] transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 active:scale-[0.99] transition-all whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                   >
                     <span>{t.raptor.hero.primaryCta}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -248,8 +248,8 @@ export default function PalantirRaptorPage({
 
               {/* Right Interactive 3D Iridescent Optical Eye */}
               <ParallaxLayer
-                speed={0.028}
-                maxOffset={10}
+                speed={0.022}
+                maxOffset={8}
                 desktopOnly
                 className="lg:col-span-6 flex items-center w-full"
               >
@@ -259,33 +259,35 @@ export default function PalantirRaptorPage({
           </div>
         </section>
 
-        {/* Reconnaissance Vectors: Symmetric 2x2 Architectural Grid */}
-        <section id="raptor-capacidades" className="py-20 sm:py-28 border-t border-zinc-200/80">
+        {/* Reconnaissance Vectors: Unified 2x2 Architectural Hairline Matrix */}
+        <section id="raptor-capacidades" className="py-12 sm:py-16 border-t border-zinc-200/80">
           <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
             <div className="max-w-[56ch]">
-              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-950 text-balance">
+              <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950 text-balance">
                 {t.raptor.capabilities.headline}
               </h2>
-              <p className="mt-3 text-base text-zinc-600 leading-relaxed">
+              <p className="mt-2 text-sm sm:text-base text-zinc-600 leading-relaxed">
                 {t.raptor.capabilities.subtitle}
               </p>
             </div>
 
-            <ParallaxLayer speed={0.02} maxOffset={10} desktopOnly className="mt-12">
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+            <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly className="mt-7">
+              <div className="rounded-2xl border border-zinc-200/90 overflow-hidden bg-zinc-200/80 grid grid-cols-1 md:grid-cols-2 gap-px shadow-sm shadow-zinc-950/[0.03]">
                 {t.raptor.capabilities.items.map((item) => (
                   <article
                     key={item.num}
-                    className="md:col-span-6 glass-panel rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+                    className="bg-white/95 p-6 sm:p-7 flex flex-col justify-between"
                   >
                     <div>
-                      <div className="text-xs font-medium text-zinc-500 tabular-nums">
-                        {item.num}
+                      <div className="flex items-baseline gap-2.5">
+                        <span className="text-xs font-medium text-zinc-400 tabular-nums shrink-0">
+                          {item.num}
+                        </span>
+                        <h3 className="text-base sm:text-lg font-semibold tracking-tight text-zinc-950 text-balance">
+                          {item.title}
+                        </h3>
                       </div>
-                      <h3 className="mt-3 text-xl sm:text-2xl font-semibold tracking-tight text-zinc-950 text-balance">
-                        {item.title}
-                      </h3>
-                      <p className="mt-3.5 text-sm sm:text-base text-zinc-600 leading-relaxed">
+                      <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
                         {item.desc}
                       </p>
                     </div>
@@ -297,11 +299,11 @@ export default function PalantirRaptorPage({
         </section>
 
         {/* Confidential Deliverable: Dossier Táctico Full-Width Monolith */}
-        <section id="raptor-dossier" className="py-16 sm:py-24 border-t border-zinc-200/80">
+        <section id="raptor-dossier" className="py-12 sm:py-16 border-t border-zinc-200/80">
           <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
-            <ParallaxLayer speed={0.018} maxOffset={8} desktopOnly>
-              <div className="glass-panel-dark text-white rounded-2xl p-8 sm:p-12 lg:p-14">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly>
+              <div className="glass-panel-dark text-white rounded-2xl p-6 sm:p-8 lg:px-10 lg:py-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
                   <div className="lg:col-span-8">
                     <div className="flex flex-wrap items-center gap-2.5 text-xs font-medium text-zinc-400">
                       <span className="text-zinc-200">{t.raptor.dossier.kicker[0]}</span>
@@ -309,11 +311,11 @@ export default function PalantirRaptorPage({
                       <span>{t.raptor.dossier.kicker[1]}</span>
                     </div>
 
-                    <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-white text-balance">
+                    <h2 className="mt-2.5 text-2xl sm:text-3xl font-semibold tracking-tight text-white text-balance">
                       {t.raptor.dossier.title}
                     </h2>
 
-                    <p className="mt-4 text-sm sm:text-base text-zinc-300 leading-relaxed tracking-[0.01em] max-w-[64ch]">
+                    <p className="mt-3 text-sm sm:text-base text-zinc-300 leading-relaxed tracking-[0.01em] max-w-[64ch]">
                       {t.raptor.dossier.body}
                     </p>
                   </div>
@@ -322,7 +324,7 @@ export default function PalantirRaptorPage({
                     <button
                       type="button"
                       onClick={handleScrollToForm}
-                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap shrink-0"
+                      className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-white text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                     >
                       <span>{t.raptor.dossier.cta}</span>
                       <ArrowRight className="w-4 h-4" />
@@ -340,7 +342,7 @@ export default function PalantirRaptorPage({
 
       {/* Minimalist Footer */}
       <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
-        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-6 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-2.5 text-xs text-zinc-500">
             <button
               type="button"

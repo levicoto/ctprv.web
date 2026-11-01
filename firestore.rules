@@ -75,7 +75,12 @@ service cloud.firestore {
         && data.preocupacionReciente.size() <= 1500
         && data.tierSugerido is string
         && data.tierSugerido.size() <= 20
-        && (data.tierSugerido == 'Tier 1: Argos' || data.tierSugerido == 'Tier 2: Atlas' || data.tierSugerido == 'Palantir Raptor')
+        && (
+          data.tierSugerido == 'Tier 1: Argos'
+          || data.tierSugerido == 'Tier 2: Atlas'
+          || data.tierSugerido == 'Palantir Raptor'
+          || data.tierSugerido == 'Protocolo PEP'
+        )
         && data.status is string
         && data.status.size() <= 20
         && (data.status == 'pendiente' || data.status == 'en_revision' || data.status == 'contactado' || data.status == 'cerrado')

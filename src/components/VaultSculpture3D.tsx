@@ -904,7 +904,7 @@ export default function VaultSculpture3D() {
 
   if (webglFallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-200 bg-zinc-100 flex items-center justify-center">
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-200 bg-zinc-100 flex items-center justify-center">
         <div className="w-20 h-20 rounded-2xl border border-zinc-300 bg-white flex items-center justify-center shadow-sm">
           <Lock className="w-9 h-9 text-zinc-900" />
         </div>
@@ -915,7 +915,7 @@ export default function VaultSculpture3D() {
   return (
     <div
       aria-label={t.hero.padlockAria}
-      className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-200/90 bg-[#F4F4F5] overflow-hidden select-none touch-pan-y"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-200/90 bg-[#F4F4F5] overflow-hidden select-none touch-pan-y"
     >
       <div ref={canvasMountRef} className="w-full h-full touch-pan-y" />
     </div>

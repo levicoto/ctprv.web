@@ -40,7 +40,7 @@ import {
 import { useI18n } from '../lib/i18n';
 
 export type EvaluationStatus = 'pendiente' | 'en_revision' | 'contactado' | 'cerrado';
-type ServiceTier = 'Tier 1: Argos' | 'Tier 2: Atlas' | 'Palantir Raptor';
+type ServiceTier = 'Tier 1: Argos' | 'Tier 2: Atlas' | 'Palantir Raptor' | 'Protocolo PEP';
 
 interface StoredEvaluation {
   id: string;
@@ -193,7 +193,9 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                 ? 'Tier 2: Atlas'
                 : d.tierSugerido === 'Palantir Raptor'
                   ? 'Palantir Raptor'
-                  : 'Tier 1: Argos',
+                  : d.tierSugerido === 'Protocolo PEP'
+                    ? 'Protocolo PEP'
+                    : 'Tier 1: Argos',
             status: (['pendiente', 'en_revision', 'contactado', 'cerrado'].includes(d.status)
               ? d.status
               : 'pendiente') as EvaluationStatus,
@@ -659,6 +661,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                     <option value="Tier 1: Argos">Tier 1: Argos</option>
                     <option value="Tier 2: Atlas">Tier 2: Atlas</option>
                     <option value="Palantir Raptor">Palantir Raptor</option>
+                    <option value="Protocolo PEP">Protocolo PEP</option>
                   </select>
 
                   <button

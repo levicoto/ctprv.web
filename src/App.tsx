@@ -8,6 +8,7 @@ import { ArrowRight, Check, ChevronDown, Globe, ShieldAlert } from 'lucide-react
 import VaultSculpture3D from './components/VaultSculpture3D';
 import TierKineticObject3D, { type ServiceTierId } from './components/TierKineticObject3D';
 import TechnologyStack from './components/TechnologyStack';
+import PublicExposureSection from './components/PublicExposureSection';
 import EvaluationForm, { type OperationMode } from './components/EvaluationForm';
 import PrivacyModal from './components/PrivacyModal';
 import EmergencyModal from './components/EmergencyModal';
@@ -43,6 +44,7 @@ export default function App() {
   const [activeView, setActiveView] = useState<ActiveView>(() => readViewFromHash());
   const [activeTier, setActiveTier] = useState<ServiceTierId>('atlas');
   const [preferredMode, setPreferredMode] = useState<OperationMode>('solo');
+  const [mainFormVariant, setMainFormVariant] = useState<'tiers' | 'pep'>('tiers');
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
@@ -131,8 +133,20 @@ export default function App() {
   };
 
   const handleSelectTierForAudit = (tier: ServiceTierId) => {
+    setMainFormVariant('tiers');
     setActiveTier(tier);
     setPreferredMode(tier === 'argos' ? 'solo' : 'equipo');
+    smoothScrollToSection('evaluacion');
+    window.setTimeout(() => {
+      const firstInput = document.getElementById('eval-nombre');
+      firstInput?.focus({ preventScroll: true });
+    }, 620);
+  };
+
+  const handleSelectPepForAudit = () => {
+    setMainFormVariant('pep');
+    setActiveTier('atlas');
+    setPreferredMode('equipo');
     smoothScrollToSection('evaluacion');
     window.setTimeout(() => {
       const firstInput = document.getElementById('eval-nombre');
@@ -216,18 +230,18 @@ export default function App() {
             className="hidden md:flex items-center justify-self-center gap-6 lg:gap-7 text-sm font-medium text-zinc-600"
           >
             <a
-              href="#inicio"
-              onClick={(e) => handleAnchorClick(e, 'inicio')}
-              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
-            >
-              {t.nav.overview}
-            </a>
-            <a
               href="#servicios"
               onClick={(e) => handleAnchorClick(e, 'servicios')}
               className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
             >
               {t.nav.services}
+            </a>
+            <a
+              href="#exposicion-publica"
+              onClick={(e) => handleAnchorClick(e, 'exposicion-publica')}
+              className="hover:text-zinc-950 hover:underline underline-offset-4 transition-colors whitespace-nowrap shrink-0"
+            >
+              {t.nav.pep}
             </a>
             <a
               href="#respaldo"
@@ -325,7 +339,7 @@ export default function App() {
 
       <main id="inicio" className="relative z-10 flex-1">
         {/* Hero Section: Unified 6 / 6 Architectural Grid */}
-        <section className="pt-12 pb-20 sm:pt-20 sm:pb-28">
+        <section className="pt-8 pb-12 sm:pt-12 sm:pb-16">
           <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
               {/* Left Proposition Column */}
@@ -338,19 +352,19 @@ export default function App() {
                   <span>{t.hero.kicker[2]}</span>
                 </div>
 
-                <h1 className="mt-5 text-[clamp(2.25rem,3.6vw,3.5rem)] font-semibold leading-[1.08] tracking-tight text-zinc-950 text-balance">
+                <h1 className="mt-4 text-[clamp(2.15rem,3.4vw,3.35rem)] font-semibold leading-[1.08] tracking-tight text-zinc-950 text-balance">
                   {t.hero.headline}
                 </h1>
 
-                <p className="mt-6 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-[52ch]">
+                <p className="mt-4 text-base sm:text-lg text-zinc-600 leading-relaxed max-w-[52ch]">
                   {t.hero.body}
                 </p>
 
-                <div className="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
                   <button
                     type="button"
                     onClick={() => smoothScrollToSection('evaluacion')}
-                    className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 active:scale-[0.99] transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                    className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 active:scale-[0.99] transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                   >
                     <span>{t.hero.primaryCta}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -371,8 +385,8 @@ export default function App() {
 
               {/* Right Interactive 3D Iridescent Padlock Sculpture */}
               <ParallaxLayer
-                speed={0.028}
-                maxOffset={10}
+                speed={0.022}
+                maxOffset={8}
                 desktopOnly
                 className="lg:col-span-6 flex items-center w-full"
               >
@@ -382,37 +396,37 @@ export default function App() {
           </div>
         </section>
 
-        {/* Services Section: Unified 6 / 6 Grid so 3D Shield & Atlas Share Exact Vertical Axis */}
-        <section id="servicios" className="py-20 sm:py-28 border-t border-zinc-200/80">
+        {/* Services Section: Unified 6 / 6 Grid */}
+        <section id="servicios" className="py-12 sm:py-16 border-t border-zinc-200/80">
           <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
-            {/* Top Row: Left Headline (6 cols) + Right 3D Shield (6 cols) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            {/* Top Row: Left Headline (6 cols) + Right Compact 3D Shield (6 cols) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
               <div className="lg:col-span-6 lg:pr-4">
-                <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-950 text-balance">
+                <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950 text-balance">
                   {t.services.headline}
                 </h2>
-                <p className="mt-3 text-base text-zinc-600 leading-relaxed max-w-[48ch]">
+                <p className="mt-2 text-sm sm:text-base text-zinc-600 leading-relaxed max-w-[48ch]">
                   {t.services.subtitle}
                 </p>
               </div>
 
-              <ParallaxLayer speed={0.025} maxOffset={10} desktopOnly className="lg:col-span-6 w-full">
+              <ParallaxLayer speed={0.02} maxOffset={8} desktopOnly className="lg:col-span-6 w-full">
                 <TierKineticObject3D activeTier={activeTier} />
               </ParallaxLayer>
             </div>
 
-            {/* Dual Monochrome Glassmorphic Service Cards: Cohesive Row for 100% Baseline Alignment */}
-            <ParallaxLayer speed={0.02} maxOffset={10} desktopOnly className="mt-10 lg:mt-12">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+            {/* Dual Monochrome Service Cards: Crisp Rhythm Without Artificial Empty Gaps */}
+            <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly className="mt-7 lg:mt-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch">
                 {/* Tier 1: Argos */}
                 <div className="lg:col-span-6 flex">
                   <article
                     onMouseEnter={() => setActiveTier('argos')}
                     onTouchStart={() => setActiveTier('argos')}
-                    className="w-full h-full glass-panel rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+                    className="w-full h-full glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
                   >
                     <div>
-                      <div className="lg:min-h-[8.5rem] flex flex-col justify-start">
+                      <div>
                         <div className="text-xs font-medium text-zinc-500 flex items-center gap-2">
                           <span className="tabular-nums text-zinc-700">
                             {t.services.argos.tierTag}
@@ -421,22 +435,22 @@ export default function App() {
                           <span>{t.services.argos.subtitleTag}</span>
                         </div>
 
-                        <h3 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950">
+                        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-950">
                           {t.services.argos.name}
                         </h3>
 
-                        <p className="mt-3 text-sm text-zinc-600 leading-relaxed">
+                        <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
                           {t.services.argos.audience}
                         </p>
                       </div>
 
-                      <div className="my-7 border-t border-zinc-200/80" />
+                      <div className="my-5 border-t border-zinc-200/80" />
 
-                      <dl className="space-y-6">
+                      <dl className="space-y-4">
                         {t.services.argos.items.map((item) => (
                           <div key={item.title}>
                             <dt className="text-sm font-semibold text-zinc-950">{item.title}</dt>
-                            <dd className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
+                            <dd className="mt-1 text-sm text-zinc-600 leading-relaxed">
                               {item.desc}
                             </dd>
                           </div>
@@ -444,11 +458,11 @@ export default function App() {
                       </dl>
                     </div>
 
-                    <div className="mt-10 pt-6 border-t border-zinc-200/80">
+                    <div className="mt-6 pt-5 border-t border-zinc-200/80">
                       <button
                         type="button"
                         onClick={() => handleSelectTierForAudit('argos')}
-                        className="w-full py-3 px-5 rounded-xl border border-zinc-900 bg-white/80 text-zinc-950 text-sm font-medium hover:bg-zinc-950 hover:text-white transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                        className="w-full py-2.5 px-5 rounded-xl border border-zinc-900 bg-white/80 text-zinc-950 text-sm font-medium hover:bg-zinc-950 hover:text-white transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
                       >
                         <span>{t.services.argos.cta}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -462,10 +476,10 @@ export default function App() {
                   <article
                     onMouseEnter={() => setActiveTier('atlas')}
                     onTouchStart={() => setActiveTier('atlas')}
-                    className="w-full h-full glass-panel-dark text-white rounded-2xl p-8 sm:p-10 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+                    className="w-full h-full glass-panel-dark text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
                   >
                     <div>
-                      <div className="lg:min-h-[8.5rem] flex flex-col justify-start">
+                      <div>
                         <div className="text-xs font-medium text-zinc-400 flex items-center gap-2">
                           <span className="tabular-nums text-zinc-200">
                             {t.services.atlas.tierTag}
@@ -474,24 +488,24 @@ export default function App() {
                           <span>{t.services.atlas.subtitleTag}</span>
                         </div>
 
-                        <h3 className="mt-3 text-2xl sm:text-3xl font-semibold tracking-tight text-white">
+                        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">
                           {t.services.atlas.name}
                         </h3>
 
-                        <p className="mt-3 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
+                        <p className="mt-2 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
                           {t.services.atlas.audience}
                         </p>
                       </div>
 
-                      <div className="my-7 border-t border-white/10" />
+                      <div className="my-5 border-t border-white/10" />
 
-                      <dl className="space-y-6">
+                      <dl className="space-y-4">
                         {t.services.atlas.items.map((item) => (
                           <div key={item.title}>
                             <dt className="text-sm font-semibold text-white tracking-[0.01em]">
                               {item.title}
                             </dt>
-                            <dd className="mt-1.5 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
+                            <dd className="mt-1 text-sm text-zinc-300 leading-relaxed tracking-[0.01em]">
                               {item.desc}
                             </dd>
                           </div>
@@ -499,11 +513,11 @@ export default function App() {
                       </dl>
                     </div>
 
-                    <div className="mt-10 pt-6 border-t border-white/10">
+                    <div className="mt-6 pt-5 border-t border-white/10">
                       <button
                         type="button"
                         onClick={() => handleSelectTierForAudit('atlas')}
-                        className="w-full py-3 px-5 rounded-xl bg-white text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                        className="w-full py-2.5 px-5 rounded-xl bg-white text-zinc-950 text-sm font-medium hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer"
                       >
                         <span>{t.services.atlas.cta}</span>
                         <ArrowRight className="w-4 h-4" />
@@ -513,61 +527,63 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Symmetric 6 / 6 Off-Tier Editorial Pair: Palantir Raptor (OSINT) + Crisis Playbook */}
-              <div className="mt-6 lg:mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-                {/* Palantir Raptor Callout */}
-                <div className="lg:col-span-6 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 transition-transform duration-200 hover:-translate-y-0.5">
-                  <div>
+              {/* Unified Architectural Index Strip: Palantir Raptor (OSINT) + Crisis Playbook */}
+              <div className="mt-5 rounded-2xl border border-zinc-200/90 overflow-hidden bg-zinc-200/80 grid grid-cols-1 lg:grid-cols-2 gap-px shadow-sm shadow-zinc-950/[0.03]">
+                {/* Palantir Raptor Index Cell */}
+                <div className="bg-white/95 p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="min-w-0">
                     <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
                       <span className="text-zinc-800">{t.services.raptorCallout.kicker[0]}</span>
                       <span aria-hidden="true">·</span>
                       <span>{t.services.raptorCallout.kicker[1]}</span>
                     </div>
-                    <p className="mt-2.5 text-base font-medium text-zinc-950 leading-snug text-balance">
+                    <p className="mt-1.5 text-sm text-zinc-700 leading-relaxed">
                       {t.services.raptorCallout.hook}
                     </p>
                   </div>
 
-                  <div className="flex items-center">
-                    <button
-                      type="button"
-                      onClick={handleOpenRaptorPage}
-                      className="w-full sm:w-auto py-2.5 px-4 rounded-xl border border-zinc-900 bg-zinc-950 text-white text-xs sm:text-sm font-medium hover:bg-zinc-800 transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
-                    >
-                      <span>{t.services.raptorCallout.cta}</span>
-                      <ArrowRight className="w-4 h-4 shrink-0" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={handleOpenRaptorPage}
+                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-zinc-300 bg-white text-zinc-950 text-xs font-medium hover:border-zinc-950 hover:bg-zinc-950 hover:text-white transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                  >
+                    <span>{t.services.raptorCallout.cta}</span>
+                    <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                  </button>
                 </div>
 
-                {/* Crisis & Reputation Playbook Callout */}
-                <div className="lg:col-span-6 glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between gap-6 transition-transform duration-200 hover:-translate-y-0.5">
-                  <div>
+                {/* Crisis Playbook Index Cell */}
+                <div className="bg-white/95 p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="min-w-0">
                     <div className="text-xs font-medium text-zinc-500 flex flex-wrap items-center gap-2">
                       <span className="text-zinc-800">{t.services.crisisCallout.kicker[0]}</span>
                       <span aria-hidden="true">·</span>
                       <span>{t.services.crisisCallout.kicker[1]}</span>
                     </div>
-                    <p className="mt-2.5 text-base font-medium text-zinc-950 leading-snug text-balance">
+                    <p className="mt-1.5 text-sm text-zinc-700 leading-relaxed">
                       {t.services.crisisCallout.hook}
                     </p>
                   </div>
 
-                  <div className="flex items-center">
-                    <button
-                      type="button"
-                      onClick={handleOpenCrisisPage}
-                      className="w-full sm:w-auto py-2.5 px-4 rounded-xl border border-zinc-900 bg-white/80 text-zinc-950 text-xs sm:text-sm font-medium hover:bg-zinc-950 hover:text-white transition-colors inline-flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
-                    >
-                      <span>{t.services.crisisCallout.cta}</span>
-                      <ArrowRight className="w-4 h-4 shrink-0" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={handleOpenCrisisPage}
+                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-zinc-300 bg-white text-zinc-950 text-xs font-medium hover:border-zinc-950 hover:bg-zinc-950 hover:text-white transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                  >
+                    <span>{t.services.crisisCallout.cta}</span>
+                    <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                  </button>
                 </div>
               </div>
             </ParallaxLayer>
           </div>
         </section>
+
+        {/* Politically Exposed Persons (PEP) & Candidacies Shielding */}
+        <PublicExposureSection
+          onRequestPepAudit={handleSelectPepForAudit}
+          onOpenRaptor={handleOpenRaptorPage}
+        />
 
         {/* Technology & Industry Backing */}
         <TechnologyStack />
@@ -577,12 +593,14 @@ export default function App() {
           preferredMode={preferredMode}
           onModeSyncTier={(tier) => setActiveTier(tier)}
           onOpenPrivacy={() => setPrivacyModalOpen(true)}
+          serviceVariant={mainFormVariant}
+          onClearPepVariant={() => setMainFormVariant('tiers')}
         />
       </main>
 
       {/* Minimalist Footer */}
       <footer className="relative z-10 border-t border-zinc-200/80 bg-white/70">
-        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-8 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-6 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2.5 text-xs text-zinc-500">
             <CotoLogoMark className="w-5 h-5 shrink-0" />
             <span className="text-sm font-semibold tracking-tight text-zinc-950">Coto Privado</span>

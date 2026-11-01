@@ -219,27 +219,18 @@ const _workLight = new THREE.Color();
 
 interface CrisisContainment3DProps {
   scenarioId: CrisisScenarioItem['id'];
-  containmentProgress: number; // 0..1
 }
 
-export default function CrisisContainment3D({
-  scenarioId,
-  containmentProgress,
-}: CrisisContainment3DProps) {
+export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DProps) {
   const { t } = useI18n();
   const mountRef = useRef<HTMLDivElement | null>(null);
   const [fallback, setFallback] = useState(false);
 
   const scenarioRef = useRef<CrisisScenarioItem['id']>(scenarioId);
-  const progressRef = useRef<number>(containmentProgress);
 
   useEffect(() => {
     scenarioRef.current = scenarioId;
   }, [scenarioId]);
-
-  useEffect(() => {
-    progressRef.current = THREE.MathUtils.clamp(containmentProgress, 0, 1);
-  }, [containmentProgress]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -616,7 +607,8 @@ export default function CrisisContainment3D({
     let gyroBaseBeta: number | null = null;
     let smoothX = 0;
     let smoothY = 0;
-    let smoothProgress = progressRef.current;
+    let smoothSeal = 0.42;
+    let smoothTone = 0.55;
     let smoothScenarioAngle = 0;
     let smoothOrbitalTilt = -Math.PI * 0.16;
     let isHovered = false;
@@ -792,72 +784,74 @@ export default function CrisisContainment3D({
           scen === 'hack' ? 0 : scen === 'extortion' ? Math.PI * 0.25 : -Math.PI * 0.25;
         const targetOrbitalTilt =
           scen === 'reputation' ? Math.PI * 0.22 : scen === 'extortion' ? 0.04 : -Math.PI * 0.16;
+        const baseScenarioSeal = scen === 'extortion' ? 0.72 : scen === 'reputation' ? 0.54 : 0.38;
+        const targetTone = scen === 'extortion' ? 0.25 : scen === 'reputation' ? 0.85 : 0.6;
 
         smoothX = THREE.MathUtils.damp(smoothX, activeTargetX, 5.4, dt);
         smoothY = THREE.MathUtils.damp(smoothY, activeTargetY, 5.4, dt);
         focusFactor = THREE.MathUtils.damp(focusFactor, shouldFocus ? 1 : 0, 5.0, dt);
-        smoothProgress = THREE.MathUtils.damp(smoothProgress, progressRef.current, 4.6, dt);
-        smoothScenarioYaw: {
-          smoothScenarioAngle = THREE.MathUtils.damp(
-            smoothScenarioAngle,
-            targetScenarioYaw,
-            4.2,
-            dt
-          );
-          break smoothScenarioYaw;
-        }
+        smoothSeal = THREE.MathUtils.damp(
+          smoothSeal,
+          THREE.MathUtils.clamp(baseScenarioSeal + focusFactor * 0.45, 0, 1),
+          4.4,
+          dt
+        );
+        smoothTone = THREE.MathUtils.damp(
+          smoothTone,
+          THREE.MathUtils.clamp(targetTone + focusFactor * 0.25, 0, 1),
+          4.2,
+          dt
+        );
+        smoothScenarioAngle = THREE.MathUtils.damp(
+          smoothScenarioAngle,
+          targetScenarioYaw,
+          4.2,
+          dt
+        );
         smoothOrbitalTilt = THREE.MathUtils.damp(smoothOrbitalTilt, targetOrbitalTilt, 4.2, dt);
 
         const motionScale = prefersReducedMotion ? 0.15 : 1.0;
-
-        // Effective seal combines checklist progress with subtle hover preview compression
-        const sealFactor = THREE.MathUtils.clamp(
-          smoothProgress * 0.85 + focusFactor * 0.28 * (1 - smoothProgress * 0.5),
-          0,
-          1
-        );
 
         sculptureRoot.rotation.y = smoothX * 0.28 + Math.sin(elapsed * 0.36) * 0.06 * motionScale;
         sculptureRoot.rotation.x = -smoothY * 0.14;
 
         chamberGroup.position.y =
-          chamberCenterY + Math.sin(elapsed * 1.1) * 0.032 * (1 - smoothProgress * 0.45) * motionScale;
+          chamberCenterY + Math.sin(elapsed * 1.1) * 0.032 * (1 - focusFactor * 0.4) * motionScale;
         chamberGroup.rotation.y = smoothScenarioAngle + smoothX * 0.22;
 
-        // Radially seal the 4 dichroic crystal vault quadrants around the core
-        const radialGap = THREE.MathUtils.lerp(0.24, 0.018, sealFactor);
+        // Radially actuate the 4 dichroic crystal vault quadrants around the core
+        const radialGap = THREE.MathUtils.lerp(0.24, 0.02, smoothSeal);
         for (let i = 0; i < quadrantGroups.length; i++) {
           const q = quadrantGroups[i];
           q.group.position.set(q.dirX * radialGap, 0, q.dirZ * radialGap);
         }
 
         // Vertically cinch upper & lower platinum compression caps
-        const capOffset = THREE.MathUtils.lerp(0.8, 0.66, sealFactor);
+        const capOffset = THREE.MathUtils.lerp(0.8, 0.66, smoothSeal);
         upperCapGroup.position.y = capOffset;
         lowerCapGroup.position.y = -capOffset;
 
-        // Core spin slows & stabilizes into calm sapphire luminescence as containment completes
-        const coreSpinSpeed = THREE.MathUtils.lerp(0.95, 0.28, smoothProgress) * motionScale;
+        const coreSpinSpeed = THREE.MathUtils.lerp(0.72, 0.36, smoothSeal) * motionScale;
         coreMesh.rotation.y = elapsed * coreSpinSpeed;
         coreMesh.rotation.x = elapsed * coreSpinSpeed * 0.55;
         innerLatticeLines.rotation.y = -elapsed * coreSpinSpeed * 0.65;
         innerLatticeLines.rotation.z = elapsed * 0.22 * motionScale;
 
-        _workEmissive.copy(ALERT_EMISSIVE).lerp(SEALED_EMISSIVE, smoothProgress);
+        _workEmissive.copy(ALERT_EMISSIVE).lerp(SEALED_EMISSIVE, smoothTone);
         identityCoreMat.emissive.copy(_workEmissive);
-        identityCoreMat.emissiveIntensity = 1.65 + focusFactor * 0.35 + smoothProgress * 0.25;
+        identityCoreMat.emissiveIntensity = 1.65 + focusFactor * 0.4;
 
-        _workLight.copy(ALERT_LIGHT).lerp(SEALED_LIGHT, smoothProgress);
+        _workLight.copy(ALERT_LIGHT).lerp(SEALED_LIGHT, smoothTone);
         corePointLight.color.copy(_workLight);
         corePointLight.position.x = smoothX * 0.4;
         corePointLight.position.y = chamberCenterY + smoothY * 0.3;
 
         equatorialGroup.rotation.y =
           -smoothScenarioAngle * 0.6 +
-          Math.sin(elapsed * 0.5) * 0.14 * (1 - smoothProgress * 0.7) * motionScale;
+          Math.sin(elapsed * 0.5) * 0.12 * (1 - focusFactor * 0.5) * motionScale;
         equatorialGroup.rotation.z = smoothY * 0.12;
 
-        dialDiscMesh.rotation.y = smoothX * 0.35 + smoothProgress * (Math.PI * 0.5);
+        dialDiscMesh.rotation.y = smoothX * 0.35 + smoothScenarioAngle * 0.8;
 
         orbitalGroup.rotation.z = smoothOrbitalTilt + smoothX * 0.18;
         orbitalMesh.rotation.z = elapsed * 0.2 * motionScale;
@@ -960,7 +954,7 @@ export default function CrisisContainment3D({
 
   if (fallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-800 bg-zinc-950 flex items-center justify-center">
         <div className="w-20 h-20 rounded-2xl border border-zinc-800 bg-zinc-900 flex items-center justify-center shadow-sm">
           <Shield className="w-9 h-9 text-white" />
         </div>
@@ -971,7 +965,7 @@ export default function CrisisContainment3D({
   return (
     <div
       aria-label={t.crisisPage.hero.chamberAria}
-      className="relative w-full aspect-[5/4] min-h-[340px] max-h-[500px] rounded-2xl border border-zinc-900/90 bg-[#0C0C0E] overflow-hidden select-none touch-pan-y shadow-xl shadow-zinc-950/15"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-zinc-900/90 bg-[#0C0C0E] overflow-hidden select-none touch-pan-y shadow-xl shadow-zinc-950/15"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

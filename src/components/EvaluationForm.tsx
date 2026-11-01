@@ -32,7 +32,11 @@ import SignalMark, {
 import type { ServiceTierId } from './TierKineticObject3D';
 
 export type OperationMode = 'solo' | 'equipo';
-export type AssignedServiceLabel = 'Tier 1: Argos' | 'Tier 2: Atlas' | 'Palantir Raptor';
+export type AssignedServiceLabel =
+  | 'Tier 1: Argos'
+  | 'Tier 2: Atlas'
+  | 'Palantir Raptor'
+  | 'Protocolo PEP';
 
 interface EvaluationRecord {
   id: string;
@@ -50,13 +54,14 @@ interface EvaluationFormProps {
   preferredMode?: OperationMode;
   onModeSyncTier?: (tier: ServiceTierId) => void;
   onOpenPrivacy?: () => void;
-  serviceVariant?: 'tiers' | 'raptor' | 'crisis';
-  prefillConcern?: { text: string; seq: number } | null;
+  serviceVariant?: 'tiers' | 'raptor' | 'crisis' | 'pep';
+  onClearPepVariant?: () => void;
 }
 
 const STORAGE_KEY_TIERS = 'coto_privado_evaluacion_ultima_v3';
 const STORAGE_KEY_RAPTOR = 'coto_privado_evaluacion_raptor_v1';
 const STORAGE_KEY_CRISIS = 'coto_privado_evaluacion_crisis_v1';
+const STORAGE_KEY_PEP = 'coto_privado_evaluacion_pep_v1';
 
 function generateFolio(): string {
   const randomDigits = Math.floor(1000 + Math.random() * 9000);
@@ -75,21 +80,26 @@ export default function EvaluationForm({
   onModeSyncTier,
   onOpenPrivacy,
   serviceVariant = 'tiers',
-  prefillConcern = null,
+  onClearPepVariant,
 }: EvaluationFormProps) {
   const { lang, t } = useI18n();
   const isRaptor = serviceVariant === 'raptor';
   const isCrisis = serviceVariant === 'crisis';
+  const isPep = serviceVariant === 'pep';
   const storageKey = isRaptor
     ? STORAGE_KEY_RAPTOR
     : isCrisis
       ? STORAGE_KEY_CRISIS
-      : STORAGE_KEY_TIERS;
+      : isPep
+        ? STORAGE_KEY_PEP
+        : STORAGE_KEY_TIERS;
 
   const [nombreAlias, setNombreAlias] = useState('');
   const [rolPrincipal, setRolPrincipal] = useState('');
   const [enlaceReferencia, setEnlaceReferencia] = useState('');
-  const [modoOperacion, setModoOperacion] = useState<OperationMode>(isCrisis ? 'equipo' : 'solo');
+  const [modoOperacion, setModoOperacion] = useState<OperationMode>(
+    isCrisis || isPep ? 'equipo' : 'solo'
+  );
   const [preocupacionReciente, setPreocupacionReciente] = useState('');
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -129,19 +139,6 @@ export default function EvaluationForm({
       setModoOperacion(preferredMode);
     }
   }, [preferredMode]);
-
-  useEffect(() => {
-    if (!prefillConcern) return;
-    if (submittedRecord) {
-      try {
-        localStorage.removeItem(storageKey);
-      } catch {
-        // Ignore
-      }
-      setSubmittedRecord(null);
-    }
-    setPreocupacionReciente(prefillConcern.text);
-  }, [prefillConcern?.seq]);
 
   const handleModeChange = (mode: OperationMode) => {
     setModoOperacion(mode);
@@ -225,9 +222,11 @@ export default function EvaluationForm({
     // Canonical tierSugerido & modoOperacion values strictly adhering to firestore.rules
     const tierSugerido: AssignedServiceLabel = isRaptor
       ? 'Palantir Raptor'
-      : modoOperacion === 'solo'
-        ? 'Tier 1: Argos'
-        : 'Tier 2: Atlas';
+      : isPep
+        ? 'Protocolo PEP'
+        : modoOperacion === 'solo'
+          ? 'Tier 1: Argos'
+          : 'Tier 2: Atlas';
 
     if (
       !EVALUATION_SCHEMA_LIMITS.idPattern.test(docId) ||
@@ -295,6 +294,7 @@ export default function EvaluationForm({
 
   const localizedTierLabel = (tier: AssignedServiceLabel) => {
     if (tier === 'Palantir Raptor') return t.form.confirmation.tierDisplayRaptor;
+    if (tier === 'Protocolo PEP') return t.form.confirmation.tierDisplayPep;
     return tier === 'Tier 1: Argos'
       ? t.form.confirmation.tierDisplayArgos
       : t.form.confirmation.tierDisplayAtlas;
@@ -397,27 +397,47 @@ export default function EvaluationForm({
   };
 
   return (
-    <section id="evaluacion" className="relative z-10 py-20 sm:py-28 border-t border-zinc-200/80">
+    <section id="evaluacion" className="relative z-10 py-12 sm:py-16 border-t border-zinc-200/80">
       <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
-        <ParallaxLayer speed={0.018} maxOffset={8} desktopOnly>
+        <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Context Column */}
-            <div className="lg:col-span-6 lg:pr-6">
-              <h2 className="text-3xl sm:text-4xl font-semibold tracking-tight text-zinc-950 text-balance">
+            <div className="lg:col-span-5 lg:pr-2">
+              <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-zinc-950 text-balance">
                 {isRaptor
                   ? t.form.raptorHeadline
                   : isCrisis
                     ? t.form.crisisHeadline
-                    : t.form.headline}
+                    : isPep
+                      ? t.form.pepHeadline
+                      : t.form.headline}
               </h2>
-              <p className="mt-4 text-base text-zinc-600 leading-relaxed max-w-[52ch]">
-                {isRaptor ? t.form.raptorBody : isCrisis ? t.form.crisisBody : t.form.body}
+              <p className="mt-3 text-sm sm:text-base text-zinc-600 leading-relaxed max-w-[48ch]">
+                {isRaptor
+                  ? t.form.raptorBody
+                  : isCrisis
+                    ? t.form.crisisBody
+                    : isPep
+                      ? t.form.pepBody
+                      : t.form.body}
               </p>
 
-              {/* Unlocked Direct Contact (Post-Folio) & Discreet Emergency Protocol Card */}
+              {isPep && onClearPepVariant && !submittedRecord && (
+                <div className="mt-2.5">
+                  <button
+                    type="button"
+                    onClick={onClearPepVariant}
+                    className="text-xs font-medium text-zinc-500 hover:text-zinc-950 underline underline-offset-4 transition-colors cursor-pointer"
+                  >
+                    {t.form.pepSwitchToGeneral}
+                  </button>
+                </div>
+              )}
+
+              {/* Unlocked Direct Contact (Post-Folio) & Discreet Emergency Disclosure */}
               <div
-                className={`mt-8 glass-panel rounded-2xl max-w-[52ch] ${
-                  submittedRecord ? 'p-6 sm:p-7' : 'px-5 py-4'
+                className={`mt-6 rounded-2xl border border-zinc-200/90 bg-white/95 shadow-sm shadow-zinc-950/[0.03] ${
+                  submittedRecord ? 'p-5 sm:p-6' : 'px-4 py-3.5'
                 }`}
               >
                 {submittedRecord ? (
@@ -432,16 +452,16 @@ export default function EvaluationForm({
                       </span>
                     </div>
 
-                    <h3 className="mt-2.5 text-base sm:text-lg font-semibold tracking-tight text-zinc-950">
+                    <h3 className="mt-2 text-base font-semibold tracking-tight text-zinc-950">
                       {t.form.signalCard.unlockedTitle}
                     </h3>
 
-                    <p className="mt-2 text-sm text-zinc-600 leading-relaxed">
+                    <p className="mt-1.5 text-sm text-zinc-600 leading-relaxed">
                       {t.form.signalCard.unlockedBody(submittedRecord.folio)}
                     </p>
 
                     {/* Unlocked Row 1: Direct Signal Encrypted Bridge */}
-                    <div className="mt-5 pt-4 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
+                    <div className="mt-4 pt-4 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-lg bg-zinc-950 text-white flex items-center justify-center shrink-0">
                           <SignalMark className="w-4 h-4" />
@@ -498,7 +518,7 @@ export default function EvaluationForm({
                       <div className="flex flex-wrap items-center gap-2">
                         <a
                           href={mailtoHref}
-                          className="h-9 px-3.5 rounded-lg bg-zinc-950 text-white hover:bg-zinc-800 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                          className="h-8 px-3 rounded-lg bg-zinc-950 text-white hover:bg-zinc-800 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                         >
                           <Mail className="w-3.5 h-3.5 shrink-0" />
                           <span>{t.form.signalCard.openMailAppBtn}</span>
@@ -507,7 +527,7 @@ export default function EvaluationForm({
                           href={gmailHref}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="h-9 px-3 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                          className="h-8 px-3 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                         >
                           <span>{t.form.signalCard.openGmailBtn}</span>
                           <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
@@ -516,7 +536,7 @@ export default function EvaluationForm({
                           href={outlookHref}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="h-9 px-3 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                          className="h-8 px-3 rounded-lg border border-zinc-300 bg-white/90 hover:border-zinc-950 text-zinc-900 text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                         >
                           <span>{t.form.signalCard.openOutlookBtn}</span>
                           <ArrowUpRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
@@ -530,10 +550,10 @@ export default function EvaluationForm({
                       type="button"
                       aria-expanded={emergencyOpen}
                       onClick={() => setEmergencyOpen((prev) => !prev)}
-                      className="w-full flex items-center justify-between gap-3 text-left text-xs font-medium text-zinc-700 hover:text-zinc-950 transition-colors cursor-pointer py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                      className="w-full flex items-center justify-between gap-3 text-left text-xs font-medium text-zinc-700 hover:text-zinc-950 transition-colors cursor-pointer py-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <ShieldAlert className="w-4 h-4 text-zinc-700 shrink-0" />
+                        <ShieldAlert className="w-4 h-4 text-zinc-600 shrink-0" />
                         <span>{t.form.signalCard.emergencyToggle}</span>
                       </span>
                       <ChevronDown
@@ -544,7 +564,7 @@ export default function EvaluationForm({
                     </button>
 
                     {emergencyOpen && (
-                      <div className="mt-4 pt-4 border-t border-zinc-200/80 space-y-3.5">
+                      <div className="mt-3.5 pt-3.5 border-t border-zinc-200/80 space-y-3">
                         <p className="text-xs text-zinc-600 leading-relaxed">
                           {t.form.signalCard.emergencyNotice}
                         </p>
@@ -573,20 +593,20 @@ export default function EvaluationForm({
               </div>
             </div>
 
-            {/* Right Glassmorphic Form / Confirmation Container */}
-            <div className="lg:col-span-6 w-full">
+            {/* Right Form / Confirmation Container */}
+            <div className="lg:col-span-7 w-full">
               {submittedRecord ? (
-                <div className="glass-panel rounded-2xl p-8 sm:p-10">
-                  <div className="flex items-center justify-between gap-4 pb-6 border-b border-zinc-200/80">
-                    <h3 className="text-2xl font-semibold text-zinc-950">
+                <div className="glass-panel rounded-2xl p-6 sm:p-8">
+                  <div className="flex items-center justify-between gap-4 pb-5 border-b border-zinc-200/80">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-zinc-950">
                       {t.form.confirmation.title}
                     </h3>
-                    <div className="w-10 h-10 rounded-xl bg-zinc-950 text-white flex items-center justify-center shrink-0">
-                      <Check className="w-5 h-5" />
+                    <div className="w-9 h-9 rounded-xl bg-zinc-950 text-white flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4" />
                     </div>
                   </div>
 
-                  <dl className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-5 text-sm">
+                  <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                     <div>
                       <dt className="text-xs text-zinc-500">{t.form.confirmation.folioLabel}</dt>
                       <dd className="mt-1 font-medium text-zinc-950 tabular-nums">
@@ -611,13 +631,13 @@ export default function EvaluationForm({
                         {submittedRecord.rolPrincipal}
                       </dd>
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                       <dt className="text-xs text-zinc-500">{t.form.confirmation.refLabel}</dt>
                       <dd className="mt-1 text-sm text-zinc-800 break-all">
                         {submittedRecord.enlaceReferencia}
                       </dd>
                     </div>
-                    <div className="sm:col-span-2">
+                    <div>
                       <dt className="text-xs text-zinc-500">{t.form.confirmation.modeLabel}</dt>
                       <dd className="mt-1 text-zinc-800">
                         {submittedRecord.modoOperacion === 'solo'
@@ -627,42 +647,20 @@ export default function EvaluationForm({
                     </div>
                   </dl>
 
-                  <div className="mt-8 pt-6 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      <button
-                        type="button"
-                        onClick={handleDownloadDossier}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors whitespace-nowrap shrink-0"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span>{t.form.confirmation.downloadBtn}</span>
-                      </button>
-
-                      <a
-                        href={mailtoHref}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white/90 text-zinc-800 text-sm font-medium hover:text-zinc-950 hover:border-zinc-400 transition-colors whitespace-nowrap shrink-0"
-                      >
-                        <Mail className="w-4 h-4" />
-                        <span>{t.form.confirmation.emailBtn}</span>
-                      </a>
-
-                      <a
-                        href={gmailHref}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-zinc-300 bg-white/90 text-zinc-800 text-sm font-medium hover:text-zinc-950 hover:border-zinc-400 transition-colors whitespace-nowrap shrink-0"
-                      >
-                        <span>{t.form.confirmation.gmailBtn}</span>
-                        <ArrowUpRight className="w-4 h-4 text-zinc-500 shrink-0" />
-                      </a>
-
-                      {renderSignalLaunchLink(t.form.confirmation.openSignalBtn, 'outline')}
-                    </div>
+                  <div className="mt-6 pt-5 border-t border-zinc-200/80 flex flex-wrap items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      onClick={handleDownloadDossier}
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>{t.form.confirmation.downloadBtn}</span>
+                    </button>
 
                     <button
                       type="button"
                       onClick={handleResetNew}
-                      className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-zinc-600 text-sm font-medium hover:text-zinc-950 transition-colors whitespace-nowrap shrink-0"
+                      className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-zinc-600 text-sm font-medium hover:text-zinc-950 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                     >
                       <RotateCcw className="w-4 h-4" />
                       <span>{t.form.confirmation.resetBtn}</span>
@@ -673,7 +671,7 @@ export default function EvaluationForm({
                 <form
                   onSubmit={handleSubmit}
                   noValidate
-                  className="glass-panel rounded-2xl p-8 sm:p-10 space-y-6"
+                  className="glass-panel rounded-2xl p-6 sm:p-7 space-y-4"
                 >
                   {submitError && (
                     <div
@@ -685,138 +683,140 @@ export default function EvaluationForm({
                     </div>
                   )}
 
-                  {/* Field 1: Nombre / Alias */}
-                  <div>
-                    <label htmlFor="eval-nombre" className="block text-sm font-medium text-zinc-900">
-                      {t.form.fields.nameLabel}
-                    </label>
-                    <input
-                      id="eval-nombre"
-                      type="text"
-                      maxLength={EVALUATION_SCHEMA_LIMITS.nombreAliasMax}
-                      value={nombreAlias}
-                      onChange={(e) => {
-                        setNombreAlias(e.target.value);
-                        if (errors.nombreAlias)
-                          setErrors((prev) => ({ ...prev, nombreAlias: '' }));
-                      }}
-                      placeholder={t.form.fields.namePlaceholder}
-                      className={`mt-2 w-full rounded-xl bg-white/90 px-4 py-3 text-sm text-zinc-950 placeholder:text-zinc-400 border transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 ${
-                        errors.nombreAlias
-                          ? 'border-zinc-900'
-                          : 'border-zinc-200 hover:border-zinc-300'
-                      }`}
-                    />
-                    {errors.nombreAlias && (
-                      <p className="mt-1.5 text-xs font-medium text-zinc-900" role="alert">
-                        {t.form.validation.errorPrefix}: {errors.nombreAlias}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Field 2: Rol principal */}
-                  <div>
-                    <label htmlFor="eval-rol" className="block text-sm font-medium text-zinc-900">
-                      {t.form.fields.roleLabel}
-                    </label>
-                    <input
-                      id="eval-rol"
-                      type="text"
-                      maxLength={EVALUATION_SCHEMA_LIMITS.rolPrincipalMax}
-                      value={rolPrincipal}
-                      onChange={(e) => {
-                        setRolPrincipal(e.target.value);
-                        if (errors.rolPrincipal)
-                          setErrors((prev) => ({ ...prev, rolPrincipal: '' }));
-                      }}
-                      placeholder={t.form.fields.rolePlaceholder}
-                      className={`mt-2 w-full rounded-xl bg-white/90 px-4 py-3 text-sm text-zinc-950 placeholder:text-zinc-400 border transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 ${
-                        errors.rolPrincipal
-                          ? 'border-zinc-900'
-                          : 'border-zinc-200 hover:border-zinc-300'
-                      }`}
-                    />
-                    {errors.rolPrincipal && (
-                      <p className="mt-1.5 text-xs font-medium text-zinc-900" role="alert">
-                        {t.form.validation.errorPrefix}: {errors.rolPrincipal}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Field 3: Enlace de referencia */}
-                  <div>
-                    <label htmlFor="eval-enlace" className="block text-sm font-medium text-zinc-900">
-                      {t.form.fields.refLabel}
-                    </label>
-                    <input
-                      id="eval-enlace"
-                      type="text"
-                      maxLength={EVALUATION_SCHEMA_LIMITS.enlaceReferenciaMax}
-                      value={enlaceReferencia}
-                      onChange={(e) => {
-                        setEnlaceReferencia(e.target.value);
-                        if (errors.enlaceReferencia)
-                          setErrors((prev) => ({ ...prev, enlaceReferencia: '' }));
-                      }}
-                      placeholder={t.form.fields.refPlaceholder}
-                      className={`mt-2 w-full rounded-xl bg-white/90 px-4 py-3 text-sm text-zinc-950 placeholder:text-zinc-400 border transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 ${
-                        errors.enlaceReferencia
-                          ? 'border-zinc-900'
-                          : 'border-zinc-200 hover:border-zinc-300'
-                      }`}
-                    />
-                    {errors.enlaceReferencia && (
-                      <p className="mt-1.5 text-xs font-medium text-zinc-900" role="alert">
-                        {t.form.validation.errorPrefix}: {errors.enlaceReferencia}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Field 4: Solo / Equipo */}
-                  <div>
-                    <span className="block text-sm font-medium text-zinc-900">
-                      {t.form.fields.modeLabel}
-                    </span>
-                    <div
-                      role="radiogroup"
-                      aria-label={t.form.fields.modeAria}
-                      className="mt-2 grid grid-cols-2 gap-2 p-1.5 rounded-xl bg-zinc-100/90 border border-zinc-200/80"
-                    >
-                      <button
-                        type="button"
-                        role="radio"
-                        aria-checked={modoOperacion === 'solo'}
-                        onClick={() => handleModeChange('solo')}
-                        className={`py-2.5 px-4 rounded-lg text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                          modoOperacion === 'solo'
-                            ? 'bg-zinc-950 text-white shadow-sm'
-                            : 'text-zinc-600 hover:text-zinc-950'
+                  {/* Row 1: Side-by-Side Name / Alias + Role */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="eval-nombre" className="block text-xs font-medium text-zinc-800">
+                        {t.form.fields.nameLabel}
+                      </label>
+                      <input
+                        id="eval-nombre"
+                        type="text"
+                        maxLength={EVALUATION_SCHEMA_LIMITS.nombreAliasMax}
+                        value={nombreAlias}
+                        onChange={(e) => {
+                          setNombreAlias(e.target.value);
+                          if (errors.nombreAlias)
+                            setErrors((prev) => ({ ...prev, nombreAlias: '' }));
+                        }}
+                        placeholder={t.form.fields.namePlaceholder}
+                        className={`mt-1.5 w-full rounded-xl bg-white/95 px-3.5 py-2.5 text-sm text-zinc-950 placeholder:text-zinc-400 border transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 ${
+                          errors.nombreAlias
+                            ? 'border-zinc-900'
+                            : 'border-zinc-200 hover:border-zinc-300'
                         }`}
-                      >
-                        {t.form.fields.soloOption}
-                      </button>
-                      <button
-                        type="button"
-                        role="radio"
-                        aria-checked={modoOperacion === 'equipo'}
-                        onClick={() => handleModeChange('equipo')}
-                        className={`py-2.5 px-4 rounded-lg text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                          modoOperacion === 'equipo'
-                            ? 'bg-zinc-950 text-white shadow-sm'
-                            : 'text-zinc-600 hover:text-zinc-950'
+                      />
+                      {errors.nombreAlias && (
+                        <p className="mt-1 text-xs font-medium text-zinc-900" role="alert">
+                          {t.form.validation.errorPrefix}: {errors.nombreAlias}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label htmlFor="eval-rol" className="block text-xs font-medium text-zinc-800">
+                        {t.form.fields.roleLabel}
+                      </label>
+                      <input
+                        id="eval-rol"
+                        type="text"
+                        maxLength={EVALUATION_SCHEMA_LIMITS.rolPrincipalMax}
+                        value={rolPrincipal}
+                        onChange={(e) => {
+                          setRolPrincipal(e.target.value);
+                          if (errors.rolPrincipal)
+                            setErrors((prev) => ({ ...prev, rolPrincipal: '' }));
+                        }}
+                        placeholder={t.form.fields.rolePlaceholder}
+                        className={`mt-1.5 w-full rounded-xl bg-white/95 px-3.5 py-2.5 text-sm text-zinc-950 placeholder:text-zinc-400 border transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 ${
+                          errors.rolPrincipal
+                            ? 'border-zinc-900'
+                            : 'border-zinc-200 hover:border-zinc-300'
                         }`}
-                      >
-                        {t.form.fields.teamOption}
-                      </button>
+                      />
+                      {errors.rolPrincipal && (
+                        <p className="mt-1 text-xs font-medium text-zinc-900" role="alert">
+                          {t.form.validation.errorPrefix}: {errors.rolPrincipal}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  {/* Field 5: Preocupación de seguridad o incidente reciente */}
+                  {/* Row 2: Reference Link + Operating Structure */}
+                  <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
+                    <div className="sm:col-span-7">
+                      <label htmlFor="eval-enlace" className="block text-xs font-medium text-zinc-800">
+                        {t.form.fields.refLabel}
+                      </label>
+                      <input
+                        id="eval-enlace"
+                        type="text"
+                        maxLength={EVALUATION_SCHEMA_LIMITS.enlaceReferenciaMax}
+                        value={enlaceReferencia}
+                        onChange={(e) => {
+                          setEnlaceReferencia(e.target.value);
+                          if (errors.enlaceReferencia)
+                            setErrors((prev) => ({ ...prev, enlaceReferencia: '' }));
+                        }}
+                        placeholder={t.form.fields.refPlaceholder}
+                        className={`mt-1.5 w-full rounded-xl bg-white/95 px-3.5 py-2.5 text-sm text-zinc-950 placeholder:text-zinc-400 border transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 ${
+                          errors.enlaceReferencia
+                            ? 'border-zinc-900'
+                            : 'border-zinc-200 hover:border-zinc-300'
+                        }`}
+                      />
+                      {errors.enlaceReferencia && (
+                        <p className="mt-1 text-xs font-medium text-zinc-900" role="alert">
+                          {t.form.validation.errorPrefix}: {errors.enlaceReferencia}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="sm:col-span-5">
+                      <span className="block text-xs font-medium text-zinc-800">
+                        {t.form.fields.modeLabel}
+                      </span>
+                      <div
+                        role="radiogroup"
+                        aria-label={t.form.fields.modeAria}
+                        className="mt-1.5 grid grid-cols-2 gap-1 p-1 rounded-xl bg-zinc-100/95 border border-zinc-200/80"
+                      >
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={modoOperacion === 'solo'}
+                          onClick={() => handleModeChange('solo')}
+                          className={`py-2 px-2.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap truncate cursor-pointer ${
+                            modoOperacion === 'solo'
+                              ? 'bg-zinc-950 text-white shadow-sm'
+                              : 'text-zinc-600 hover:text-zinc-950'
+                          }`}
+                        >
+                          {t.form.fields.soloOption}
+                        </button>
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={modoOperacion === 'equipo'}
+                          onClick={() => handleModeChange('equipo')}
+                          className={`py-2 px-2.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap truncate cursor-pointer ${
+                            modoOperacion === 'equipo'
+                              ? 'bg-zinc-950 text-white shadow-sm'
+                              : 'text-zinc-600 hover:text-zinc-950'
+                          }`}
+                        >
+                          {t.form.fields.teamOption}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Row 3: Optional Context / Recent Concern */}
                   <div>
                     <div className="flex items-baseline justify-between gap-2">
                       <label
                         htmlFor="eval-preocupacion"
-                        className="block text-sm font-medium text-zinc-900"
+                        className="block text-xs font-medium text-zinc-800"
                       >
                         {t.form.fields.concernLabel}
                       </label>
@@ -826,26 +826,26 @@ export default function EvaluationForm({
                     </div>
                     <textarea
                       id="eval-preocupacion"
-                      rows={3}
+                      rows={2}
                       maxLength={EVALUATION_SCHEMA_LIMITS.preocupacionMax}
                       value={preocupacionReciente}
                       onChange={(e) => setPreocupacionReciente(e.target.value)}
                       placeholder={t.form.fields.concernPlaceholder}
-                      className="mt-2 w-full rounded-xl bg-white/90 px-4 py-3 text-sm text-zinc-950 placeholder:text-zinc-400 border border-zinc-200 hover:border-zinc-300 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 resize-y"
+                      className="mt-1.5 w-full rounded-xl bg-white/95 px-3.5 py-2.5 text-sm text-zinc-950 placeholder:text-zinc-400 border border-zinc-200 hover:border-zinc-300 transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-950 resize-y"
                     />
                     {errors.preocupacionReciente && (
-                      <p className="mt-1.5 text-xs font-medium text-zinc-900" role="alert">
+                      <p className="mt-1 text-xs font-medium text-zinc-900" role="alert">
                         {t.form.validation.errorPrefix}: {errors.preocupacionReciente}
                       </p>
                     )}
                   </div>
 
                   {/* Primary Submit Action */}
-                  <div className="pt-2">
+                  <div className="pt-1">
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3.5 px-6 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] transition-all flex items-center justify-center gap-2 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
+                      className="w-full py-3 px-6 rounded-xl bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-950"
                     >
                       {isSubmitting ? (
                         <>
@@ -860,7 +860,9 @@ export default function EvaluationForm({
                               ? t.form.fields.raptorSubmitIdle
                               : isCrisis
                                 ? t.form.fields.crisisSubmitIdle
-                                : t.form.fields.submitIdle}
+                                : isPep
+                                  ? t.form.fields.pepSubmitIdle
+                                  : t.form.fields.submitIdle}
                           </span>
                         </>
                       )}
@@ -870,7 +872,7 @@ export default function EvaluationForm({
               )}
 
               {onOpenPrivacy && (
-                <div className="mt-4 flex items-center justify-center sm:justify-start px-1">
+                <div className="mt-3.5 flex items-center justify-center sm:justify-start px-1">
                   <button
                     type="button"
                     onClick={onOpenPrivacy}

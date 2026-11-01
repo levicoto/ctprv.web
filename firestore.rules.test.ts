@@ -13,6 +13,7 @@ export interface DirtyDozenCase {
   expectedOutcome: 'PERMISSION_DENIED';
 }
 
+// Allowed tierSugerido enum: 'Tier 1: Argos' | 'Tier 2: Atlas' | 'Palantir Raptor' | 'Protocolo PEP'
 const VALID_BASE_PAYLOAD = {
   folio: 'CTPV-26-4821',
   nombreAlias: 'Martín V.',
@@ -20,7 +21,7 @@ const VALID_BASE_PAYLOAD = {
   enlaceReferencia: 'https://coto.lat',
   modoOperacion: 'equipo',
   preocupacionReciente: 'Delegación de accesos críticos a agencia externa.',
-  tierSugerido: 'Tier 2: Atlas',
+  tierSugerido: 'Protocolo PEP',
   status: 'pendiente',
   adminNotes: '',
   recipientOrg: 'coto_privado',
