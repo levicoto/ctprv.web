@@ -21,9 +21,9 @@ export default function ParallaxLayer({
 }
 
 /**
- * Fixed zero-cost ambient Electric Yellow (#E6FF00) light-field + tactile noise grain.
- * Because this layer stays fixed in the viewport while frosted glass panels scroll over it,
- * the Electric Yellow spheres naturally refract through backdrop-filter blur during scroll.
+ * Fixed ambient muted cobalt light-field + ultra-subtle optical grain over Abyssal Blue (#0A0F1C).
+ * As thick cut-glass panels (40px+ blur) scroll over this fixed field, the muted cobalt spheres
+ * refract softly with optical weight and solidity.
  */
 export function AmbientParallaxBackdrop() {
   return (

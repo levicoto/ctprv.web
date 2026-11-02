@@ -210,10 +210,10 @@ function createSoftShadowMap(): THREE.CanvasTexture {
 }
 
 // Pre-allocated color instances outside render loop (zero GC per frame)
-const ALERT_EMISSIVE = new THREE.Color(0xe6ff00);
-const SEALED_EMISSIVE = new THREE.Color(0xffffff);
-const ALERT_LIGHT = new THREE.Color(0xe6ff00);
-const SEALED_LIGHT = new THREE.Color(0xffffff);
+const ALERT_EMISSIVE = new THREE.Color(0x3b639c);
+const SEALED_EMISSIVE = new THREE.Color(0xe2e8f0);
+const ALERT_LIGHT = new THREE.Color(0x3b639c);
+const SEALED_LIGHT = new THREE.Color(0xe2e8f0);
 const _workEmissive = new THREE.Color();
 const _workLight = new THREE.Color();
 
@@ -264,7 +264,7 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const darkBg = 0x060608;
+    const darkBg = 0x0a0f1c;
     scene.background = new THREE.Color(darkBg);
     scene.fog = new THREE.FogExp2(darkBg, 0.044);
 
@@ -280,23 +280,23 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
     scene.environment = envRT.texture;
     pmrem.dispose();
 
-    // Pure White + Electric Yellow (#E6FF00) 3-Point Studio Rig
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.94);
+    // Platinum + Muted Cobalt 3-Point Studio Rig
+    const hemi = new THREE.HemisphereLight(0xe2e8f0, 0x0a0f1c, 0.9);
     scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xffffff, 2.5);
+    const key = new THREE.DirectionalLight(0xf1f5f9, 2.45);
     key.position.set(4.2, 5.4, 5.0);
     scene.add(key);
 
-    const coolRim = new THREE.DirectionalLight(0xffffff, 2.05);
+    const coolRim = new THREE.DirectionalLight(0xcbd5e1, 1.98);
     coolRim.position.set(-4.6, 2.7, -3.5);
     scene.add(coolRim);
 
-    const pearlRim = new THREE.DirectionalLight(0xe6ff00, 1.48);
+    const pearlRim = new THREE.DirectionalLight(0x2b4c7e, 1.62);
     pearlRim.position.set(4.1, -2.1, -3.6);
     scene.add(pearlRim);
 
-    const corePointLight = new THREE.PointLight(0xe6ff00, 2.25, 5.2, 1.6);
+    const corePointLight = new THREE.PointLight(0x3b639c, 2.05, 5.2, 1.6);
     corePointLight.position.set(0, 0.18, 0.1);
     scene.add(corePointLight);
 
@@ -307,34 +307,34 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
     const shadowTex = createSoftShadowMap();
     const textures: THREE.Texture[] = [envRT.texture, iridTex, dialTex, shadowTex];
 
-    // 1. Stepped Architectural Obsidian Plinth Material (roughness ~0.38)
+    // 1. Stepped Architectural Abyssal Plinth Material (roughness ~0.38)
     const obsidianPlinthMat = new THREE.MeshPhysicalMaterial({
-      color: 0x131318,
+      color: 0x0f172a,
       metalness: 0.68,
       roughness: 0.38,
-      iridescence: 0.34,
-      iridescenceIOR: 1.38,
-      iridescenceThicknessRange: [180, 440],
+      iridescence: 0.2,
+      iridescenceIOR: 1.36,
+      iridescenceThicknessRange: [200, 420],
       clearcoat: 0.65,
       clearcoatRoughness: 0.16,
     });
 
-    // 2. Anisotropic Brushed Platinum Hardware (roughness ~0.11 — >=0.27 delta from obsidian)
+    // 2. Anisotropic Brushed Platinum Hardware (roughness ~0.11 — >=0.27 delta from plinth)
     const brushedPlatinumMat = new THREE.MeshPhysicalMaterial({
-      color: 0xf1f5f9,
+      color: 0xe2e8f0,
       metalness: 0.96,
       roughness: 0.11,
       anisotropy: 0.85,
-      iridescence: 0.28,
-      iridescenceIOR: 1.36,
-      iridescenceThicknessRange: [200, 460],
+      iridescence: 0.14,
+      iridescenceIOR: 1.34,
+      iridescenceThicknessRange: [220, 380],
       clearcoat: 0.42,
       clearcoatRoughness: 0.08,
     });
 
-    // 3. Matte Obsidian Inner Faraday Frame (roughness ~0.52)
+    // 3. Matte Abyssal Inner Faraday Frame (roughness ~0.52)
     const innerFrameMat = new THREE.MeshStandardMaterial({
-      color: 0x17171e,
+      color: 0x131d31,
       metalness: 0.56,
       roughness: 0.52,
     });
@@ -954,9 +954,9 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
 
   if (fallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] flex items-center justify-center">
-        <div className="w-20 h-20 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center">
-          <Shield className="w-9 h-9 text-[#E6FF00]" />
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl sculpture-frame flex items-center justify-center group">
+        <div className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center">
+          <Shield className="w-9 h-9 icon-slate" />
         </div>
       </div>
     );
@@ -965,7 +965,7 @@ export default function CrisisContainment3D({ scenarioId }: CrisisContainment3DP
   return (
     <div
       aria-label={t.crisisPage.hero.chamberAria}
-      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl sculpture-frame overflow-hidden select-none touch-pan-y"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

@@ -221,10 +221,10 @@ function createDialTexture(maxAnisotropy: number): THREE.CanvasTexture {
       const r1 = cardinal ? size * 0.36 : major ? size * 0.38 : size * 0.41;
       const r2 = size * 0.46;
       ctx.strokeStyle = cardinal
-        ? 'rgba(230, 255, 0, 0.92)'
+        ? 'rgba(226, 232, 240, 0.92)'
         : major
-          ? 'rgba(255, 255, 255, 0.72)'
-          : 'rgba(255, 255, 255, 0.28)';
+          ? 'rgba(226, 232, 240, 0.64)'
+          : 'rgba(148, 163, 184, 0.28)';
       ctx.lineWidth = cardinal ? 2.8 : major ? 2.2 : 1.3;
       ctx.beginPath();
       ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
@@ -294,7 +294,7 @@ export default function VaultSculpture3D() {
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const bgHex = 0x060608;
+    const bgHex = 0x0a0f1c;
     scene.background = new THREE.Color(bgHex);
     scene.fog = new THREE.FogExp2(bgHex, 0.044);
 
@@ -304,25 +304,25 @@ export default function VaultSculpture3D() {
     camera.position.set(0, 0.08, baseCameraZ * Math.max(1, 1.08 / initialAspect));
     camera.lookAt(0, -0.06, 0);
 
-    // Studio Reflection Environment (critical for refractive & iridescent crystal)
+    // Studio Reflection Environment (critical for refractive & optical crystal)
     const pmremGenerator = new THREE.PMREMGenerator(renderer);
     const envRT = pmremGenerator.fromScene(new RoomEnvironment(), 0.035);
     scene.environment = envRT.texture;
     pmremGenerator.dispose();
 
-    // Studio Rig: Pure White Key + Grazing Rim + Electric Yellow (#E6FF00) Backlight Caustic
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.92);
+    // Studio Rig: Platinum Key + Cool Slate Grazing Rim + Muted Cobalt Caustic Backlight
+    const hemiLight = new THREE.HemisphereLight(0xe2e8f0, 0x0a0f1c, 0.9);
     scene.add(hemiLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.5);
+    const keyLight = new THREE.DirectionalLight(0xf1f5f9, 2.45);
     keyLight.position.set(4.2, 6.0, 5.4);
     scene.add(keyLight);
 
-    const coolGrazingLight = new THREE.DirectionalLight(0xffffff, 1.85);
+    const coolGrazingLight = new THREE.DirectionalLight(0xcbd5e1, 1.8);
     coolGrazingLight.position.set(-5.0, 2.8, -3.6);
     scene.add(coolGrazingLight);
 
-    const pearlGrazingLight = new THREE.DirectionalLight(0xe6ff00, 1.45);
+    const pearlGrazingLight = new THREE.DirectionalLight(0x2b4c7e, 1.65);
     pearlGrazingLight.position.set(4.6, -2.4, -3.8);
     scene.add(pearlGrazingLight);
 
@@ -401,32 +401,32 @@ export default function VaultSculpture3D() {
       depthWrite: false,
     });
 
-    // 4. Sculpted Internal Obsidian Vault Core (visible & refracted inside the crystal body)
+    // 4. Sculpted Internal Abyssal Vault Core (visible & refracted inside the crystal body)
     const internalObsidianCoreMat = new THREE.MeshPhysicalMaterial({
-      color: 0x121216,
+      color: 0x0f172a,
       metalness: 0.86,
       roughness: 0.26,
-      iridescence: 0.45,
-      iridescenceIOR: 1.38,
-      iridescenceThicknessRange: [180, 480],
+      iridescence: 0.22,
+      iridescenceIOR: 1.36,
+      iridescenceThicknessRange: [200, 420],
       clearcoat: 0.75,
       clearcoatRoughness: 0.14,
     });
 
-    // 5. Brushed Platinum Hardware with Subtle Vapor-Deposited Sheen
+    // 5. Brushed Platinum Hardware with Institutional Precision Finish
     const brushedPlatinumMat = new THREE.MeshPhysicalMaterial({
-      color: 0xf4f4f6,
+      color: 0xe2e8f0,
       metalness: 0.95,
-      roughness: 0.12,
+      roughness: 0.13,
       anisotropy: 0.8,
-      iridescence: 0.28,
-      iridescenceIOR: 1.35,
-      iridescenceThicknessRange: [200, 440],
+      iridescence: 0.14,
+      iridescenceIOR: 1.34,
+      iridescenceThicknessRange: [220, 380],
       clearcoat: 0.35,
     });
 
     const deepKeyholeMat = new THREE.MeshStandardMaterial({
-      color: 0x09090b,
+      color: 0x0a0f1c,
       metalness: 0.5,
       roughness: 0.62,
     });
@@ -909,9 +909,9 @@ export default function VaultSculpture3D() {
 
   if (webglFallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] flex items-center justify-center">
-        <div className="w-20 h-20 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center">
-          <Lock className="w-9 h-9 text-[#E6FF00]" />
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl sculpture-frame flex items-center justify-center group">
+        <div className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center">
+          <Lock className="w-9 h-9 icon-slate" />
         </div>
       </div>
     );
@@ -920,7 +920,7 @@ export default function VaultSculpture3D() {
   return (
     <div
       aria-label={t.hero.padlockAria}
-      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl sculpture-frame overflow-hidden select-none touch-pan-y"
     >
       <div ref={canvasMountRef} className="w-full h-full touch-pan-y" />
     </div>

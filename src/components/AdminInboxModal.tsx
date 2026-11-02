@@ -69,7 +69,10 @@ function getSafeExternalUrl(raw: string): string | null {
   const candidate = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
   try {
     const parsed = new URL(candidate);
-    if ((parsed.protocol === 'https:' || parsed.protocol === 'http:') && parsed.hostname.includes('.')) {
+    if (
+      (parsed.protocol === 'https:' || parsed.protocol === 'http:') &&
+      parsed.hostname.includes('.')
+    ) {
       return parsed.href;
     }
     return null;
@@ -81,13 +84,13 @@ function getSafeExternalUrl(raw: string): string | null {
 function getStatusTextClass(status: EvaluationStatus): string {
   switch (status) {
     case 'pendiente':
-      return 'text-[#E6FF00]';
+      return 'text-[#E2E8F0]';
     case 'en_revision':
-      return 'text-white';
+      return 'text-[#CBD5E1]';
     case 'contactado':
-      return 'text-[#E6FF00]';
+      return 'text-[#E2E8F0]';
     case 'cerrado':
-      return 'text-white/40';
+      return 'text-[#94A3B8]/65';
   }
 }
 
@@ -117,6 +120,13 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
   const dossierScrollRef = useRef<HTMLDivElement | null>(null);
 
   const localeCode = lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'es-ES';
+
+  const displayTierLabel = (tier: ServiceTier) => {
+    if (tier === 'Tier 1: Argos') return t.form.confirmation.tierDisplayArgos;
+    if (tier === 'Tier 2: Atlas') return t.form.confirmation.tierDisplayAtlas;
+    if (tier === 'Palantir Raptor') return t.form.confirmation.tierDisplayRaptor;
+    return t.form.confirmation.tierDisplayPep;
+  };
 
   const formatMillis = (millis: number) => {
     if (!millis) return t.admin.recentFallback;
@@ -236,12 +246,13 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
         ev.preocupacionReciente,
         ev.adminNotes,
         ev.tierSugerido,
+        displayTierLabel(ev.tierSugerido),
       ]
         .join(' ')
         .toLowerCase();
       return haystack.includes(needle);
     });
-  }, [evaluations, serviceFilter, searchQuery]);
+  }, [evaluations, serviceFilter, searchQuery, t.form.confirmation]);
 
   const statusCounts = useMemo(() => {
     const counts = {
@@ -426,10 +437,10 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
       'Role',
       'Reference',
       'Mode',
-      'Tier',
+      'Protocol',
       'Status',
-      'Concern',
-      'Admin Notes',
+      'Context',
+      'Internal Notes',
     ];
     const escapeCsv = (val: string) => `"${val.replace(/"/g, '""')}"`;
     const rows = source.map((ev) =>
@@ -440,7 +451,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
         ev.rolPrincipal,
         ev.enlaceReferencia,
         ev.modoOperacion === 'solo' ? t.admin.soloShort : t.admin.teamShort,
-        ev.tierSugerido,
+        displayTierLabel(ev.tierSugerido),
         t.admin.statusLabels[ev.status],
         ev.preocupacionReciente,
         ev.adminNotes,
@@ -453,7 +464,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `CotoPrivado_Evaluations_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `CotoPrivado_Expedientes_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -471,23 +482,23 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
       role="dialog"
       aria-modal="true"
       aria-label={t.admin.dialogAria}
-      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5"
+      className="fixed inset-0 z-50 bg-[#060A14]/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5"
     >
       <div
-        className={`w-full max-w-6xl glass-modal text-white rounded-2xl flex flex-col overflow-hidden ${
+        className={`w-full max-w-6xl glass-modal text-[#E2E8F0] rounded-2xl flex flex-col overflow-hidden ${
           authReady && user && isAuthorizedAdmin ? 'h-[90vh] max-h-[860px]' : 'max-h-[90vh]'
         }`}
       >
         {/* Top Modal Header */}
-        <div className="px-5 sm:px-6 py-3.5 border-b border-white/10 flex items-center justify-between gap-4 bg-black/30 shrink-0">
+        <div className="px-5 sm:px-6 py-3.5 border-b border-white/[0.07] flex items-center justify-between gap-4 bg-[#0A0F1C]/65 shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
             <CotoLogoMark className="w-5 h-5 shrink-0" />
             <div className="min-w-0">
-              <span className="font-display text-sm sm:text-base font-semibold text-white truncate block">
+              <span className="text-sm sm:text-base font-medium text-[#F1F5F9] truncate block">
                 {t.admin.headerTitle}
               </span>
               {user && isAuthorizedAdmin && user.email && (
-                <span className="text-xs text-white/50 truncate hidden sm:block">
+                <span className="text-xs font-light text-[#94A3B8] truncate hidden sm:block">
                   {user.email}
                 </span>
               )}
@@ -499,9 +510,9 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
               <button
                 type="button"
                 onClick={handleExportCsv}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-xs font-medium text-white hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#CBD5E1] hover:border-[#E2E8F0]/45 hover:text-[#E2E8F0] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
               >
-                <Download className="w-3.5 h-3.5" />
+                <Download className="w-3.5 h-3.5 icon-slate" />
                 <span className="hidden xs:inline">{t.admin.exportCsv}</span>
               </button>
             )}
@@ -509,9 +520,9 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/12 bg-white/[0.03] text-xs font-medium text-white/65 hover:text-white transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#94A3B8] hover:text-[#E2E8F0] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
               >
-                <LogOut className="w-3.5 h-3.5" />
+                <LogOut className="w-3.5 h-3.5 icon-slate" />
                 <span>{t.admin.signOut}</span>
               </button>
             )}
@@ -519,61 +530,59 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
               type="button"
               onClick={onClose}
               aria-label={t.admin.closeAria}
-              className="p-1.5 rounded-lg text-white/55 hover:text-white hover:bg-white/[0.08] transition-colors shrink-0 cursor-pointer"
+              className="group p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors shrink-0 cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 icon-slate" />
             </button>
           </div>
         </div>
 
         {/* Modal Body */}
         {!authReady ? (
-          <div className="py-20 px-6 flex flex-col items-center justify-center text-white/60">
-            <Loader2 className="w-6 h-6 animate-spin mb-3 text-[#E6FF00]" />
-            <p className="text-sm">{t.admin.verifying}</p>
+          <div className="py-20 px-6 flex flex-col items-center justify-center text-[#94A3B8]">
+            <Loader2 className="w-6 h-6 animate-spin mb-3 text-[#E2E8F0]" />
+            <p className="text-sm font-light">{t.admin.verifying}</p>
           </div>
         ) : !user ? (
           <div className="py-16 px-6 max-w-md mx-auto text-center">
-            <div className="w-12 h-12 rounded-2xl border border-white/15 bg-white/[0.05] text-white flex items-center justify-center mx-auto mb-4">
+            <div className="w-12 h-12 rounded-2xl border border-white/[0.10] bg-white/[0.03] flex items-center justify-center mx-auto mb-4">
               <CotoLogoMark variant="light" padded className="w-9 h-9" />
             </div>
-            <h3 className="font-display text-xl font-semibold text-white">
-              {t.admin.signInTitle}
-            </h3>
-            <p className="mt-2 text-sm text-white/65 leading-relaxed">{t.admin.signInDesc}</p>
+            <h3 className="text-xl font-medium text-[#F1F5F9]">{t.admin.signInTitle}</h3>
+            <p className="mt-2 text-sm font-light text-[#94A3B8] leading-relaxed">
+              {t.admin.signInDesc}
+            </p>
             {authError && (
-              <p className="mt-4 text-xs font-medium text-[#E6FF00] bg-[#E6FF00]/[0.08] border border-[#E6FF00]/40 rounded-lg py-2 px-3">
+              <p className="mt-4 text-xs font-normal text-[#E2E8F0] bg-white/[0.03] border border-[#E2E8F0]/35 rounded-lg py-2 px-3">
                 {authError}
               </p>
             )}
             <button
               type="button"
               onClick={handleGoogleSignIn}
-              className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-electric text-sm font-semibold transition-all whitespace-nowrap cursor-pointer"
+              className="mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-platinum text-sm font-medium transition-all whitespace-nowrap cursor-pointer"
             >
               <span>{t.admin.signInBtn}</span>
             </button>
           </div>
         ) : !isAuthorizedAdmin ? (
           <div className="py-16 px-6 max-w-md mx-auto text-center">
-            <h3 className="font-display text-lg font-semibold text-white">
-              {t.admin.unauthorizedTitle}
-            </h3>
-            <p className="mt-2 text-sm text-white/65 leading-relaxed">
+            <h3 className="text-lg font-medium text-[#F1F5F9]">{t.admin.unauthorizedTitle}</h3>
+            <p className="mt-2 text-sm font-light text-[#94A3B8] leading-relaxed">
               {t.admin.unauthorizedPrefix} (
-              <span className="text-xs font-medium text-white">{user.email}</span>){' '}
+              <span className="text-xs font-medium text-[#E2E8F0]">{user.email}</span>){' '}
               {t.admin.unauthorizedMiddle}{' '}
-              <span className="text-xs font-semibold text-[#E6FF00]">@{ADMIN_DOMAIN}</span>.
+              <span className="text-xs font-medium text-[#E2E8F0]">@{ADMIN_DOMAIN}</span>.
             </p>
             {authError && (
-              <p className="mt-4 text-xs font-medium text-[#E6FF00] bg-[#E6FF00]/[0.08] border border-[#E6FF00]/40 rounded-lg py-2 px-3">
+              <p className="mt-4 text-xs font-normal text-[#E2E8F0] bg-white/[0.03] border border-[#E2E8F0]/35 rounded-lg py-2 px-3">
                 {authError}
               </p>
             )}
             <button
               type="button"
               onClick={handleGoogleSignIn}
-              className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl btn-electric text-xs font-semibold transition-all whitespace-nowrap cursor-pointer"
+              className="mt-6 inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl btn-platinum text-xs font-medium transition-all whitespace-nowrap cursor-pointer"
             >
               <span>{t.admin.switchAccountBtn}</span>
             </button>
@@ -581,9 +590,9 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
         ) : (
           <div className="flex-1 min-h-0 flex flex-col">
             {/* Workspace Filter & Search Bar */}
-            <div className="px-5 sm:px-6 py-3.5 border-b border-white/10 bg-black/25 space-y-3 shrink-0">
+            <div className="px-5 sm:px-6 py-3.5 border-b border-white/[0.07] bg-[#0A0F1C]/45 space-y-3 shrink-0">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/10 overflow-x-auto max-w-full">
+                <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.02] border border-white/[0.08] overflow-x-auto max-w-full">
                   {(
                     [
                       { id: 'todas', label: t.admin.tabs.all(statusCounts.all) },
@@ -608,8 +617,8 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                       }}
                       className={`px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shrink-0 tabular-nums cursor-pointer ${
                         statusFilter === tab.id
-                          ? 'bg-[#E6FF00] text-[#060608] font-semibold shadow-sm'
-                          : 'font-medium text-white/65 hover:text-white'
+                          ? 'bg-[#E2E8F0] text-[#0A0F1C] font-medium shadow-sm'
+                          : 'font-normal text-[#94A3B8] hover:text-[#E2E8F0]'
                       }`}
                     >
                       {tab.label}
@@ -618,13 +627,13 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                 </div>
 
                 {actionFeedback && (
-                  <span className="text-xs font-medium text-[#E6FF00]">{actionFeedback}</span>
+                  <span className="text-xs font-medium text-[#E2E8F0]">{actionFeedback}</span>
                 )}
               </div>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
                 <div className="relative flex-1 min-w-0">
-                  <Search className="w-4 h-4 text-white/40 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Search className="w-4 h-4 text-[#94A3B8] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="text"
                     value={searchQuery}
@@ -633,16 +642,16 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                       setMobileDetailOpen(false);
                     }}
                     placeholder={t.admin.searchPlaceholder}
-                    className="w-full pl-9 pr-8 py-1.5 rounded-lg border border-white/12 bg-white/[0.04] text-xs sm:text-sm text-white placeholder:text-white/35 focus:outline-none focus:border-[#E6FF00] focus:ring-1 focus:ring-[#E6FF00]"
+                    className="w-full pl-9 pr-8 py-1.5 rounded-lg border border-white/[0.10] bg-[#0A0F1C]/65 text-xs sm:text-sm font-light text-[#E2E8F0] placeholder:text-[#94A3B8]/55 focus:outline-none focus:border-[#E2E8F0]/60 focus:ring-1 focus:ring-[#E2E8F0]/35"
                   />
                   {searchQuery && (
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}
                       aria-label={t.admin.clearSearchAria}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-white/40 hover:text-white cursor-pointer"
+                      className="group absolute right-2 top-1/2 -translate-y-1/2 p-1 cursor-pointer"
                     >
-                      <X className="w-3.5 h-3.5" />
+                      <X className="w-3.5 h-3.5 icon-slate" />
                     </button>
                   )}
                 </div>
@@ -655,13 +664,15 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                       setServiceFilter(e.target.value as 'todas' | ServiceTier);
                       setMobileDetailOpen(false);
                     }}
-                    className="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg border border-white/12 bg-[#0B0B0F] text-xs font-medium text-white focus:outline-none focus:border-[#E6FF00] focus:ring-1 focus:ring-[#E6FF00]"
+                    className="flex-1 sm:flex-initial px-3 py-1.5 rounded-lg border border-white/[0.10] bg-[#0D1425] text-xs font-medium text-[#E2E8F0] focus:outline-none focus:border-[#E2E8F0]/60 focus:ring-1 focus:ring-[#E2E8F0]/35"
                   >
                     <option value="todas">{t.admin.serviceAll}</option>
-                    <option value="Tier 1: Argos">Tier 1: Argos</option>
-                    <option value="Tier 2: Atlas">Tier 2: Atlas</option>
-                    <option value="Palantir Raptor">Palantir Raptor</option>
-                    <option value="Protocolo PEP">Protocolo PEP</option>
+                    <option value="Tier 1: Argos">{t.form.confirmation.tierDisplayArgos}</option>
+                    <option value="Tier 2: Atlas">{t.form.confirmation.tierDisplayAtlas}</option>
+                    <option value="Palantir Raptor">
+                      {t.form.confirmation.tierDisplayRaptor}
+                    </option>
+                    <option value="Protocolo PEP">{t.form.confirmation.tierDisplayPep}</option>
                   </select>
 
                   <button
@@ -669,9 +680,9 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                     onClick={() =>
                       setSortOrder((prev) => (prev === 'newest' ? 'oldest' : 'newest'))
                     }
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/12 bg-white/[0.04] text-xs font-medium text-white/75 hover:text-white hover:border-white/25 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                    className="group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#CBD5E1] hover:text-[#E2E8F0] hover:border-white/[0.20] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                   >
-                    <ArrowUpDown className="w-3.5 h-3.5 text-white/55" />
+                    <ArrowUpDown className="w-3.5 h-3.5 icon-slate" />
                     <span>
                       {sortOrder === 'newest' ? t.admin.sortNewest : t.admin.sortOldest}
                     </span>
@@ -682,22 +693,22 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
 
             {/* Main Split Workspace */}
             {loadingDocs ? (
-              <div className="flex-1 flex items-center justify-center text-white/60 text-sm">
-                <Loader2 className="w-4 h-4 animate-spin mr-2 text-[#E6FF00]" />
+              <div className="flex-1 flex items-center justify-center text-[#94A3B8] text-sm font-light">
+                <Loader2 className="w-4 h-4 animate-spin mr-2 text-[#E2E8F0]" />
                 {t.admin.loadingDocs}
               </div>
             ) : evaluations.length === 0 ? (
-              <div className="flex-1 flex items-center justify-center px-6 text-center text-sm text-white/50">
+              <div className="flex-1 flex items-center justify-center px-6 text-center text-sm font-light text-[#94A3B8]">
                 {t.admin.emptyDocs}
               </div>
             ) : filteredEvaluations.length === 0 ? (
               <div className="flex-1 flex flex-col items-center justify-center px-6 text-center gap-3">
-                <p className="text-sm text-white/65">{t.admin.emptyFiltered}</p>
+                <p className="text-sm font-light text-[#94A3B8]">{t.admin.emptyFiltered}</p>
                 {hasActiveFilters && (
                   <button
                     type="button"
                     onClick={resetFilters}
-                    className="px-3.5 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-xs font-medium text-white hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors whitespace-nowrap cursor-pointer"
+                    className="px-3.5 py-1.5 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#E2E8F0] hover:border-[#E2E8F0]/45 transition-colors whitespace-nowrap cursor-pointer"
                   >
                     {t.admin.clearFiltersBtn}
                   </button>
@@ -707,18 +718,20 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
               <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
                 {/* Left Request Queue */}
                 <div
-                  className={`lg:w-[390px] xl:w-[430px] shrink-0 lg:border-r border-white/10 flex-col min-h-0 bg-black/20 ${
+                  className={`lg:w-[390px] xl:w-[430px] shrink-0 lg:border-r border-white/[0.07] flex-col min-h-0 bg-[#0A0F1C]/35 ${
                     mobileDetailOpen ? 'hidden lg:flex' : 'flex flex-1 lg:flex-initial'
                   }`}
                 >
-                  <div className="px-5 py-2.5 bg-white/[0.02] border-b border-white/10 flex items-center justify-between gap-2 text-xs shrink-0">
-                    <span className="font-medium text-white/80 tabular-nums">
+                  <div className="px-5 py-2.5 bg-white/[0.015] border-b border-white/[0.07] flex items-center justify-between gap-2 text-xs shrink-0">
+                    <span className="font-medium text-[#CBD5E1] tabular-nums">
                       {t.admin.queueCount(filteredEvaluations.length, evaluations.length)}
                     </span>
-                    <span className="text-white/45 truncate">{t.admin.selectPrompt}</span>
+                    <span className="font-light text-[#94A3B8] truncate">
+                      {t.admin.selectPrompt}
+                    </span>
                   </div>
 
-                  <div className="flex-1 overflow-y-auto divide-y divide-white/10">
+                  <div className="flex-1 overflow-y-auto divide-y divide-white/[0.06]">
                     {filteredEvaluations.map((ev, index) => {
                       const active = selectedEvaluation?.id === ev.id;
                       const previewText =
@@ -731,42 +744,42 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                           onClick={() => handleSelectEvaluation(ev.id)}
                           className={`group w-full text-left px-5 py-3.5 transition-colors cursor-pointer ${
                             active
-                              ? 'bg-white/[0.07] lg:border-l-2 lg:border-l-[#E6FF00]'
-                              : 'hover:bg-white/[0.03]'
+                              ? 'bg-white/[0.05] lg:border-l-2 lg:border-l-[#E2E8F0]'
+                              : 'hover:bg-white/[0.025]'
                           }`}
                         >
                           <div className="flex items-center justify-between gap-2 text-xs tabular-nums">
                             <span
-                              className={`font-mono ${
-                                active ? 'font-semibold text-[#E6FF00]' : 'text-white/50'
-                              }`}
+                              className={
+                                active ? 'font-medium text-[#E2E8F0]' : 'font-normal text-[#94A3B8]'
+                              }
                             >
                               #{String(index + 1).padStart(2, '0')} · {ev.folio}
                             </span>
-                            <span className="text-white/40">
+                            <span className="font-light text-[#94A3B8]/80">
                               {formatShortMillis(ev.createdAtMillis)}
                             </span>
                           </div>
 
                           <div className="mt-1.5 flex items-center justify-between gap-3">
-                            <span className="text-sm font-semibold text-white truncate">
+                            <span className="text-sm font-medium text-[#F1F5F9] truncate">
                               {ev.nombreAlias}
                             </span>
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-white/50 group-hover:text-white shrink-0">
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-[#94A3B8] group-hover:text-[#E2E8F0] shrink-0">
                               <span className="lg:hidden">{t.admin.openDossier}</span>
                               <ChevronRight
                                 className={`w-4 h-4 transition-transform ${
                                   active
-                                    ? 'lg:text-[#E6FF00] lg:translate-x-0.5'
-                                    : 'text-white/35 group-hover:translate-x-0.5'
+                                    ? 'lg:text-[#E2E8F0] lg:translate-x-0.5'
+                                    : 'text-[#94A3B8] group-hover:text-[#E2E8F0] group-hover:translate-x-0.5'
                                 }`}
                               />
                             </span>
                           </div>
 
                           <div className="mt-1 flex items-center justify-between gap-2 text-xs">
-                            <span className="text-white/60 truncate">
-                              {ev.rolPrincipal} · {ev.tierSugerido}
+                            <span className="font-light text-[#94A3B8] truncate">
+                              {ev.rolPrincipal} · {displayTierLabel(ev.tierSugerido)}
                             </span>
                             <span
                               className={`font-medium shrink-0 ${getStatusTextClass(ev.status)}`}
@@ -776,7 +789,9 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                           </div>
 
                           {previewText && (
-                            <p className="mt-1.5 text-xs text-white/40 truncate">{previewText}</p>
+                            <p className="mt-1.5 text-xs font-light text-[#94A3B8]/80 truncate">
+                              {previewText}
+                            </p>
                           )}
                         </button>
                       );
@@ -792,18 +807,18 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                     }`}
                   >
                     {/* Sticky Dossier Stepper Bar */}
-                    <div className="px-5 sm:px-7 py-2.5 bg-white/[0.02] border-b border-white/10 flex items-center justify-between gap-3 shrink-0">
+                    <div className="px-5 sm:px-7 py-2.5 bg-white/[0.015] border-b border-white/[0.07] flex items-center justify-between gap-3 shrink-0">
                       <div className="flex items-center gap-3 min-w-0">
                         <button
                           type="button"
                           onClick={() => setMobileDetailOpen(false)}
-                          className="lg:hidden inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/15 bg-white/[0.04] text-xs font-medium text-white hover:bg-white/[0.08] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                          className="group lg:hidden inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#E2E8F0] hover:bg-white/[0.06] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                         >
-                          <ArrowLeft className="w-3.5 h-3.5" />
+                          <ArrowLeft className="w-3.5 h-3.5 icon-slate" />
                           <span>{t.admin.backToList(filteredEvaluations.length)}</span>
                         </button>
 
-                        <span className="text-xs font-medium text-white/65 tabular-nums truncate">
+                        <span className="text-xs font-normal text-[#94A3B8] tabular-nums truncate">
                           {t.admin.dossierPosition(selectedIndex + 1, filteredEvaluations.length)}
                         </span>
                       </div>
@@ -813,19 +828,19 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                           type="button"
                           disabled={selectedIndex <= 0}
                           onClick={handlePrev}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/12 bg-white/[0.04] text-xs font-medium text-white hover:border-[#E6FF00] hover:text-[#E6FF00] disabled:opacity-30 disabled:pointer-events-none transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                          className="group inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#CBD5E1] hover:border-[#E2E8F0]/45 hover:text-[#E2E8F0] disabled:opacity-30 disabled:pointer-events-none transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                         >
-                          <ChevronLeft className="w-3.5 h-3.5" />
+                          <ChevronLeft className="w-3.5 h-3.5 icon-slate" />
                           <span className="hidden sm:inline">{t.admin.prevRequest}</span>
                         </button>
                         <button
                           type="button"
                           disabled={selectedIndex >= filteredEvaluations.length - 1}
                           onClick={handleNext}
-                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/12 bg-white/[0.04] text-xs font-medium text-white hover:border-[#E6FF00] hover:text-[#E6FF00] disabled:opacity-30 disabled:pointer-events-none transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                          className="group inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#CBD5E1] hover:border-[#E2E8F0]/45 hover:text-[#E2E8F0] disabled:opacity-30 disabled:pointer-events-none transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                         >
                           <span className="hidden sm:inline">{t.admin.nextRequest}</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
+                          <ChevronRight className="w-3.5 h-3.5 icon-slate" />
                         </button>
                       </div>
                     </div>
@@ -838,35 +853,37 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                       {/* Applicant Header */}
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 text-xs text-white/50 tabular-nums">
-                            <span className="font-mono font-semibold text-[#E6FF00]">
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-[#94A3B8] tabular-nums">
+                            <span className="font-medium text-[#E2E8F0]">
                               {selectedEvaluation.folio}
                             </span>
                             <button
                               type="button"
                               onClick={() => handleCopy(selectedEvaluation.folio, 'folio')}
-                              className="inline-flex items-center gap-1 text-xs text-white/55 hover:text-white transition-colors whitespace-nowrap cursor-pointer"
+                              className="group inline-flex items-center gap-1 text-xs text-[#94A3B8] hover:text-[#E2E8F0] transition-colors whitespace-nowrap cursor-pointer"
                             >
                               {copiedField === 'folio' ? (
                                 <>
-                                  <Check className="w-3 h-3 text-[#E6FF00]" />
-                                  <span className="text-[#E6FF00]">{t.admin.copiedBtn}</span>
+                                  <Check className="w-3 h-3 text-[#E2E8F0]" />
+                                  <span className="text-[#E2E8F0]">{t.admin.copiedBtn}</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-3 h-3" />
+                                  <Copy className="w-3 h-3 icon-slate" />
                                   <span>{t.admin.copyBtn}</span>
                                 </>
                               )}
                             </button>
                             <span>·</span>
-                            <span>{formatMillis(selectedEvaluation.createdAtMillis)}</span>
+                            <span className="font-light">
+                              {formatMillis(selectedEvaluation.createdAtMillis)}
+                            </span>
                           </div>
 
-                          <h4 className="mt-1.5 font-display text-2xl font-semibold text-white break-words">
+                          <h4 className="mt-1.5 text-2xl font-medium text-[#F1F5F9] break-words">
                             {selectedEvaluation.nombreAlias}
                           </h4>
-                          <p className="mt-0.5 text-sm text-white/65">
+                          <p className="mt-0.5 text-sm font-light text-[#94A3B8]">
                             {selectedEvaluation.rolPrincipal}
                           </p>
                         </div>
@@ -876,14 +893,14 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                             <button
                               type="button"
                               onClick={() => handleDelete(selectedEvaluation.id)}
-                              className="px-3 py-1.5 rounded-lg btn-electric text-xs font-semibold transition-all whitespace-nowrap cursor-pointer"
+                              className="px-3 py-1.5 rounded-lg btn-platinum text-xs font-medium transition-all whitespace-nowrap cursor-pointer"
                             >
                               {t.admin.confirmDelete}
                             </button>
                             <button
                               type="button"
                               onClick={() => setConfirmDeleteId(null)}
-                              className="px-2.5 py-1.5 rounded-lg border border-white/15 text-xs text-white/70 hover:text-white transition-colors whitespace-nowrap cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-lg border border-white/[0.10] text-xs font-medium text-[#94A3B8] hover:text-[#E2E8F0] transition-colors whitespace-nowrap cursor-pointer"
                             >
                               {t.admin.cancelDelete}
                             </button>
@@ -893,22 +910,22 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                             type="button"
                             onClick={() => setConfirmDeleteId(selectedEvaluation.id)}
                             aria-label={t.admin.deleteAria}
-                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/12 text-xs font-medium text-white/55 hover:text-white hover:border-white/25 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                            className="group inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/[0.10] text-xs font-medium text-[#94A3B8] hover:text-[#E2E8F0] hover:border-white/[0.20] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-3.5 h-3.5 icon-slate" />
                             <span>{t.admin.deleteBtn}</span>
                           </button>
                         )}
                       </div>
 
                       {/* Workflow Status Bar */}
-                      <div className="py-4 border-y border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                        <span className="text-xs font-medium text-white/75">
+                      <div className="py-4 border-y border-white/[0.07] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <span className="text-xs font-medium text-[#CBD5E1]">
                           {t.admin.dossierStatus}
                         </span>
                         {selectedEvaluation.status === 'cerrado' ? (
                           <div className="flex flex-wrap items-center gap-3">
-                            <span className="text-xs text-white/50">
+                            <span className="text-xs font-light text-[#94A3B8]">
                               {t.admin.closedLockedMsg}
                             </span>
                             <button
@@ -916,7 +933,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                               onClick={() =>
                                 handleStatusChange(selectedEvaluation, 'en_revision')
                               }
-                              className="px-3 py-1.5 rounded-lg border border-white/15 bg-white/[0.04] text-xs font-medium text-white hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                              className="px-3 py-1.5 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#E2E8F0] hover:border-[#E2E8F0]/45 transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                             >
                               {t.admin.reopenBtn}
                             </button>
@@ -931,8 +948,8 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                                   onClick={() => handleStatusChange(selectedEvaluation, st)}
                                   className={`px-3 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
                                     selectedEvaluation.status === st
-                                      ? 'bg-[#E6FF00] text-[#060608] font-semibold'
-                                      : 'bg-white/[0.04] border border-white/12 font-medium text-white/70 hover:border-white/25 hover:text-white'
+                                      ? 'bg-[#E2E8F0] text-[#0A0F1C] font-medium'
+                                      : 'bg-white/[0.02] border border-white/[0.10] font-normal text-[#94A3B8] hover:border-white/[0.20] hover:text-[#E2E8F0]'
                                   }`}
                                 >
                                   {t.admin.statusLabels[st]}
@@ -946,32 +963,38 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                       {/* Structured Request Metadata */}
                       <dl className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-sm">
                         <div>
-                          <dt className="text-xs text-white/50">{t.admin.serviceLabel}</dt>
-                          <dd className="mt-1 font-medium text-white">
-                            {selectedEvaluation.tierSugerido}
+                          <dt className="text-xs font-light text-[#94A3B8]">
+                            {t.admin.serviceLabel}
+                          </dt>
+                          <dd className="mt-1 font-medium text-[#E2E8F0]">
+                            {displayTierLabel(selectedEvaluation.tierSugerido)}
                           </dd>
                         </div>
                         <div>
-                          <dt className="text-xs text-white/50">{t.admin.modeLabel}</dt>
-                          <dd className="mt-1 font-medium text-white">
+                          <dt className="text-xs font-light text-[#94A3B8]">
+                            {t.admin.modeLabel}
+                          </dt>
+                          <dd className="mt-1 font-medium text-[#E2E8F0]">
                             {selectedEvaluation.modoOperacion === 'solo'
                               ? t.admin.soloShort
                               : t.admin.teamShort}
                           </dd>
                         </div>
                         <div>
-                          <dt className="text-xs text-white/50">{t.admin.dateLabel}</dt>
-                          <dd className="mt-1 font-medium text-white tabular-nums">
+                          <dt className="text-xs font-light text-[#94A3B8]">
+                            {t.admin.dateLabel}
+                          </dt>
+                          <dd className="mt-1 font-medium text-[#E2E8F0] tabular-nums">
                             {formatMillis(selectedEvaluation.createdAtMillis)}
                           </dd>
                         </div>
                       </dl>
 
                       {/* Reference Link / Handle */}
-                      <div className="pt-5 border-t border-white/10">
-                        <div className="text-xs text-white/50">{t.admin.refLink}</div>
+                      <div className="pt-5 border-t border-white/[0.07]">
+                        <div className="text-xs font-light text-[#94A3B8]">{t.admin.refLink}</div>
                         <div className="mt-1.5 flex flex-wrap items-center justify-between gap-3">
-                          <span className="font-mono text-sm font-medium text-white break-all">
+                          <span className="text-sm font-normal text-[#E2E8F0] break-all">
                             {selectedEvaluation.enlaceReferencia}
                           </span>
                           <div className="flex items-center gap-2 shrink-0">
@@ -980,16 +1003,16 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                               onClick={() =>
                                 handleCopy(selectedEvaluation.enlaceReferencia, 'ref')
                               }
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/12 bg-white/[0.04] text-xs font-medium text-white/75 hover:text-white hover:border-white/25 transition-colors whitespace-nowrap cursor-pointer"
+                              className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#CBD5E1] hover:text-[#E2E8F0] hover:border-white/[0.20] transition-colors whitespace-nowrap cursor-pointer"
                             >
                               {copiedField === 'ref' ? (
                                 <>
-                                  <Check className="w-3.5 h-3.5 text-[#E6FF00]" />
-                                  <span className="text-[#E6FF00]">{t.admin.copiedBtn}</span>
+                                  <Check className="w-3.5 h-3.5 text-[#E2E8F0]" />
+                                  <span className="text-[#E2E8F0]">{t.admin.copiedBtn}</span>
                                 </>
                               ) : (
                                 <>
-                                  <Copy className="w-3.5 h-3.5" />
+                                  <Copy className="w-3.5 h-3.5 icon-slate" />
                                   <span>{t.admin.copyBtn}</span>
                                 </>
                               )}
@@ -999,24 +1022,26 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                                 href={safeRefUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/12 bg-white/[0.04] text-xs font-medium text-white hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors whitespace-nowrap"
+                                className="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg border border-white/[0.10] bg-white/[0.02] text-xs font-medium text-[#CBD5E1] hover:border-[#E2E8F0]/45 hover:text-[#E2E8F0] transition-colors whitespace-nowrap"
                               >
                                 <span>{t.admin.openLinkBtn}</span>
-                                <ExternalLink className="w-3.5 h-3.5" />
+                                <ExternalLink className="w-3.5 h-3.5 icon-slate" />
                               </a>
                             )}
                           </div>
                         </div>
                       </div>
 
-                      {/* Reported Concern */}
-                      <div className="pt-5 border-t border-white/10">
-                        <div className="text-xs text-white/50">{t.admin.reportedConcern}</div>
+                      {/* Reported Executive Context */}
+                      <div className="pt-5 border-t border-white/[0.07]">
+                        <div className="text-xs font-light text-[#94A3B8]">
+                          {t.admin.reportedConcern}
+                        </div>
                         <p
-                          className={`mt-2 text-sm whitespace-pre-wrap leading-relaxed ${
+                          className={`mt-2 text-sm font-light whitespace-pre-wrap leading-relaxed ${
                             selectedEvaluation.preocupacionReciente
-                              ? 'text-white/90'
-                              : 'text-white/40'
+                              ? 'text-[#E2E8F0]'
+                              : 'text-[#94A3B8]/70'
                           }`}
                         >
                           {selectedEvaluation.preocupacionReciente || t.admin.noComments}
@@ -1024,21 +1049,21 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                       </div>
 
                       {/* Internal Follow-up Notes */}
-                      <div className="pt-5 border-t border-white/10">
+                      <div className="pt-5 border-t border-white/[0.07]">
                         <div className="flex items-center justify-between gap-2">
                           <label
                             htmlFor="admin-notes-box"
-                            className="block text-xs font-medium text-white/75"
+                            className="block text-xs font-medium text-[#CBD5E1]"
                           >
                             {t.admin.internalNotesLabel}
                           </label>
                           <div className="flex items-center gap-2 text-xs tabular-nums">
                             {notesDirty && (
-                              <span className="text-[#E6FF00] font-medium">
+                              <span className="text-[#E2E8F0] font-medium">
                                 {t.admin.unsavedNotes}
                               </span>
                             )}
-                            <span className="text-white/40">
+                            <span className="font-light text-[#94A3B8]">
                               {notesDraft.length}/{EVALUATION_SCHEMA_LIMITS.adminNotesMax}
                             </span>
                           </div>
@@ -1051,7 +1076,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                           value={notesDraft}
                           onChange={(e) => setNotesDraft(e.target.value)}
                           placeholder={t.admin.internalNotesPlaceholder}
-                          className="mt-2 w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-white/35 border border-white/12 focus:outline-none focus:border-[#E6FF00] focus:ring-1 focus:ring-[#E6FF00] disabled:bg-white/[0.02] disabled:text-white/40"
+                          className="mt-2 w-full rounded-xl bg-[#0A0F1C]/60 px-3.5 py-2.5 text-sm font-light text-[#E2E8F0] placeholder:text-[#94A3B8]/50 border border-white/[0.10] focus:outline-none focus:border-[#E2E8F0]/60 focus:ring-1 focus:ring-[#E2E8F0]/35 disabled:bg-white/[0.015] disabled:text-[#94A3B8]/60"
                         />
                         {selectedEvaluation.status !== 'cerrado' && (
                           <div className="mt-3 flex justify-end">
@@ -1059,7 +1084,7 @@ export default function AdminInboxModal({ isOpen, onClose }: AdminInboxModalProp
                               type="button"
                               disabled={savingNotes || !notesDirty}
                               onClick={() => handleSaveNotes(selectedEvaluation)}
-                              className="px-4 py-2 rounded-lg btn-electric text-xs font-semibold disabled:opacity-40 transition-all whitespace-nowrap cursor-pointer"
+                              className="px-4 py-2 rounded-lg btn-platinum text-xs font-medium disabled:opacity-40 transition-all whitespace-nowrap cursor-pointer"
                             >
                               {savingNotes ? t.admin.savingBtn : t.admin.saveNotesBtn}
                             </button>

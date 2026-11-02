@@ -1,18 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 32 32" fill="none" shape-rendering="geometricPrecision">
-  <rect width="32" height="32" fill="#060608" />
+  <rect width="32" height="32" fill="#0A0F1C" />
   <g transform="translate(4 4)">
     <path
       d="M 20 9 L 20 11.2 C 20 16.4 16.8708 19.5646 12.6708 21.6646 A 1.5 1.5 0 0 1 11.3292 21.6646 C 7.1292 19.5646 4 16.4 4 11.2 L 4 6.8652 A 1.4 1.4 0 0 1 4.7739 5.613 L 11.2845 2.3578 A 1.6 1.6 0 0 1 12.7155 2.3578 L 19.2261 5.613 A 1.4 1.4 0 0 1 20 6.8652 Z"
-      stroke="#FFFFFF"
+      stroke="#E2E8F0"
       stroke-width="1.9"
       stroke-linejoin="round"
     />
     <path
       d="M 14.91 8.94 A 4.05 4.05 0 1 0 14.91 14.56"
-      stroke="#FFFFFF"
+      stroke="#E2E8F0"
       stroke-width="1.9"
       stroke-linecap="round"
     />
-    <circle cx="12" cy="11.75" r="1.35" fill="#E6FF00" />
+    <circle cx="12" cy="11.75" r="1.35" fill="#94A3B8" />
   </g>
 </svg>

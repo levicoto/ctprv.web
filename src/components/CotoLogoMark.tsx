@@ -7,8 +7,8 @@ interface CotoLogoMarkProps {
 
 /**
  * Precision-engineered 24x24 geometric vector emblem for Coto Privado.
- * Pure 3-color discipline: crisp #FFFFFF geometric shield & 'C' arc on dark surfaces
- * (or #060608 when rendered over light/yellow surfaces) with an Electric Yellow (#E6FF00) core point.
+ * Institutional Abyssal & Platinum discipline: crisp #E2E8F0 geometric shield & 'C' arc
+ * (or #0A0F1C when rendered over Platinum surfaces) with a Slate (#94A3B8) precision core.
  */
 export default function CotoLogoMark({
   className = 'w-6 h-6',
@@ -16,8 +16,8 @@ export default function CotoLogoMark({
   mark = 'dot',
   padded = false,
 }: CotoLogoMarkProps) {
-  const strokeColor = variant === 'dark' ? '#060608' : '#FFFFFF';
-  const centerColor = variant === 'dark' ? '#060608' : '#E6FF00';
+  const strokeColor = variant === 'dark' ? '#0A0F1C' : '#E2E8F0';
+  const centerColor = variant === 'dark' ? '#0A0F1C' : '#94A3B8';
 
   return (
     <svg
@@ -32,7 +32,7 @@ export default function CotoLogoMark({
       <path
         d="M 20 9 L 20 11.2 C 20 16.4 16.8708 19.5646 12.6708 21.6646 A 1.5 1.5 0 0 1 11.3292 21.6646 C 7.1292 19.5646 4 16.4 4 11.2 L 4 6.8652 A 1.4 1.4 0 0 1 4.7739 5.613 L 11.2845 2.3578 A 1.6 1.6 0 0 1 12.7155 2.3578 L 19.2261 5.613 A 1.4 1.4 0 0 1 20 6.8652 Z"
         stroke={strokeColor}
-        strokeWidth="1.9"
+        strokeWidth="1.85"
         strokeLinejoin="round"
       />
 
@@ -40,11 +40,11 @@ export default function CotoLogoMark({
       <path
         d="M 14.91 8.94 A 4.05 4.05 0 1 0 14.91 14.56"
         stroke={strokeColor}
-        strokeWidth="1.9"
+        strokeWidth="1.85"
         strokeLinecap="round"
       />
 
-      {/* Central core: Electric Yellow precision point or 6-spoke cryptographic asterisk */}
+      {/* Central core: Slate precision point or 6-spoke cryptographic asterisk */}
       {mark === 'asterisk' ? (
         <g stroke={centerColor} strokeWidth="1.3" strokeLinecap="round">
           <path d="M 12 10.15 L 12 13.35" />

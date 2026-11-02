@@ -3,16 +3,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { lazy, MouseEvent, Suspense, useEffect, useRef, useState } from 'react';
-import { ArrowRight, Check, ChevronDown, Globe, ShieldAlert } from 'lucide-react';
+import { lazy, Suspense, useEffect, useState } from 'react';
+import { ArrowRight, ShieldAlert } from 'lucide-react';
 import VaultSculpture3D from './components/VaultSculpture3D';
-import TierKineticObject3D, { type ServiceTierId } from './components/TierKineticObject3D';
+import { type ServiceTierId } from './components/TierKineticObject3D';
+import BoutiqueProfilesSection from './components/BoutiqueProfilesSection';
+import SpecializedUnitsSection from './components/SpecializedUnitsSection';
 import TechnologyStack from './components/TechnologyStack';
 import PublicExposureSection from './components/PublicExposureSection';
+import ProtectionMetricsSection from './components/ProtectionMetricsSection';
 import EvaluationForm, { type OperationMode } from './components/EvaluationForm';
 import PrivacyModal from './components/PrivacyModal';
 import EmergencyModal from './components/EmergencyModal';
 import CotoLogoMark from './components/CotoLogoMark';
+import SiteHeader, { type HeaderLinkItem } from './components/SiteHeader';
 
 const PalantirRaptorPage = lazy(() => import('./components/PalantirRaptorPage'));
 const CrisisPlaybookPage = lazy(() => import('./components/CrisisPlaybookPage'));
@@ -21,41 +25,22 @@ import ParallaxLayer, {
   AmbientParallaxBackdrop,
   smoothScrollToSection,
 } from './components/ParallaxLayer';
-import { type Language, useI18n } from './lib/i18n';
-
-const LANGUAGES: { code: Language; short: string; name: string }[] = [
-  { code: 'es', short: 'ES', name: 'Español' },
-  { code: 'en', short: 'EN', name: 'English' },
-  { code: 'pt', short: 'PT', name: 'Português' },
-];
+import { type BoutiqueAudienceItem, type MetricsScopeId, useI18n } from './lib/i18n';
 
 type ActiveView = 'main' | 'raptor' | 'crisis';
 
 function readViewFromHash(): ActiveView {
   if (typeof window === 'undefined') return 'main';
   const raw = window.location.hash.replace(/^#/, '').trim().toLowerCase();
-  if (raw === 'palantir-raptor' || raw.startsWith('raptor-')) return 'raptor';
+  if (raw === 'palantirr' || raw === 'palantir-raptor' || raw.startsWith('raptor-')) {
+    return 'raptor';
+  }
   if (raw === 'protocolo-crisis' || raw.startsWith('crisis-')) return 'crisis';
   return 'main';
 }
 
-function renderPowerHeadline(text: string, tailWords = 3) {
-  const words = text.trim().split(/\s+/);
-  if (words.length <= tailWords) {
-    return <span className="text-[#E6FF00]">{text}</span>;
-  }
-  const lead = words.slice(0, -tailWords).join(' ');
-  const tail = words.slice(-tailWords).join(' ');
-  return (
-    <>
-      <span>{lead} </span>
-      <span className="text-[#E6FF00]">{tail}</span>
-    </>
-  );
-}
-
 export default function App() {
-  const { lang, setLang, t } = useI18n();
+  const { t } = useI18n();
   const [activeView, setActiveView] = useState<ActiveView>(() => readViewFromHash());
   const [activeTier, setActiveTier] = useState<ServiceTierId>('atlas');
   const [preferredMode, setPreferredMode] = useState<OperationMode>('solo');
@@ -63,8 +48,6 @@ export default function App() {
   const [adminModalOpen, setAdminModalOpen] = useState(false);
   const [privacyModalOpen, setPrivacyModalOpen] = useState(false);
   const [emergencyModalOpen, setEmergencyModalOpen] = useState(false);
-  const [langMenuOpen, setLangMenuOpen] = useState(false);
-  const langMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const syncRoute = () => {
@@ -94,40 +77,15 @@ export default function App() {
           : t.metaTitle;
   }, [activeView, t.metaTitle, t.raptorMetaTitle, t.crisisMetaTitle]);
 
-  useEffect(() => {
-    if (!langMenuOpen) return;
-
-    const handlePointerDown = (e: PointerEvent) => {
-      if (langMenuRef.current && !langMenuRef.current.contains(e.target as Node)) {
-        setLangMenuOpen(false);
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setLangMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('pointerdown', handlePointerDown);
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [langMenuOpen]);
-
   const handleOpenRaptorPage = () => {
-    setLangMenuOpen(false);
-    if (window.location.hash !== '#palantir-raptor') {
-      window.history.pushState(null, '', '#palantir-raptor');
+    if (window.location.hash !== '#palantirr') {
+      window.history.pushState(null, '', '#palantirr');
     }
     setActiveView('raptor');
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   const handleOpenCrisisPage = () => {
-    setLangMenuOpen(false);
     if (window.location.hash !== '#protocolo-crisis') {
       window.history.pushState(null, '', '#protocolo-crisis');
     }
@@ -136,15 +94,16 @@ export default function App() {
   };
 
   const handleBackToMain = () => {
-    setLangMenuOpen(false);
     window.history.pushState(null, '', window.location.pathname + window.location.search);
     setActiveView('main');
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
-  const handleAnchorClick = (e: MouseEvent<HTMLAnchorElement>, sectionId: string) => {
-    e.preventDefault();
-    smoothScrollToSection(sectionId);
+  const focusEvaluationInput = () => {
+    window.setTimeout(() => {
+      const firstInput = document.getElementById('eval-nombre');
+      firstInput?.focus({ preventScroll: true });
+    }, 620);
   };
 
   const handleSelectTierForAudit = (tier: ServiceTierId) => {
@@ -152,10 +111,7 @@ export default function App() {
     setActiveTier(tier);
     setPreferredMode(tier === 'argos' ? 'solo' : 'equipo');
     smoothScrollToSection('evaluacion');
-    window.setTimeout(() => {
-      const firstInput = document.getElementById('eval-nombre');
-      firstInput?.focus({ preventScroll: true });
-    }, 620);
+    focusEvaluationInput();
   };
 
   const handleSelectPepForAudit = () => {
@@ -163,10 +119,33 @@ export default function App() {
     setActiveTier('atlas');
     setPreferredMode('equipo');
     smoothScrollToSection('evaluacion');
-    window.setTimeout(() => {
-      const firstInput = document.getElementById('eval-nombre');
-      firstInput?.focus({ preventScroll: true });
-    }, 620);
+    focusEvaluationInput();
+  };
+
+  const handleSelectAudience = (audienceId: BoutiqueAudienceItem['id']) => {
+    if (audienceId === 'pep') {
+      smoothScrollToSection('exposicion-publica');
+      return;
+    }
+    if (audienceId === 'creators') {
+      handleSelectTierForAudit('atlas');
+      return;
+    }
+    handleSelectTierForAudit('argos');
+  };
+
+  const handleSelectMetricsScopeForAudit = (scope: MetricsScopeId) => {
+    if (scope === 'pep') {
+      handleSelectPepForAudit();
+      return;
+    }
+    if (scope === 'atlas') {
+      handleSelectTierForAudit('atlas');
+      return;
+    }
+    setMainFormVariant('tiers');
+    smoothScrollToSection('evaluacion');
+    focusEvaluationInput();
   };
 
   if (activeView === 'raptor') {
@@ -218,187 +197,110 @@ export default function App() {
     );
   }
 
-  const currentLangItem = LANGUAGES.find((item) => item.code === lang) ?? LANGUAGES[0];
+  const desktopHeaderLinks: HeaderLinkItem[] = [
+    {
+      label: t.nav.profiles,
+      href: '#perfiles',
+      onSelect: () => smoothScrollToSection('perfiles'),
+    },
+    {
+      label: t.nav.services,
+      href: '#servicios',
+      onSelect: () => smoothScrollToSection('servicios'),
+    },
+    {
+      label: t.nav.units,
+      href: '#unidades',
+      onSelect: () => smoothScrollToSection('unidades'),
+    },
+    {
+      label: t.nav.pep,
+      href: '#exposicion-publica',
+      onSelect: () => smoothScrollToSection('exposicion-publica'),
+    },
+    {
+      label: t.nav.metrics,
+      href: '#metricas',
+      onSelect: () => smoothScrollToSection('metricas'),
+    },
+  ];
+
+  const mobilePrimaryLinks: HeaderLinkItem[] = [
+    ...desktopHeaderLinks,
+    {
+      label: t.nav.backing,
+      href: '#respaldo',
+      onSelect: () => smoothScrollToSection('respaldo'),
+    },
+  ];
+
+  const mobileSecondaryLinks: HeaderLinkItem[] = [
+    {
+      label: t.nav.raptor,
+      href: '#palantirr',
+      onSelect: handleOpenRaptorPage,
+    },
+    {
+      label: t.nav.crisis,
+      href: '#protocolo-crisis',
+      onSelect: handleOpenCrisisPage,
+    },
+  ];
 
   return (
-    <div className="relative min-h-screen architectural-canvas text-white flex flex-col overflow-x-clip">
+    <div className="relative min-h-screen architectural-canvas text-[#E2E8F0] flex flex-col overflow-x-clip">
       <AmbientParallaxBackdrop />
 
-      {/* Symmetric Architectural Top Bar */}
-      <header className="sticky top-0 z-40 header-glass">
-        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-3.5 w-full flex items-center justify-between md:grid md:grid-cols-[1fr_auto_1fr] gap-4">
-          {/* Zone 1: Brand Wordmark */}
-          <div className="flex items-center justify-self-start">
-            <a
-              href="#inicio"
-              onClick={(e) => handleAnchorClick(e, 'inicio')}
-              className="inline-flex items-center gap-2.5 text-lg font-semibold tracking-tight text-white whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E6FF00]"
-            >
-              <CotoLogoMark className="w-6 h-6 shrink-0" />
-              <span>Coto Privado</span>
-            </a>
-          </div>
-
-          {/* Zone 2: Mathematically Centered Primary Navigation */}
-          <nav
-            aria-label={t.nav.ariaMain}
-            className="hidden md:flex items-center justify-self-center gap-6 lg:gap-7 text-sm font-medium text-white/65"
-          >
-            <a
-              href="#servicios"
-              onClick={(e) => handleAnchorClick(e, 'servicios')}
-              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
-            >
-              {t.nav.services}
-            </a>
-            <a
-              href="#exposicion-publica"
-              onClick={(e) => handleAnchorClick(e, 'exposicion-publica')}
-              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
-            >
-              {t.nav.pep}
-            </a>
-            <a
-              href="#respaldo"
-              onClick={(e) => handleAnchorClick(e, 'respaldo')}
-              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
-            >
-              {t.nav.backing}
-            </a>
-            <a
-              href="#protocolo-crisis"
-              onClick={(e) => {
-                e.preventDefault();
-                handleOpenCrisisPage();
-              }}
-              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
-            >
-              {t.nav.crisis}
-            </a>
-            <a
-              href="#evaluacion"
-              onClick={(e) => handleAnchorClick(e, 'evaluacion')}
-              className="hover:text-white hover:underline decoration-[#E6FF00] underline-offset-4 transition-colors whitespace-nowrap shrink-0"
-            >
-              {t.nav.evaluation}
-            </a>
-          </nav>
-
-          {/* Zone 3: Globe Language Selector Dropdown + Primary Action */}
-          <div className="flex items-center justify-end justify-self-end gap-2.5 sm:gap-3 shrink-0">
-            <div ref={langMenuRef} className="relative">
-              <button
-                type="button"
-                aria-haspopup="listbox"
-                aria-expanded={langMenuOpen}
-                aria-label={t.nav.langSelectorAria}
-                onClick={() => setLangMenuOpen((prev) => !prev)}
-                className="h-9 px-2.5 rounded-lg border border-white/12 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/25 text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
-              >
-                <Globe className="w-4 h-4 text-white/80 shrink-0" />
-                <span>{currentLangItem.short}</span>
-                <ChevronDown
-                  className={`w-3.5 h-3.5 text-white/55 shrink-0 transition-transform duration-150 ${
-                    langMenuOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              {langMenuOpen && (
-                <div
-                  role="listbox"
-                  aria-label={t.nav.langSelectorAria}
-                  className="absolute right-0 top-[calc(100%+0.5rem)] z-50 min-w-[164px] p-1.5 rounded-xl glass-modal"
-                >
-                  {LANGUAGES.map((item) => {
-                    const active = lang === item.code;
-                    return (
-                      <button
-                        key={item.code}
-                        type="button"
-                        role="option"
-                        aria-selected={active}
-                        onClick={() => {
-                          setLang(item.code);
-                          setLangMenuOpen(false);
-                        }}
-                        className={`w-full px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between gap-3 transition-colors cursor-pointer whitespace-nowrap ${
-                          active
-                            ? 'bg-[#E6FF00] text-[#060608] font-semibold'
-                            : 'text-white/75 hover:bg-white/[0.06] hover:text-white'
-                        }`}
-                      >
-                        <span>{item.name}</span>
-                        {active ? (
-                          <Check className="w-3.5 h-3.5 shrink-0" />
-                        ) : (
-                          <span className="text-[11px] text-white/40">{item.short}</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => smoothScrollToSection('evaluacion')}
-              className="h-9 px-4 rounded-lg btn-electric text-xs sm:text-sm font-semibold transition-all inline-flex items-center justify-center whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
-            >
-              {t.nav.cta}
-            </button>
-          </div>
-        </div>
-      </header>
+      <SiteHeader
+        desktopLinks={desktopHeaderLinks}
+        mobilePrimaryLinks={mobilePrimaryLinks}
+        mobileSecondaryLinks={mobileSecondaryLinks}
+        ctaLabel={t.nav.cta}
+        mobileCtaLabel={t.nav.mobileCta}
+        onCtaClick={() => smoothScrollToSection('evaluacion')}
+        onBrandClick={() => smoothScrollToSection('inicio')}
+        onEmergencyClick={() => setEmergencyModalOpen(true)}
+      />
 
       <main id="inicio" className="relative z-10 flex-1">
-        {/* Hero Section: Unified 6 / 6 Architectural Grid */}
-        <section className="pt-8 pb-12 sm:pt-12 sm:pb-16">
-          <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              {/* Left Proposition Column */}
-              <div className="lg:col-span-6 flex flex-col justify-center lg:pr-4">
-                <div className="flex items-center gap-2.5 text-xs font-medium text-white/55">
-                  <span className="text-[#E6FF00]">{t.hero.kicker[0]}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{t.hero.kicker[1]}</span>
-                  <span aria-hidden="true">·</span>
-                  <span>{t.hero.kicker[2]}</span>
-                </div>
-
-                <h1 className="mt-4 text-[clamp(2.15rem,3.4vw,3.35rem)] font-semibold leading-[1.08] tracking-tight text-white text-balance">
-                  {renderPowerHeadline(t.hero.headline, 3)}
+        {/* Hero Section: Uncluttered Silent Authority Statement + 3D Vault Sculpture */}
+        <section className="pt-8 pb-12 sm:pt-14 sm:pb-16 lg:pb-18">
+          <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-5 sm:px-8 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 sm:gap-8 xl:gap-10 items-center">
+              {/* Left Proposition Column: Zero Top Labels, Pure Headline + Single-Impact Body */}
+              <div className="lg:col-span-6 flex flex-col justify-center lg:pr-2">
+                <h1 className="text-[clamp(2.1rem,3.65vw,3.55rem)] font-medium leading-[1.08] tracking-tight text-[#F1F5F9] text-balance">
+                  {t.hero.headline}
                 </h1>
 
-                <p className="mt-4 text-base sm:text-lg text-white/70 leading-relaxed tracking-[0.01em] max-w-[52ch]">
+                <p className="mt-4 text-base sm:text-[17px] font-light text-[#94A3B8] leading-relaxed tracking-[0.01em] max-w-[52ch]">
                   {t.hero.body}
                 </p>
 
-                <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+                <div className="mt-7 sm:mt-8 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-x-5 sm:gap-y-3">
                   <button
                     type="button"
                     onClick={() => smoothScrollToSection('evaluacion')}
-                    className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl btn-electric text-sm font-semibold active:scale-[0.99] transition-all whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
+                    className="inline-flex items-center justify-center gap-2.5 min-h-12 sm:min-h-11 px-5 py-3 rounded-xl btn-platinum text-sm font-medium active:scale-[0.99] transition-all whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
                   >
                     <span>{t.hero.primaryCta}</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <ArrowRight className="w-4 h-4 shrink-0" />
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setEmergencyModalOpen(true)}
-                    className="inline-flex items-center gap-2 py-2 text-sm font-medium text-white/75 hover:text-[#E6FF00] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E6FF00]"
+                    className="group inline-flex items-center justify-center sm:justify-start gap-2 min-h-10 py-2 text-sm font-normal text-[#94A3B8] hover:text-[#E2E8F0] transition-colors whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#E2E8F0]"
                   >
-                    <ShieldAlert className="w-4 h-4 text-[#E6FF00] shrink-0" />
-                    <span className="underline decoration-white/25 hover:decoration-[#E6FF00] underline-offset-4 transition-colors">
+                    <ShieldAlert className="w-4 h-4 icon-slate shrink-0" />
+                    <span className="underline decoration-[#94A3B8]/40 group-hover:decoration-[#E2E8F0] underline-offset-4 transition-colors">
                       {t.hero.emergencyTrigger}
                     </span>
                   </button>
                 </div>
               </div>
 
-              {/* Right Interactive 3D Iridescent Padlock Sculpture with Diffused Backlight */}
+              {/* Right Interactive 3D Vault Sculpture Preserved with Muted Cobalt Backlight */}
               <ParallaxLayer
                 speed={0.022}
                 maxOffset={8}
@@ -407,7 +309,7 @@ export default function App() {
               >
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute -inset-4 rounded-full electric-backlight-soft opacity-80"
+                  className="pointer-events-none absolute -inset-4 rounded-full cobalt-backlight-soft opacity-90"
                 />
                 <div className="relative z-10 w-full">
                   <VaultSculpture3D />
@@ -417,215 +319,220 @@ export default function App() {
           </div>
         </section>
 
-        {/* Services Section: Unified 6 / 6 Grid */}
-        <section id="servicios" className="py-12 sm:py-16 border-t border-white/10">
-          <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
-            {/* Top Row: Left Headline (6 cols) + Right Compact 3D Shield (6 cols) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-              <div className="lg:col-span-6 lg:pr-4">
-                <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white text-balance">
+        {/* Central Elevator Pitch + Profiles & Operating Principles */}
+        <BoutiqueProfilesSection onSelectAudience={handleSelectAudience} />
+
+        {/* Service Tiers (Argos & Atlas): Clean Executive Header + Synchronized Dual Cut-Glass Subgrid */}
+        <section id="servicios" className="py-12 sm:py-16 lg:py-18 border-t border-white/[0.07]">
+          <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-5 sm:px-8 w-full">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5">
+              <div className="max-w-[56ch]">
+                <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-[#F1F5F9] text-balance">
                   {t.services.headline}
                 </h2>
-                <p className="mt-2 text-sm sm:text-base text-white/65 leading-relaxed tracking-[0.01em] max-w-[48ch]">
+                <p className="mt-2.5 text-sm sm:text-base font-light text-[#94A3B8] leading-relaxed tracking-[0.01em]">
                   {t.services.subtitle}
                 </p>
               </div>
 
-              <ParallaxLayer speed={0.02} maxOffset={8} desktopOnly className="lg:col-span-6 w-full">
-                <TierKineticObject3D activeTier={activeTier} />
-              </ParallaxLayer>
-            </div>
-
-            {/* Dual Cut-Glass Service Cards Fed by Electric Yellow Backlight Spheres */}
-            <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly className="relative mt-7 lg:mt-8">
-              {/* Electric Yellow Backlight Halos Refracting Through Frosted Glass */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -top-10 left-[8%] w-72 h-72 rounded-full electric-backlight-soft"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute top-1/4 right-[6%] w-80 h-80 rounded-full electric-backlight"
-              />
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -bottom-8 left-1/3 w-96 h-48 rounded-full electric-backlight-soft"
-              />
-
-              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch">
-                {/* Tier 1: Argos */}
-                <div className="lg:col-span-6 flex">
-                  <article
-                    onMouseEnter={() => setActiveTier('argos')}
-                    onTouchStart={() => setActiveTier('argos')}
-                    className="w-full h-full glass-panel rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+              {/* Discreet Interactive Scope Switcher balancing the PC header row */}
+              <div className="shrink-0 self-start lg:self-auto">
+                <div
+                  role="group"
+                  aria-label={t.services.headline}
+                  className="inline-flex items-center gap-1 p-1 rounded-xl bg-[#0A0F1C]/65 border border-white/[0.08]"
+                >
+                  <button
+                    type="button"
+                    aria-pressed={activeTier === 'argos'}
+                    onClick={() => setActiveTier('argos')}
+                    className={`min-h-9 px-3.5 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0] ${
+                      activeTier === 'argos'
+                        ? 'bg-[#E2E8F0] text-[#0A0F1C] font-medium'
+                        : 'text-[#94A3B8] hover:text-[#E2E8F0] font-normal'
+                    }`}
                   >
-                    <div>
-                      <div>
-                        <div className="text-xs font-medium text-white/55 flex items-center gap-2">
-                          <span className="tabular-nums text-white">
-                            {t.services.argos.tierTag}
-                          </span>
-                          <span aria-hidden="true">·</span>
-                          <span>{t.services.argos.subtitleTag}</span>
-                        </div>
-
-                        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-                          {t.services.argos.name}
-                        </h3>
-
-                        <p className="mt-2 text-sm text-white/65 leading-relaxed tracking-[0.01em]">
-                          {t.services.argos.audience}
-                        </p>
-                      </div>
-
-                      <div className="my-5 border-t border-white/10" />
-
-                      <dl className="space-y-4">
-                        {t.services.argos.items.map((item) => (
-                          <div key={item.title}>
-                            <dt className="text-sm font-semibold text-white tracking-[0.01em]">
-                              {item.title}
-                            </dt>
-                            <dd className="mt-1 text-sm text-white/65 leading-relaxed tracking-[0.01em]">
-                              {item.desc}
-                            </dd>
-                          </div>
-                        ))}
-                      </dl>
-                    </div>
-
-                    <div className="mt-6 pt-5 border-t border-white/10">
-                      <button
-                        type="button"
-                        onClick={() => handleSelectTierForAudit('argos')}
-                        className="w-full py-2.5 px-5 rounded-xl border border-white/18 bg-white/[0.04] text-white text-sm font-medium hover:border-[#E6FF00] hover:text-[#E6FF00] hover:bg-white/[0.06] transition-colors flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
-                      >
-                        <span>{t.services.argos.cta}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </article>
-                </div>
-
-                {/* Tier 2: Atlas */}
-                <div className="lg:col-span-6 flex">
-                  <article
-                    onMouseEnter={() => setActiveTier('atlas')}
-                    onTouchStart={() => setActiveTier('atlas')}
-                    className="w-full h-full glass-panel-electric text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-0.5"
+                    {t.services.argos.tierTag} · {t.services.argos.name}
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={activeTier === 'atlas'}
+                    onClick={() => setActiveTier('atlas')}
+                    className={`min-h-9 px-3.5 py-1.5 rounded-lg text-xs transition-colors whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0] ${
+                      activeTier === 'atlas'
+                        ? 'bg-[#E2E8F0] text-[#0A0F1C] font-medium'
+                        : 'text-[#94A3B8] hover:text-[#E2E8F0] font-normal'
+                    }`}
                   >
-                    <div>
-                      <div>
-                        <div className="text-xs font-medium text-white/60 flex items-center gap-2">
-                          <span className="tabular-nums text-[#E6FF00] font-semibold">
-                            {t.services.atlas.tierTag}
-                          </span>
-                          <span aria-hidden="true">·</span>
-                          <span>{t.services.atlas.subtitleTag}</span>
-                        </div>
-
-                        <h3 className="mt-2 text-2xl font-semibold tracking-tight text-white">
-                          {t.services.atlas.name}
-                        </h3>
-
-                        <p className="mt-2 text-sm text-white/70 leading-relaxed tracking-[0.01em]">
-                          {t.services.atlas.audience}
-                        </p>
-                      </div>
-
-                      <div className="my-5 border-t border-white/10" />
-
-                      <dl className="space-y-4">
-                        {t.services.atlas.items.map((item) => (
-                          <div key={item.title}>
-                            <dt className="text-sm font-semibold text-white tracking-[0.01em]">
-                              {item.title}
-                            </dt>
-                            <dd className="mt-1 text-sm text-white/70 leading-relaxed tracking-[0.01em]">
-                              {item.desc}
-                            </dd>
-                          </div>
-                        ))}
-                      </dl>
-                    </div>
-
-                    <div className="mt-6 pt-5 border-t border-white/10">
-                      <button
-                        type="button"
-                        onClick={() => handleSelectTierForAudit('atlas')}
-                        className="w-full py-2.5 px-5 rounded-xl btn-electric text-sm font-semibold transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
-                      >
-                        <span>{t.services.atlas.cta}</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </article>
+                    {t.services.atlas.tierTag} · {t.services.atlas.name}
+                  </button>
                 </div>
               </div>
+            </div>
 
-              {/* Unified Cut-Glass Index Strip: Palantir Raptor (OSINT) + Crisis Playbook */}
-              <div className="relative z-10 mt-5 glass-panel rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
-                {/* Palantir Raptor Index Cell */}
-                <div className="p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
-                  <div className="min-w-0">
-                    <div className="text-xs font-medium text-white/55 flex flex-wrap items-center gap-2">
-                      <span className="text-[#E6FF00]">{t.services.raptorCallout.kicker[0]}</span>
+            {/* Dual Cut-Glass Service Scope Cards:
+                3-track CSS subgrid on PC aligns Header, Top Hairline, Bullets, and Bottom CTA Hairline */}
+            <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly className="relative mt-7 sm:mt-8">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -top-10 left-[8%] w-72 h-72 rounded-full cobalt-backlight-soft"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/4 right-[6%] w-80 h-80 rounded-full cobalt-backlight"
+              />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-8 left-1/3 w-96 h-48 rounded-full cobalt-backlight-soft"
+              />
+
+              <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-x-6 lg:gap-y-0 lg:grid-rows-[auto_1fr_auto]">
+                {/* Nivel I: Argos (Gestión Personal) */}
+                <article
+                  onMouseEnter={() => setActiveTier('argos')}
+                  onTouchStart={() => setActiveTier('argos')}
+                  className={`w-full rounded-2xl p-5 sm:p-8 flex flex-col lg:grid lg:grid-rows-subgrid lg:row-span-3 lg:gap-y-0 transition-all duration-200 hover:-translate-y-0.5 ${
+                    activeTier === 'argos' ? 'glass-panel-featured' : 'glass-panel'
+                  }`}
+                >
+                  <div className="pb-5">
+                    <div className="text-xs font-normal text-[#94A3B8] flex items-center gap-2 tracking-[0.02em]">
+                      <span className="tabular-nums text-[#E2E8F0] font-medium">
+                        {t.services.argos.tierTag}
+                      </span>
                       <span aria-hidden="true">·</span>
-                      <span>{t.services.raptorCallout.kicker[1]}</span>
+                      <span>{t.services.argos.scopeTag}</span>
                     </div>
-                    <p className="mt-1.5 text-sm text-white/75 leading-relaxed tracking-[0.01em]">
-                      {t.services.raptorCallout.hook}
+
+                    <h3 className="mt-2 text-2xl font-medium tracking-tight text-[#F1F5F9]">
+                      {t.services.argos.name}
+                    </h3>
+
+                    <p className="mt-2 text-sm font-light text-[#CBD5E1] leading-relaxed tracking-[0.01em] max-w-[50ch]">
+                      {t.services.argos.scopeSummary}
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleOpenRaptorPage}
-                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-white/15 bg-white/[0.04] text-white text-xs font-medium hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
-                  >
-                    <span>{t.services.raptorCallout.cta}</span>
-                    <ArrowRight className="w-3.5 h-3.5 shrink-0" />
-                  </button>
-                </div>
+                  <div className="py-5 border-t border-white/[0.07] flex-1">
+                    <ul className="space-y-3">
+                      {t.services.argos.bullets.map((bullet) => (
+                        <li
+                          key={bullet}
+                          className="flex items-start gap-3 text-sm font-light text-[#94A3B8] leading-snug tracking-[0.01em]"
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[#94A3B8]/80 shrink-0"
+                          />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
 
-                {/* Crisis Playbook Index Cell */}
-                <div className="p-5 sm:px-7 sm:py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-white/[0.02] transition-colors">
-                  <div className="min-w-0">
-                    <div className="text-xs font-medium text-white/55 flex flex-wrap items-center gap-2">
-                      <span className="text-[#E6FF00]">{t.services.crisisCallout.kicker[0]}</span>
+                  <div className="pt-5 border-t border-white/[0.07] flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectTierForAudit('argos')}
+                      className={`group w-full min-h-11 py-2.5 px-5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0] ${
+                        activeTier === 'argos'
+                          ? 'btn-platinum'
+                          : 'border border-white/[0.12] bg-white/[0.02] text-[#E2E8F0] hover:border-[#E2E8F0]/45 hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <span>{t.services.argos.cta}</span>
+                      <ArrowRight
+                        className={`w-4 h-4 shrink-0 ${activeTier === 'argos' ? '' : 'icon-slate'}`}
+                      />
+                    </button>
+                  </div>
+                </article>
+
+                {/* Nivel II: Atlas (Delegación de Accesos) */}
+                <article
+                  onMouseEnter={() => setActiveTier('atlas')}
+                  onTouchStart={() => setActiveTier('atlas')}
+                  className={`w-full text-[#E2E8F0] rounded-2xl p-5 sm:p-8 flex flex-col lg:grid lg:grid-rows-subgrid lg:row-span-3 lg:gap-y-0 transition-all duration-200 hover:-translate-y-0.5 ${
+                    activeTier === 'atlas' ? 'glass-panel-featured' : 'glass-panel'
+                  }`}
+                >
+                  <div className="pb-5">
+                    <div className="text-xs font-normal text-[#94A3B8] flex items-center gap-2 tracking-[0.02em]">
+                      <span className="tabular-nums text-[#E2E8F0] font-medium">
+                        {t.services.atlas.tierTag}
+                      </span>
                       <span aria-hidden="true">·</span>
-                      <span>{t.services.crisisCallout.kicker[1]}</span>
+                      <span>{t.services.atlas.scopeTag}</span>
                     </div>
-                    <p className="mt-1.5 text-sm text-white/75 leading-relaxed tracking-[0.01em]">
-                      {t.services.crisisCallout.hook}
+
+                    <h3 className="mt-2 text-2xl font-medium tracking-tight text-[#F1F5F9]">
+                      {t.services.atlas.name}
+                    </h3>
+
+                    <p className="mt-2 text-sm font-light text-[#CBD5E1] leading-relaxed tracking-[0.01em] max-w-[50ch]">
+                      {t.services.atlas.scopeSummary}
                     </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={handleOpenCrisisPage}
-                    className="self-start sm:self-center py-2 px-3.5 rounded-lg border border-white/15 bg-white/[0.04] text-white text-xs font-medium hover:border-[#E6FF00] hover:text-[#E6FF00] transition-colors inline-flex items-center gap-1.5 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
-                  >
-                    <span>{t.services.crisisCallout.cta}</span>
-                    <ArrowRight className="w-3.5 h-3.5 shrink-0" />
-                  </button>
-                </div>
+                  <div className="py-5 border-t border-white/[0.07] flex-1">
+                    <ul className="space-y-3">
+                      {t.services.atlas.bullets.map((bullet) => (
+                        <li
+                          key={bullet}
+                          className="flex items-start gap-3 text-sm font-light text-[#94A3B8] leading-snug tracking-[0.01em]"
+                        >
+                          <span
+                            aria-hidden="true"
+                            className="mt-[7px] w-1.5 h-1.5 rounded-full bg-[#E2E8F0]/75 shrink-0"
+                          />
+                          <span>{bullet}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="pt-5 border-t border-white/[0.07] flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectTierForAudit('atlas')}
+                      className={`group w-full min-h-11 py-2.5 px-5 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0] ${
+                        activeTier === 'atlas'
+                          ? 'btn-platinum'
+                          : 'border border-white/[0.12] bg-white/[0.02] text-[#E2E8F0] hover:border-[#E2E8F0]/45 hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <span>{t.services.atlas.cta}</span>
+                      <ArrowRight
+                        className={`w-4 h-4 shrink-0 ${activeTier === 'atlas' ? '' : 'icon-slate'}`}
+                      />
+                    </button>
+                  </div>
+                </article>
               </div>
             </ParallaxLayer>
           </div>
         </section>
 
-        {/* Politically Exposed Persons (PEP) & Candidacies Shielding */}
+        {/* Dedicated Hierarchy Section: Palantirr (Passive OSINT) & Incident Protocol */}
+        <SpecializedUnitsSection
+          onOpenPalantirr={handleOpenRaptorPage}
+          onOpenIncidentProtocol={handleOpenCrisisPage}
+          onOpenEmergency={() => setEmergencyModalOpen(true)}
+        />
+
+        {/* Politically Exposed Persons (PEP) & Candidacies Personal Protection */}
         <PublicExposureSection
           onRequestPepAudit={handleSelectPepForAudit}
           onOpenRaptor={handleOpenRaptorPage}
         />
 
-        {/* Technology & Industry Backing */}
+        {/* D3.js Public Exposure Reduction Metrics */}
+        <ProtectionMetricsSection onRequestAudit={handleSelectMetricsScopeForAudit} />
+
+        {/* Tailored Intelligence Infrastructure */}
         <TechnologyStack />
 
-        {/* Private Evaluation Form */}
+        {/* Assessment Intake */}
         <EvaluationForm
           preferredMode={preferredMode}
           onModeSyncTier={(tier) => setActiveTier(tier)}
@@ -635,21 +542,29 @@ export default function App() {
         />
       </main>
 
-      {/* Minimalist Frosted Footer */}
-      <footer className="relative z-10 border-t border-white/10 bg-black/45 backdrop-blur-md">
-        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 py-6 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5 text-xs text-white/50">
+      {/* Abyssal Footer */}
+      <footer className="relative z-10 border-t border-white/[0.07] bg-[#0A0F1C]/80 backdrop-blur-xl">
+        <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-5 sm:px-8 py-6 w-full flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5 text-xs font-light text-[#94A3B8]">
             <CotoLogoMark className="w-5 h-5 shrink-0" />
-            <span className="text-sm font-semibold tracking-tight text-white">Coto Privado</span>
+            <span className="text-sm font-medium tracking-tight text-[#E2E8F0]">Coto Privado</span>
             <span aria-hidden="true">·</span>
             <span className="tabular-nums">© {new Date().getFullYear()}</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs text-white/55">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-normal text-[#94A3B8]">
+            <button
+              type="button"
+              onClick={handleOpenRaptorPage}
+              className="hover:text-[#E2E8F0] transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {t.footer.raptorLink}
+            </button>
+            <span aria-hidden="true">·</span>
             <button
               type="button"
               onClick={handleOpenCrisisPage}
-              className="hover:text-[#E6FF00] transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-[#E2E8F0] transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.crisisLink}
             </button>
@@ -657,7 +572,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setEmergencyModalOpen(true)}
-              className="hover:text-[#E6FF00] transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-[#E2E8F0] transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.contactTrigger}
             </button>
@@ -665,7 +580,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setPrivacyModalOpen(true)}
-              className="hover:text-white transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-[#E2E8F0] transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.privacyLink}
             </button>
@@ -673,7 +588,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setAdminModalOpen(true)}
-              className="hover:text-white transition-colors cursor-pointer whitespace-nowrap"
+              className="hover:text-[#E2E8F0] transition-colors cursor-pointer whitespace-nowrap"
             >
               {t.footer.privateAccess}
             </button>

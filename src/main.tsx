@@ -26,17 +26,17 @@ class RootErrorBoundary extends Component<BoundaryProps, BoundaryState> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#060608] text-white flex items-center justify-center p-6">
-          <div className="max-w-md w-full rounded-2xl border border-white/15 bg-white/[0.04] p-6 text-center space-y-4">
-            <p className="text-sm font-medium text-white/80">
-              No se pudo cargar la interfaz en este navegador.
+        <div className="min-h-screen bg-[#0A0F1C] text-[#E2E8F0] flex items-center justify-center p-6">
+          <div className="max-w-md w-full rounded-2xl glass-panel p-6 text-center space-y-4">
+            <p className="text-sm font-light text-[#94A3B8]">
+              No fue posible inicializar la interfaz en este navegador.
             </p>
             <button
               type="button"
               onClick={() => window.location.reload()}
-              className="px-5 py-2.5 rounded-xl bg-[#E6FF00] text-[#060608] text-xs font-semibold cursor-pointer"
+              className="px-5 py-2.5 rounded-xl btn-platinum text-xs font-medium cursor-pointer transition-colors"
             >
-              Recargar sitio
+              Recargar interfaz
             </button>
           </div>
         </div>

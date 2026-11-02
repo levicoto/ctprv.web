@@ -185,7 +185,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const darkBg = 0x060608;
+    const darkBg = 0x0a0f1c;
     scene.background = new THREE.Color(darkBg);
     scene.fog = new THREE.FogExp2(darkBg, 0.052);
 
@@ -200,18 +200,18 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
     scene.environment = envRT.texture;
     pmrem.dispose();
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.9);
+    const hemi = new THREE.HemisphereLight(0xe2e8f0, 0x0a0f1c, 0.88);
     scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xffffff, 2.55);
+    const key = new THREE.DirectionalLight(0xf1f5f9, 2.48);
     key.position.set(3.8, 4.8, 4.6);
     scene.add(key);
 
-    const coolRim = new THREE.DirectionalLight(0xffffff, 1.95);
+    const coolRim = new THREE.DirectionalLight(0xcbd5e1, 1.88);
     coolRim.position.set(-4.4, 2.4, -3.6);
     scene.add(coolRim);
 
-    const pearlRim = new THREE.DirectionalLight(0xe6ff00, 1.45);
+    const pearlRim = new THREE.DirectionalLight(0x2b4c7e, 1.65);
     pearlRim.position.set(4.0, -2.2, -3.4);
     scene.add(pearlRim);
 
@@ -266,27 +266,27 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
       depthWrite: false,
     });
 
-    // 3. Inner Sculpted Obsidian Core (refracted through the crystal shield)
+    // 3. Inner Sculpted Abyssal Core (refracted through the crystal shield)
     const darkObsidian = new THREE.MeshPhysicalMaterial({
-      color: 0x121217,
+      color: 0x0f172a,
       metalness: 0.85,
       roughness: 0.28,
-      iridescence: 0.4,
-      iridescenceIOR: 1.38,
-      iridescenceThicknessRange: [180, 480],
+      iridescence: 0.22,
+      iridescenceIOR: 1.36,
+      iridescenceThicknessRange: [200, 420],
       clearcoat: 0.7,
       clearcoatRoughness: 0.14,
     });
 
     // 4. Brushed Platinum Hardware
     const brushedPlatinum = new THREE.MeshPhysicalMaterial({
-      color: 0xf1f1f4,
+      color: 0xe2e8f0,
       metalness: 0.95,
-      roughness: 0.12,
+      roughness: 0.13,
       anisotropy: 0.78,
-      iridescence: 0.3,
-      iridescenceIOR: 1.36,
-      iridescenceThicknessRange: [200, 460],
+      iridescence: 0.14,
+      iridescenceIOR: 1.34,
+      iridescenceThicknessRange: [220, 380],
       clearcoat: 0.35,
     });
 
@@ -727,8 +727,8 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
 
   if (fallback) {
     return (
-      <div className="w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#060608] border border-white/12 flex items-center justify-center p-6 text-white">
-        <Shield className="w-8 h-8 text-[#E6FF00]" />
+      <div className="w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl sculpture-frame flex items-center justify-center p-6 text-[#E2E8F0] group">
+        <Shield className="w-8 h-8 icon-slate" />
       </div>
     );
   }
@@ -736,7 +736,7 @@ export default function TierKineticObject3D({ activeTier }: TierKineticObject3DP
   return (
     <div
       aria-label={t.services.shieldAria}
-      className="relative w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl bg-[#060608] border border-white/12 overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
+      className="relative w-full aspect-[16/9] min-h-[176px] max-h-[220px] rounded-2xl sculpture-frame overflow-hidden select-none touch-pan-y"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

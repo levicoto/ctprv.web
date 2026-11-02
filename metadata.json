@@ -1,6 +1,6 @@
 {
   "name": "Coto Privado",
-  "description": "Protegemos el patrimonio digital, la identidad y las operaciones de fundadores, creadores y figuras públicas. Seguridad de grado corporativo simplificada para ti, para que te concentres en lo que mejor sabes hacer.",
+  "description": "Ciberseguridad e inteligencia OSINT de grado corporativo, dedicadas exclusivamente a proteger su patrimonio digital y su círculo cero.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

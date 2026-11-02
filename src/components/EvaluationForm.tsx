@@ -303,6 +303,13 @@ export default function EvaluationForm({
   const handleDownloadDossier = () => {
     if (!submittedRecord) return;
     const c = t.form.confirmation;
+    const receiptFooter =
+      lang === 'en'
+        ? 'Coto Privado · Digital Identity & Patrimony Protection'
+        : lang === 'pt'
+          ? 'Coto Privado · Proteção de Identidade e Patrimônio Digital'
+          : 'Coto Privado · Protección de Identidad y Patrimonio Digital';
+
     const content = [
       c.receiptHeader,
       '--------------------------------------------------',
@@ -317,7 +324,7 @@ export default function EvaluationForm({
       `${c.receiptTier}: ${localizedTierLabel(submittedRecord.tierSugerido)}`,
       `${c.receiptNotes}: ${submittedRecord.preocupacionReciente || c.receiptNoNotes}`,
       '--------------------------------------------------',
-      'Confidential · Safe, Trust, Cybersecurity',
+      receiptFooter,
     ].join('\n');
 
     const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
@@ -336,7 +343,7 @@ export default function EvaluationForm({
       return { to: CONTACT_EMAIL };
     }
     const c = t.form.confirmation;
-    const subject = `${c.mailSubjectPrefix} [${submittedRecord.folio}] — ${submittedRecord.nombreAlias}`;
+    const subject = `${c.mailSubjectPrefix} [${submittedRecord.folio}]: ${submittedRecord.nombreAlias}`;
     const body = [
       `${c.receiptFolio}: ${submittedRecord.folio}`,
       `${c.receiptName}: ${submittedRecord.nombreAlias}`,
@@ -377,33 +384,43 @@ export default function EvaluationForm({
   };
 
   const renderSignalLaunchLink = (label: string, variant: 'solid' | 'outline' = 'solid') => {
-    const baseClasses =
-      variant === 'solid'
-        ? 'h-9 px-3.5 rounded-lg btn-electric text-xs font-semibold inline-flex items-center gap-1.5 transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]'
-        : 'inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/15 bg-white/[0.04] text-white text-sm font-medium hover:text-[#E6FF00] hover:border-[#E6FF00] transition-colors whitespace-nowrap shrink-0';
+    if (variant === 'solid') {
+      return (
+        <a
+          href={SIGNAL_DIRECT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="h-9 px-3.5 rounded-lg btn-platinum text-xs font-medium inline-flex items-center gap-1.5 transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
+        >
+          <SignalMark className="w-3.5 h-3.5 shrink-0" />
+          <span>{label}</span>
+          <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+        </a>
+      );
+    }
 
     return (
       <a
         href={SIGNAL_DIRECT_URL}
         target="_blank"
         rel="noopener noreferrer"
-        className={baseClasses}
+        className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.10] bg-white/[0.02] text-[#E2E8F0] text-sm font-medium hover:border-[#E2E8F0]/45 hover:bg-white/[0.04] transition-colors whitespace-nowrap shrink-0"
       >
-        <SignalMark className="w-3.5 h-3.5 shrink-0" />
+        <SignalMark className="w-3.5 h-3.5 icon-slate shrink-0" />
         <span>{label}</span>
-        <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+        <ArrowUpRight className="w-3.5 h-3.5 icon-slate shrink-0" />
       </a>
     );
   };
 
   return (
-    <section id="evaluacion" className="relative z-10 py-12 sm:py-16 border-t border-white/10">
+    <section id="evaluacion" className="relative z-10 py-14 sm:py-18 border-t border-white/[0.07]">
       <div className="max-w-[1200px] xl:max-w-[1280px] mx-auto px-6 sm:px-8 w-full">
         <ParallaxLayer speed={0.016} maxOffset={6} desktopOnly>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Left Context Column */}
             <div className="lg:col-span-5 lg:pr-2">
-              <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white text-balance">
+              <h2 className="text-2xl sm:text-3xl font-medium tracking-tight text-[#F1F5F9] text-balance">
                 {isRaptor
                   ? t.form.raptorHeadline
                   : isCrisis
@@ -412,7 +429,7 @@ export default function EvaluationForm({
                       ? t.form.pepHeadline
                       : t.form.headline}
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-white/70 leading-relaxed tracking-[0.01em] max-w-[48ch]">
+              <p className="mt-3 text-sm sm:text-base font-light text-[#94A3B8] leading-relaxed tracking-[0.01em] max-w-[48ch]">
                 {isRaptor
                   ? t.form.raptorBody
                   : isCrisis
@@ -427,14 +444,14 @@ export default function EvaluationForm({
                   <button
                     type="button"
                     onClick={onClearPepVariant}
-                    className="text-xs font-medium text-[#E6FF00] hover:text-white underline underline-offset-4 transition-colors cursor-pointer"
+                    className="text-xs font-medium text-[#E2E8F0] hover:text-white underline decoration-[#94A3B8]/50 hover:decoration-[#E2E8F0] underline-offset-4 transition-colors cursor-pointer"
                   >
                     {t.form.pepSwitchToGeneral}
                   </button>
                 </div>
               )}
 
-              {/* Unlocked Direct Contact (Post-Folio) & Discreet Emergency Disclosure */}
+              {/* Unlocked Direct Contact (Post-Folio) & Discreet Incident Disclosure */}
               <div
                 className={`mt-6 glass-panel rounded-2xl ${
                   submittedRecord ? 'p-5 sm:p-6' : 'px-4 py-3.5'
@@ -442,35 +459,35 @@ export default function EvaluationForm({
               >
                 {submittedRecord ? (
                   <>
-                    <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-white/55">
-                      <span className="text-white">
+                    <div className="flex flex-wrap items-center gap-2 text-xs font-normal text-[#94A3B8]">
+                      <span className="text-[#E2E8F0] font-medium">
                         {t.form.signalCard.unlockedKicker(submittedRecord.folio)[0]}
                       </span>
                       <span aria-hidden="true">·</span>
-                      <span className="font-mono text-[#E6FF00]">
+                      <span className="tabular-nums font-medium text-[#E2E8F0]">
                         {t.form.signalCard.unlockedKicker(submittedRecord.folio)[1]}
                       </span>
                     </div>
 
-                    <h3 className="mt-2 text-base font-semibold tracking-tight text-white">
+                    <h3 className="mt-2 text-base font-medium tracking-tight text-[#F1F5F9]">
                       {t.form.signalCard.unlockedTitle}
                     </h3>
 
-                    <p className="mt-1.5 text-sm text-white/70 leading-relaxed tracking-[0.01em]">
+                    <p className="mt-1.5 text-sm font-light text-[#94A3B8] leading-relaxed tracking-[0.01em]">
                       {t.form.signalCard.unlockedBody(submittedRecord.folio)}
                     </p>
 
                     {/* Unlocked Row 1: Direct Signal Encrypted Bridge */}
-                    <div className="mt-4 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                    <div className="group mt-4 pt-4 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-3">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg border border-white/15 bg-white/[0.06] text-[#E6FF00] flex items-center justify-center shrink-0">
-                          <SignalMark className="w-4 h-4" />
+                        <div className="w-8 h-8 rounded-lg border border-white/[0.10] bg-white/[0.03] flex items-center justify-center shrink-0">
+                          <SignalMark className="w-4 h-4 icon-slate" />
                         </div>
                         <div>
-                          <div className="text-[11px] font-medium text-white/50 leading-none">
+                          <div className="text-[11px] font-normal text-[#94A3B8] leading-none">
                             {t.form.signalCard.userLabel}
                           </div>
-                          <div className="mt-1 text-xs font-medium text-white">
+                          <div className="mt-1 text-xs font-medium text-[#E2E8F0]">
                             {t.form.signalCard.signalSubtitle}
                           </div>
                         </div>
@@ -480,17 +497,17 @@ export default function EvaluationForm({
                     </div>
 
                     {/* Unlocked Row 2: Direct Email (help@coto.lat) with Native App + Webmail Launchers */}
-                    <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
-                      <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="mt-4 pt-4 border-t border-white/[0.07] space-y-3">
+                      <div className="group flex flex-wrap items-center justify-between gap-3">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg border border-white/15 bg-white/[0.05] text-white flex items-center justify-center shrink-0">
-                            <Mail className="w-4 h-4" />
+                          <div className="w-8 h-8 rounded-lg border border-white/[0.10] bg-white/[0.03] flex items-center justify-center shrink-0">
+                            <Mail className="w-4 h-4 icon-slate" />
                           </div>
                           <div>
-                            <div className="text-[11px] font-medium text-white/50 leading-none">
+                            <div className="text-[11px] font-normal text-[#94A3B8] leading-none">
                               {t.form.signalCard.emailLabel}
                             </div>
-                            <div className="mt-1 font-mono text-sm font-semibold text-white tracking-tight select-all">
+                            <div className="mt-1 text-sm font-medium text-[#E2E8F0] tracking-tight select-all">
                               {CONTACT_EMAIL}
                             </div>
                           </div>
@@ -499,18 +516,18 @@ export default function EvaluationForm({
                         <button
                           type="button"
                           onClick={handleCopyEmail}
-                          className="h-8 px-3 rounded-lg border border-white/15 bg-white/[0.04] hover:border-[#E6FF00] hover:text-[#E6FF00] text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
+                          className="group/copy h-8 px-3 rounded-lg border border-white/[0.10] bg-white/[0.02] hover:border-[#E2E8F0]/45 hover:text-[#E2E8F0] text-[#CBD5E1] text-xs font-medium inline-flex items-center gap-1.5 transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
                         >
                           {emailCopied ? (
                             <>
-                              <Check className="w-3.5 h-3.5 text-[#E6FF00] shrink-0" />
-                              <span className="text-[#E6FF00]">
+                              <Check className="w-3.5 h-3.5 text-[#E2E8F0] shrink-0" />
+                              <span className="text-[#E2E8F0]">
                                 {t.form.signalCard.copiedEmailBtn}
                               </span>
                             </>
                           ) : (
                             <>
-                              <Copy className="w-3.5 h-3.5 shrink-0" />
+                              <Copy className="w-3.5 h-3.5 text-[#94A3B8] group-hover/copy:text-[#E2E8F0] transition-colors shrink-0" />
                               <span>{t.form.signalCard.copyEmailBtn}</span>
                             </>
                           )}
@@ -520,7 +537,7 @@ export default function EvaluationForm({
                       <div className="flex flex-wrap items-center gap-2">
                         <a
                           href={mailtoHref}
-                          className="h-8 px-3 rounded-lg btn-electric text-xs font-semibold inline-flex items-center gap-1.5 transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
+                          className="h-8 px-3 rounded-lg btn-platinum text-xs font-medium inline-flex items-center gap-1.5 transition-all whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
                         >
                           <Mail className="w-3.5 h-3.5 shrink-0" />
                           <span>{t.form.signalCard.openMailAppBtn}</span>
@@ -529,19 +546,19 @@ export default function EvaluationForm({
                           href={gmailHref}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="h-8 px-3 rounded-lg border border-white/15 bg-white/[0.04] hover:border-[#E6FF00] hover:text-[#E6FF00] text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
+                          className="group h-8 px-3 rounded-lg border border-white/[0.10] bg-white/[0.02] hover:border-[#E2E8F0]/45 hover:text-[#E2E8F0] text-[#CBD5E1] text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
                         >
                           <span>{t.form.signalCard.openGmailBtn}</span>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-white/55 shrink-0" />
+                          <ArrowUpRight className="w-3.5 h-3.5 icon-slate shrink-0" />
                         </a>
                         <a
                           href={outlookHref}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="h-8 px-3 rounded-lg border border-white/15 bg-white/[0.04] hover:border-[#E6FF00] hover:text-[#E6FF00] text-white text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
+                          className="group h-8 px-3 rounded-lg border border-white/[0.10] bg-white/[0.02] hover:border-[#E2E8F0]/45 hover:text-[#E2E8F0] text-[#CBD5E1] text-xs font-medium inline-flex items-center gap-1.5 transition-colors whitespace-nowrap shrink-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
                         >
                           <span>{t.form.signalCard.openOutlookBtn}</span>
-                          <ArrowUpRight className="w-3.5 h-3.5 text-white/55 shrink-0" />
+                          <ArrowUpRight className="w-3.5 h-3.5 icon-slate shrink-0" />
                         </a>
                       </div>
                     </div>
@@ -552,35 +569,35 @@ export default function EvaluationForm({
                       type="button"
                       aria-expanded={emergencyOpen}
                       onClick={() => setEmergencyOpen((prev) => !prev)}
-                      className="w-full flex items-center justify-between gap-3 text-left text-xs font-medium text-white/75 hover:text-white transition-colors cursor-pointer py-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
+                      className="group w-full flex items-center justify-between gap-3 text-left text-xs font-medium text-[#CBD5E1] hover:text-[#E2E8F0] transition-colors cursor-pointer py-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
                     >
                       <span className="inline-flex items-center gap-2">
-                        <ShieldAlert className="w-4 h-4 text-[#E6FF00] shrink-0" />
+                        <ShieldAlert className="w-4 h-4 icon-slate shrink-0" />
                         <span>{t.form.signalCard.emergencyToggle}</span>
                       </span>
                       <ChevronDown
-                        className={`w-4 h-4 text-white/50 shrink-0 transition-transform duration-200 ${
+                        className={`w-4 h-4 icon-slate shrink-0 transition-transform duration-200 ${
                           emergencyOpen ? 'rotate-180' : ''
                         }`}
                       />
                     </button>
 
                     {emergencyOpen && (
-                      <div className="mt-3.5 pt-3.5 border-t border-white/10 space-y-3">
-                        <p className="text-xs text-white/65 leading-relaxed tracking-[0.01em]">
+                      <div className="mt-3.5 pt-3.5 border-t border-white/[0.07] space-y-3">
+                        <p className="text-xs font-light text-[#94A3B8] leading-relaxed tracking-[0.01em]">
                           {t.form.signalCard.emergencyNotice}
                         </p>
 
-                        <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="group flex flex-wrap items-center justify-between gap-3">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-lg border border-white/15 bg-white/[0.06] text-[#E6FF00] flex items-center justify-center shrink-0">
-                              <SignalMark className="w-4 h-4" />
+                            <div className="w-8 h-8 rounded-lg border border-white/[0.10] bg-white/[0.03] flex items-center justify-center shrink-0">
+                              <SignalMark className="w-4 h-4 icon-slate" />
                             </div>
                             <div>
-                              <div className="text-[11px] font-medium text-white/50 leading-none">
+                              <div className="text-[11px] font-normal text-[#94A3B8] leading-none">
                                 {t.form.signalCard.emergencySignalLabel}
                               </div>
-                              <div className="mt-1 text-xs font-medium text-white">
+                              <div className="mt-1 text-xs font-medium text-[#E2E8F0]">
                                 {t.form.signalCard.emergencySignalSubtitle}
                               </div>
                             </div>
@@ -595,58 +612,70 @@ export default function EvaluationForm({
               </div>
             </div>
 
-            {/* Right Cut-Glass Form / Confirmation Container Fed by Electric Yellow Backlight */}
+            {/* Right Cut-Glass Form / Confirmation Container Fed by Muted Cobalt Sphere */}
             <div className="relative lg:col-span-7 w-full">
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -top-10 right-4 w-80 h-80 rounded-full electric-backlight"
+                className="pointer-events-none absolute -top-10 right-4 w-80 h-80 rounded-full cobalt-backlight"
               />
 
               {submittedRecord ? (
-                <div className="relative z-10 glass-panel-electric rounded-2xl p-6 sm:p-8 text-white">
-                  <div className="flex items-center justify-between gap-4 pb-5 border-b border-white/10">
-                    <h3 className="text-xl sm:text-2xl font-semibold text-white">
+                <div className="relative z-10 glass-panel-featured rounded-2xl p-6 sm:p-8 text-[#E2E8F0]">
+                  <div className="flex items-center justify-between gap-4 pb-5 border-b border-white/[0.07]">
+                    <h3 className="text-xl sm:text-2xl font-medium text-[#F1F5F9]">
                       {t.form.confirmation.title}
                     </h3>
-                    <div className="w-9 h-9 rounded-xl bg-[#E6FF00] text-[#060608] flex items-center justify-center shrink-0">
-                      <Check className="w-4 h-4 stroke-[2.5]" />
+                    <div className="w-9 h-9 rounded-xl bg-[#E2E8F0] text-[#0A0F1C] flex items-center justify-center shrink-0">
+                      <Check className="w-4 h-4 stroke-[2.25]" />
                     </div>
                   </div>
 
                   <dl className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4 text-sm">
                     <div>
-                      <dt className="text-xs text-white/50">{t.form.confirmation.folioLabel}</dt>
-                      <dd className="mt-1 font-mono font-semibold text-[#E6FF00] tabular-nums">
+                      <dt className="text-xs font-light text-[#94A3B8]">
+                        {t.form.confirmation.folioLabel}
+                      </dt>
+                      <dd className="mt-1 font-medium text-[#E2E8F0] tabular-nums">
                         {submittedRecord.folio}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-white/50">{t.form.confirmation.tierLabel}</dt>
-                      <dd className="mt-1 font-medium text-white">
+                      <dt className="text-xs font-light text-[#94A3B8]">
+                        {t.form.confirmation.tierLabel}
+                      </dt>
+                      <dd className="mt-1 font-medium text-[#E2E8F0]">
                         {localizedTierLabel(submittedRecord.tierSugerido)}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-white/50">{t.form.confirmation.nameLabel}</dt>
-                      <dd className="mt-1 font-medium text-white break-words">
+                      <dt className="text-xs font-light text-[#94A3B8]">
+                        {t.form.confirmation.nameLabel}
+                      </dt>
+                      <dd className="mt-1 font-medium text-[#E2E8F0] break-words">
                         {submittedRecord.nombreAlias}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-white/50">{t.form.confirmation.roleLabel}</dt>
-                      <dd className="mt-1 font-medium text-white break-words">
+                      <dt className="text-xs font-light text-[#94A3B8]">
+                        {t.form.confirmation.roleLabel}
+                      </dt>
+                      <dd className="mt-1 font-medium text-[#E2E8F0] break-words">
                         {submittedRecord.rolPrincipal}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-white/50">{t.form.confirmation.refLabel}</dt>
-                      <dd className="mt-1 text-sm text-white/85 break-all">
+                      <dt className="text-xs font-light text-[#94A3B8]">
+                        {t.form.confirmation.refLabel}
+                      </dt>
+                      <dd className="mt-1 text-sm font-light text-[#CBD5E1] break-all">
                         {submittedRecord.enlaceReferencia}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-xs text-white/50">{t.form.confirmation.modeLabel}</dt>
-                      <dd className="mt-1 text-white/85">
+                      <dt className="text-xs font-light text-[#94A3B8]">
+                        {t.form.confirmation.modeLabel}
+                      </dt>
+                      <dd className="mt-1 font-light text-[#CBD5E1]">
                         {submittedRecord.modoOperacion === 'solo'
                           ? t.form.confirmation.modeSoloDesc
                           : t.form.confirmation.modeTeamDesc}
@@ -654,11 +683,11 @@ export default function EvaluationForm({
                     </div>
                   </dl>
 
-                  <div className="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
+                  <div className="mt-6 pt-5 border-t border-white/[0.07] flex flex-wrap items-center justify-between gap-3">
                     <button
                       type="button"
                       onClick={handleDownloadDossier}
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl btn-electric text-sm font-semibold transition-all whitespace-nowrap shrink-0 cursor-pointer"
+                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl btn-platinum text-sm font-medium transition-all whitespace-nowrap shrink-0 cursor-pointer"
                     >
                       <Download className="w-4 h-4" />
                       <span>{t.form.confirmation.downloadBtn}</span>
@@ -667,9 +696,9 @@ export default function EvaluationForm({
                     <button
                       type="button"
                       onClick={handleResetNew}
-                      className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-white/65 text-sm font-medium hover:text-[#E6FF00] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
+                      className="group inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-[#94A3B8] text-sm font-medium hover:text-[#E2E8F0] transition-colors whitespace-nowrap shrink-0 cursor-pointer"
                     >
-                      <RotateCcw className="w-4 h-4" />
+                      <RotateCcw className="w-4 h-4 icon-slate" />
                       <span>{t.form.confirmation.resetBtn}</span>
                     </button>
                   </div>
@@ -683,9 +712,9 @@ export default function EvaluationForm({
                   {submitError && (
                     <div
                       role="alert"
-                      className="rounded-xl border border-[#E6FF00]/50 bg-[#E6FF00]/[0.08] px-4 py-3 text-xs text-white flex items-start gap-2.5"
+                      className="rounded-xl border border-[#E2E8F0]/35 bg-white/[0.03] px-4 py-3 text-xs font-light text-[#E2E8F0] flex items-start gap-2.5"
                     >
-                      <AlertCircle className="w-4 h-4 text-[#E6FF00] shrink-0 mt-0.5" />
+                      <AlertCircle className="w-4 h-4 text-[#94A3B8] shrink-0 mt-0.5" />
                       <span>{submitError}</span>
                     </div>
                   )}
@@ -693,7 +722,10 @@ export default function EvaluationForm({
                   {/* Row 1: Side-by-Side Name / Alias + Role */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label htmlFor="eval-nombre" className="block text-xs font-medium text-white/85">
+                      <label
+                        htmlFor="eval-nombre"
+                        className="block text-xs font-medium text-[#CBD5E1]"
+                      >
                         {t.form.fields.nameLabel}
                       </label>
                       <input
@@ -707,21 +739,24 @@ export default function EvaluationForm({
                             setErrors((prev) => ({ ...prev, nombreAlias: '' }));
                         }}
                         placeholder={t.form.fields.namePlaceholder}
-                        className={`mt-1.5 w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-white/35 border transition-colors focus:outline-none focus:border-[#E6FF00] focus:ring-1 focus:ring-[#E6FF00] ${
+                        className={`mt-1.5 w-full rounded-xl bg-[#0A0F1C]/55 px-3.5 py-2.5 text-sm font-light text-[#E2E8F0] placeholder:text-[#94A3B8]/50 border transition-colors focus:outline-none focus:border-[#E2E8F0]/60 focus:ring-1 focus:ring-[#E2E8F0]/35 ${
                           errors.nombreAlias
-                            ? 'border-[#E6FF00]'
-                            : 'border-white/12 hover:border-white/25'
+                            ? 'border-[#E2E8F0]/65'
+                            : 'border-white/[0.10] hover:border-white/[0.18]'
                         }`}
                       />
                       {errors.nombreAlias && (
-                        <p className="mt-1 text-xs font-medium text-[#E6FF00]" role="alert">
+                        <p className="mt-1 text-xs font-normal text-[#E2E8F0]" role="alert">
                           {t.form.validation.errorPrefix}: {errors.nombreAlias}
                         </p>
                       )}
                     </div>
 
                     <div>
-                      <label htmlFor="eval-rol" className="block text-xs font-medium text-white/85">
+                      <label
+                        htmlFor="eval-rol"
+                        className="block text-xs font-medium text-[#CBD5E1]"
+                      >
                         {t.form.fields.roleLabel}
                       </label>
                       <input
@@ -735,14 +770,14 @@ export default function EvaluationForm({
                             setErrors((prev) => ({ ...prev, rolPrincipal: '' }));
                         }}
                         placeholder={t.form.fields.rolePlaceholder}
-                        className={`mt-1.5 w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-white/35 border transition-colors focus:outline-none focus:border-[#E6FF00] focus:ring-1 focus:ring-[#E6FF00] ${
+                        className={`mt-1.5 w-full rounded-xl bg-[#0A0F1C]/55 px-3.5 py-2.5 text-sm font-light text-[#E2E8F0] placeholder:text-[#94A3B8]/50 border transition-colors focus:outline-none focus:border-[#E2E8F0]/60 focus:ring-1 focus:ring-[#E2E8F0]/35 ${
                           errors.rolPrincipal
-                            ? 'border-[#E6FF00]'
-                            : 'border-white/12 hover:border-white/25'
+                            ? 'border-[#E2E8F0]/65'
+                            : 'border-white/[0.10] hover:border-white/[0.18]'
                         }`}
                       />
                       {errors.rolPrincipal && (
-                        <p className="mt-1 text-xs font-medium text-[#E6FF00]" role="alert">
+                        <p className="mt-1 text-xs font-normal text-[#E2E8F0]" role="alert">
                           {t.form.validation.errorPrefix}: {errors.rolPrincipal}
                         </p>
                       )}
@@ -752,7 +787,10 @@ export default function EvaluationForm({
                   {/* Row 2: Reference Link + Operating Structure */}
                   <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-start">
                     <div className="sm:col-span-7">
-                      <label htmlFor="eval-enlace" className="block text-xs font-medium text-white/85">
+                      <label
+                        htmlFor="eval-enlace"
+                        className="block text-xs font-medium text-[#CBD5E1]"
+                      >
                         {t.form.fields.refLabel}
                       </label>
                       <input
@@ -766,27 +804,27 @@ export default function EvaluationForm({
                             setErrors((prev) => ({ ...prev, enlaceReferencia: '' }));
                         }}
                         placeholder={t.form.fields.refPlaceholder}
-                        className={`mt-1.5 w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-white/35 border transition-colors focus:outline-none focus:border-[#E6FF00] focus:ring-1 focus:ring-[#E6FF00] ${
+                        className={`mt-1.5 w-full rounded-xl bg-[#0A0F1C]/55 px-3.5 py-2.5 text-sm font-light text-[#E2E8F0] placeholder:text-[#94A3B8]/50 border transition-colors focus:outline-none focus:border-[#E2E8F0]/60 focus:ring-1 focus:ring-[#E2E8F0]/35 ${
                           errors.enlaceReferencia
-                            ? 'border-[#E6FF00]'
-                            : 'border-white/12 hover:border-white/25'
+                            ? 'border-[#E2E8F0]/65'
+                            : 'border-white/[0.10] hover:border-white/[0.18]'
                         }`}
                       />
                       {errors.enlaceReferencia && (
-                        <p className="mt-1 text-xs font-medium text-[#E6FF00]" role="alert">
+                        <p className="mt-1 text-xs font-normal text-[#E2E8F0]" role="alert">
                           {t.form.validation.errorPrefix}: {errors.enlaceReferencia}
                         </p>
                       )}
                     </div>
 
                     <div className="sm:col-span-5">
-                      <span className="block text-xs font-medium text-white/85">
+                      <span className="block text-xs font-medium text-[#CBD5E1]">
                         {t.form.fields.modeLabel}
                       </span>
                       <div
                         role="radiogroup"
                         aria-label={t.form.fields.modeAria}
-                        className="mt-1.5 grid grid-cols-2 gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/12"
+                        className="mt-1.5 grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#0A0F1C]/55 border border-white/[0.10]"
                       >
                         <button
                           type="button"
@@ -795,8 +833,8 @@ export default function EvaluationForm({
                           onClick={() => handleModeChange('solo')}
                           className={`py-2 px-2.5 rounded-lg text-xs transition-all whitespace-nowrap truncate cursor-pointer ${
                             modoOperacion === 'solo'
-                              ? 'bg-[#E6FF00] text-[#060608] font-semibold shadow-sm'
-                              : 'font-medium text-white/65 hover:text-white'
+                              ? 'bg-[#E2E8F0] text-[#0A0F1C] font-medium shadow-sm'
+                              : 'font-normal text-[#94A3B8] hover:text-[#E2E8F0]'
                           }`}
                         >
                           {t.form.fields.soloOption}
@@ -808,8 +846,8 @@ export default function EvaluationForm({
                           onClick={() => handleModeChange('equipo')}
                           className={`py-2 px-2.5 rounded-lg text-xs transition-all whitespace-nowrap truncate cursor-pointer ${
                             modoOperacion === 'equipo'
-                              ? 'bg-[#E6FF00] text-[#060608] font-semibold shadow-sm'
-                              : 'font-medium text-white/65 hover:text-white'
+                              ? 'bg-[#E2E8F0] text-[#0A0F1C] font-medium shadow-sm'
+                              : 'font-normal text-[#94A3B8] hover:text-[#E2E8F0]'
                           }`}
                         >
                           {t.form.fields.teamOption}
@@ -818,16 +856,16 @@ export default function EvaluationForm({
                     </div>
                   </div>
 
-                  {/* Row 3: Optional Context / Recent Concern */}
+                  {/* Row 3: Optional Executive Context */}
                   <div>
                     <div className="flex items-baseline justify-between gap-2">
                       <label
                         htmlFor="eval-preocupacion"
-                        className="block text-xs font-medium text-white/85"
+                        className="block text-xs font-medium text-[#CBD5E1]"
                       >
                         {t.form.fields.concernLabel}
                       </label>
-                      <span className="text-xs text-white/40 shrink-0">
+                      <span className="text-xs font-light text-[#94A3B8]/80 shrink-0">
                         {t.form.fields.optionalTag}
                       </span>
                     </div>
@@ -838,10 +876,10 @@ export default function EvaluationForm({
                       value={preocupacionReciente}
                       onChange={(e) => setPreocupacionReciente(e.target.value)}
                       placeholder={t.form.fields.concernPlaceholder}
-                      className="mt-1.5 w-full rounded-xl bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-white/35 border border-white/12 hover:border-white/25 transition-colors focus:outline-none focus:border-[#E6FF00] focus:ring-1 focus:ring-[#E6FF00] resize-y"
+                      className="mt-1.5 w-full rounded-xl bg-[#0A0F1C]/55 px-3.5 py-2.5 text-sm font-light text-[#E2E8F0] placeholder:text-[#94A3B8]/50 border border-white/[0.10] hover:border-white/[0.18] transition-colors focus:outline-none focus:border-[#E2E8F0]/60 focus:ring-1 focus:ring-[#E2E8F0]/35 resize-y"
                     />
                     {errors.preocupacionReciente && (
-                      <p className="mt-1 text-xs font-medium text-[#E6FF00]" role="alert">
+                      <p className="mt-1 text-xs font-normal text-[#E2E8F0]" role="alert">
                         {t.form.validation.errorPrefix}: {errors.preocupacionReciente}
                       </p>
                     )}
@@ -852,7 +890,7 @@ export default function EvaluationForm({
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3 px-6 rounded-xl btn-electric text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E6FF00]"
+                      className="w-full py-3 px-6 rounded-xl btn-platinum text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.99] transition-all flex items-center justify-center gap-2 whitespace-nowrap cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E2E8F0]"
                     >
                       {isSubmitting ? (
                         <>
@@ -883,9 +921,9 @@ export default function EvaluationForm({
                   <button
                     type="button"
                     onClick={onOpenPrivacy}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-white/55 hover:text-[#E6FF00] underline underline-offset-4 transition-colors cursor-pointer"
+                    className="group inline-flex items-center gap-1.5 text-xs font-normal text-[#94A3B8] hover:text-[#E2E8F0] underline decoration-[#94A3B8]/40 hover:decoration-[#E2E8F0] underline-offset-4 transition-colors cursor-pointer"
                   >
-                    <Lock className="w-3.5 h-3.5 shrink-0" />
+                    <Lock className="w-3.5 h-3.5 icon-slate shrink-0" />
                     <span>{t.form.signalCard.privacyTrigger}</span>
                   </button>
                 </div>

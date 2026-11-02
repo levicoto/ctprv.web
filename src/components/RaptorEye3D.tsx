@@ -83,10 +83,10 @@ function createFresnelLensTexture(maxAnisotropy: number): THREE.CanvasTexture {
 
     const coreGrad = ctx.createRadialGradient(cx, cy, size * 0.02, cx, cy, size * 0.5);
     coreGrad.addColorStop(0, '#ffffff');
-    coreGrad.addColorStop(0.18, '#f6ff8a');
-    coreGrad.addColorStop(0.42, '#e6ff00');
-    coreGrad.addColorStop(0.72, '#1f2205');
-    coreGrad.addColorStop(1, '#060608');
+    coreGrad.addColorStop(0.22, '#e2e8f0');
+    coreGrad.addColorStop(0.48, '#64748b');
+    coreGrad.addColorStop(0.76, '#15233b');
+    coreGrad.addColorStop(1, '#0a0f1c');
     ctx.fillStyle = coreGrad;
     ctx.fillRect(0, 0, size, size);
 
@@ -94,7 +94,7 @@ function createFresnelLensTexture(maxAnisotropy: number): THREE.CanvasTexture {
     const rings = [0.14, 0.22, 0.30, 0.38, 0.45];
     rings.forEach((r, idx) => {
       ctx.strokeStyle =
-        idx < 2 ? 'rgba(255, 255, 255, 0.9)' : 'rgba(230, 255, 0, 0.52)';
+        idx < 2 ? 'rgba(241, 245, 249, 0.88)' : 'rgba(148, 163, 184, 0.48)';
       ctx.lineWidth = idx === 0 ? 3.0 : 2.0;
       ctx.beginPath();
       ctx.arc(cx, cy, size * r, 0, Math.PI * 2);
@@ -107,7 +107,7 @@ function createFresnelLensTexture(maxAnisotropy: number): THREE.CanvasTexture {
       const major = i % 9 === 0;
       const r0 = size * (major ? 0.16 : 0.34);
       const r1 = size * 0.47;
-      ctx.strokeStyle = major ? 'rgba(255, 255, 255, 0.72)' : 'rgba(230, 255, 0, 0.32)';
+      ctx.strokeStyle = major ? 'rgba(226, 232, 240, 0.72)' : 'rgba(148, 163, 184, 0.32)';
       ctx.lineWidth = major ? 2.0 : 1.1;
       ctx.beginPath();
       ctx.moveTo(cx + Math.cos(angle) * r0, cy + Math.sin(angle) * r0);
@@ -135,11 +135,11 @@ function createVolumetricBeamTexture(): THREE.CanvasTexture {
   if (ctx) {
     // Canvas y=0 corresponds to UV.y=1 (apex), y=h corresponds to UV.y=0 (outer open end)
     const grad = ctx.createLinearGradient(0, 0, 0, h);
-    grad.addColorStop(0.0, 'rgba(255, 255, 255, 0.92)');
-    grad.addColorStop(0.2, 'rgba(230, 255, 0, 0.54)');
-    grad.addColorStop(0.55, 'rgba(230, 255, 0, 0.18)');
-    grad.addColorStop(0.85, 'rgba(230, 255, 0, 0.04)');
-    grad.addColorStop(1.0, 'rgba(230, 255, 0, 0.0)');
+    grad.addColorStop(0.0, 'rgba(241, 245, 249, 0.86)');
+    grad.addColorStop(0.24, 'rgba(203, 213, 225, 0.44)');
+    grad.addColorStop(0.58, 'rgba(59, 99, 156, 0.18)');
+    grad.addColorStop(0.86, 'rgba(30, 58, 108, 0.04)');
+    grad.addColorStop(1.0, 'rgba(10, 15, 28, 0.0)');
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
   }
@@ -242,7 +242,7 @@ export default function RaptorEye3D() {
     container.appendChild(renderer.domElement);
 
     const scene = new THREE.Scene();
-    const darkBg = 0x060608;
+    const darkBg = 0x0a0f1c;
     scene.background = new THREE.Color(darkBg);
     scene.fog = new THREE.FogExp2(darkBg, 0.045);
 
@@ -258,23 +258,23 @@ export default function RaptorEye3D() {
     scene.environment = envRT.texture;
     pmrem.dispose();
 
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x09090b, 0.92);
+    const hemi = new THREE.HemisphereLight(0xe2e8f0, 0x0a0f1c, 0.9);
     scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xffffff, 2.55);
+    const key = new THREE.DirectionalLight(0xf1f5f9, 2.48);
     key.position.set(4.1, 5.2, 5.1);
     scene.add(key);
 
-    const coolRim = new THREE.DirectionalLight(0xffffff, 2.1);
+    const coolRim = new THREE.DirectionalLight(0xcbd5e1, 2.0);
     coolRim.position.set(-4.6, 2.6, -3.6);
     scene.add(coolRim);
 
-    const pearlRim = new THREE.DirectionalLight(0xe6ff00, 1.55);
+    const pearlRim = new THREE.DirectionalLight(0x2b4c7e, 1.68);
     pearlRim.position.set(4.2, -2.2, -3.5);
     scene.add(pearlRim);
 
-    // Internal point light representing the seeing-stone's active Electric Yellow optical beacon
-    const beaconPointLight = new THREE.PointLight(0xe6ff00, 2.3, 5.5, 1.6);
+    // Internal point light representing the seeing-stone's Platinum-Cobalt optical beacon
+    const beaconPointLight = new THREE.PointLight(0xcbd5e1, 2.1, 5.5, 1.6);
     beaconPointLight.position.set(0, 0.16, 0.15);
     scene.add(beaconPointLight);
 
@@ -286,34 +286,34 @@ export default function RaptorEye3D() {
     const shadowTex = createSoftShadowMap();
     const textures: THREE.Texture[] = [envRT.texture, iridTex, fresnelTex, beamTex, shadowTex];
 
-    // 1. Stepped Architectural Obsidian Monument Material (roughness ~0.38)
+    // 1. Stepped Architectural Abyssal Monument Material (roughness ~0.38)
     const obsidianPedestalMat = new THREE.MeshPhysicalMaterial({
-      color: 0x131318,
+      color: 0x0f172a,
       metalness: 0.68,
       roughness: 0.38,
-      iridescence: 0.32,
-      iridescenceIOR: 1.38,
-      iridescenceThicknessRange: [180, 440],
+      iridescence: 0.2,
+      iridescenceIOR: 1.36,
+      iridescenceThicknessRange: [200, 420],
       clearcoat: 0.65,
       clearcoatRoughness: 0.16,
     });
 
-    // 2. Anisotropic Brushed Platinum Precision Hardware (roughness ~0.11 — >=0.25 delta from obsidian)
+    // 2. Anisotropic Brushed Platinum Precision Hardware (roughness ~0.11 — >=0.25 delta from pedestal)
     const brushedPlatinumMat = new THREE.MeshPhysicalMaterial({
-      color: 0xf1f5f9,
+      color: 0xe2e8f0,
       metalness: 0.96,
       roughness: 0.11,
       anisotropy: 0.85,
-      iridescence: 0.28,
-      iridescenceIOR: 1.36,
-      iridescenceThicknessRange: [200, 460],
+      iridescence: 0.14,
+      iridescenceIOR: 1.34,
+      iridescenceThicknessRange: [220, 380],
       clearcoat: 0.42,
       clearcoatRoughness: 0.08,
     });
 
     // 3. Matte Dark Optical Chamber Barrel Material (roughness ~0.52)
     const lanternHousingMat = new THREE.MeshStandardMaterial({
-      color: 0x18181f,
+      color: 0x131d31,
       metalness: 0.52,
       roughness: 0.52,
     });
@@ -359,10 +359,10 @@ export default function RaptorEye3D() {
     // 6. Luminous Fresnel Observation Lens & Crystalline Beacon Heart
     const fresnelLensMat = new THREE.MeshPhysicalMaterial({
       map: fresnelTex,
-      color: 0xffffff,
-      emissive: new THREE.Color(0xe6ff00),
+      color: 0xf8fafc,
+      emissive: new THREE.Color(0xcbd5e1),
       emissiveMap: fresnelTex,
-      emissiveIntensity: 1.45,
+      emissiveIntensity: 1.35,
       metalness: 0.25,
       roughness: 0.12,
       clearcoat: 1.0,
@@ -370,9 +370,9 @@ export default function RaptorEye3D() {
     });
 
     const coreCrystalMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      emissive: new THREE.Color(0xe6ff00),
-      emissiveIntensity: 2.25,
+      color: 0xf8fafc,
+      emissive: new THREE.Color(0xe2e8f0),
+      emissiveIntensity: 2.0,
       metalness: 0.1,
       roughness: 0.15,
     });
@@ -380,9 +380,9 @@ export default function RaptorEye3D() {
     // 7. Volumetric Lighthouse Observation Cone Material
     const volumetricBeamMat = new THREE.MeshBasicMaterial({
       map: beamTex,
-      color: 0xe6ff00,
+      color: 0xcbd5e1,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.36,
       blending: THREE.AdditiveBlending,
       side: THREE.DoubleSide,
       depthWrite: false,
@@ -930,9 +930,9 @@ export default function RaptorEye3D() {
 
   if (fallback) {
     return (
-      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] flex items-center justify-center">
-        <div className="w-20 h-20 rounded-2xl border border-white/15 bg-white/[0.04] flex items-center justify-center">
-          <Compass className="w-9 h-9 text-[#E6FF00]" />
+      <div className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl sculpture-frame flex items-center justify-center group">
+        <div className="w-20 h-20 rounded-2xl glass-panel flex items-center justify-center">
+          <Compass className="w-9 h-9 icon-slate" />
         </div>
       </div>
     );
@@ -941,7 +941,7 @@ export default function RaptorEye3D() {
   return (
     <div
       aria-label={t.raptor.hero.eyeAria}
-      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl border border-white/12 bg-[#060608] overflow-hidden select-none touch-pan-y shadow-2xl shadow-black/80"
+      className="relative w-full aspect-[5/4] min-h-[280px] max-h-[400px] rounded-2xl sculpture-frame overflow-hidden select-none touch-pan-y"
     >
       <div ref={mountRef} className="w-full h-full touch-pan-y" />
     </div>

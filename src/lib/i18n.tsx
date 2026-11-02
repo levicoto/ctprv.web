@@ -30,28 +30,103 @@ export interface CrisisScenarioItem {
   resources: CrisisResourceLink[];
 }
 
+export type MetricsScopeId = 'consolidated' | 'pep' | 'atlas';
+
+export interface MetricsMilestoneItem {
+  day: number;
+  code: string;
+  phase: string;
+  protocolNote: string;
+  exposure: number;
+  residualRisk: number;
+}
+
+export interface MetricsVectorItem {
+  label: string;
+  shortLabel: string;
+  baseline: number;
+  mitigated: number;
+}
+
+export interface MetricsScopeTranslation {
+  id: MetricsScopeId;
+  tabLabel: string;
+  milestones: [
+    MetricsMilestoneItem,
+    MetricsMilestoneItem,
+    MetricsMilestoneItem,
+    MetricsMilestoneItem,
+    MetricsMilestoneItem,
+  ];
+  vectors: [
+    MetricsVectorItem,
+    MetricsVectorItem,
+    MetricsVectorItem,
+    MetricsVectorItem,
+    MetricsVectorItem,
+  ];
+  kpis: [
+    { value: string; label: string },
+    { value: string; label: string },
+    { value: string; label: string },
+    { value: string; label: string },
+  ];
+}
+
+export interface BoutiquePillarItem {
+  num: string;
+  title: string;
+  desc: string;
+}
+
+export interface BoutiqueAudienceItem {
+  id: 'pep' | 'creators' | 'private';
+  num: string;
+  title: string;
+  desc: string;
+  cta: string;
+}
+
 export interface TranslationDictionary {
   metaTitle: string;
   raptorMetaTitle: string;
   crisisMetaTitle: string;
   nav: {
     overview: string;
+    profiles: string;
     services: string;
+    units: string;
     pep: string;
+    metrics: string;
     backing: string;
+    raptor: string;
     crisis: string;
     evaluation: string;
     cta: string;
+    mobileCta: string;
+    menuOpen: string;
+    menuClose: string;
+    menuOpenAria: string;
+    menuCloseAria: string;
+    mobileUnitsLabel: string;
+    mobileLangLabel: string;
     ariaMain: string;
     langSelectorAria: string;
   };
   hero: {
-    kicker: [string, string, string];
     headline: string;
     body: string;
     primaryCta: string;
     emergencyTrigger: string;
     padlockAria: string;
+  };
+  profiles: {
+    pitchLead: string;
+    pitchAnchor: string;
+    pillarsLabel: string;
+    pillars: [BoutiquePillarItem, BoutiquePillarItem, BoutiquePillarItem];
+    audiencesLabel: string;
+    audiences: [BoutiqueAudienceItem, BoutiqueAudienceItem, BoutiqueAudienceItem];
   };
   services: {
     headline: string;
@@ -59,42 +134,68 @@ export interface TranslationDictionary {
     shieldAria: string;
     argos: {
       tierTag: string;
-      subtitleTag: string;
+      scopeTag: string;
       name: string;
-      audience: string;
-      items: { title: string; desc: string }[];
+      scopeSummary: string;
+      bullets: [string, string, string, string];
       cta: string;
     };
     atlas: {
       tierTag: string;
-      subtitleTag: string;
+      scopeTag: string;
       name: string;
-      audience: string;
-      items: { title: string; desc: string }[];
-      cta: string;
-    };
-    raptorCallout: {
-      kicker: [string, string];
-      hook: string;
-      cta: string;
-    };
-    crisisCallout: {
-      kicker: [string, string];
-      hook: string;
+      scopeSummary: string;
+      bullets: [string, string, string, string];
       cta: string;
     };
   };
+  units: {
+    headline: string;
+    subtitle: string;
+    palantirr: {
+      num: string;
+      tag: string;
+      name: string;
+      summary: string;
+      bullets: [string, string, string];
+      cta: string;
+    };
+    incidentProtocol: {
+      num: string;
+      tag: string;
+      name: string;
+      summary: string;
+      bullets: [string, string, string];
+      cta: string;
+      emergencyLink: string;
+    };
+  };
   pep: {
-    kicker: [string, string];
+    kicker: string;
     headline: string;
     body: string;
-    scopeLabel: string;
-    scopes: [string, string, string, string];
     cta: string;
     pillars: RaptorCapabilityItem[];
     footnote: string;
-    raptorPrompt: string;
     raptorCta: string;
+  };
+  metrics: {
+    headline: string;
+    scopeSelectorAria: string;
+    longitudinalTitle: string;
+    chartAria: string;
+    legendBaseline: string;
+    legendFootprint: string;
+    legendRisk: string;
+    footprintReadoutLabel: string;
+    mitigationDeltaLabel: string;
+    radialTitle: string;
+    radialAria: string;
+    radialLegendBefore: string;
+    radialLegendAfter: string;
+    footnote: string;
+    cta: string;
+    scopes: [MetricsScopeTranslation, MetricsScopeTranslation, MetricsScopeTranslation];
   };
   raptor: {
     nav: {
@@ -106,7 +207,7 @@ export interface TranslationDictionary {
       cta: string;
     };
     hero: {
-      kicker: [string, string];
+      kicker: string;
       name: string;
       subtitle: string;
       body: string;
@@ -119,7 +220,7 @@ export interface TranslationDictionary {
       items: RaptorCapabilityItem[];
     };
     dossier: {
-      kicker: [string, string];
+      kicker: string;
       title: string;
       body: string;
       cta: string;
@@ -225,6 +326,7 @@ export interface TranslationDictionary {
     };
   };
   footer: {
+    raptorLink: string;
     crisisLink: string;
     contactTrigger: string;
     privacyLink: string;
@@ -232,7 +334,7 @@ export interface TranslationDictionary {
   };
   privacy: {
     dialogAria: string;
-    kicker: [string, string];
+    kicker: string;
     title: string;
     intro: string;
     clauses: {
@@ -247,7 +349,7 @@ export interface TranslationDictionary {
   };
   emergencyModal: {
     dialogAria: string;
-    kicker: [string, string];
+    kicker: string;
     title: string;
     body: string;
     signalLabel: string;
@@ -269,7 +371,7 @@ export interface TranslationDictionary {
       cta: string;
     };
     hero: {
-      kicker: [string, string];
+      kicker: string;
       headline: string;
       body: string;
       primaryCta: string;
@@ -277,7 +379,7 @@ export interface TranslationDictionary {
       chamberAria: string;
     };
     protocol: {
-      kicker: [string, string];
+      kicker: string;
       title: string;
       subtitle: string;
       tabAria: string;
@@ -381,388 +483,745 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
     crisisMetaTitle: '\u2800',
     nav: {
       overview: 'Inicio',
-      services: 'Servicios',
-      pep: 'Exposición Pública',
-      backing: 'Respaldo',
-      crisis: 'Crisis',
+      profiles: 'Perfiles',
+      services: 'Niveles',
+      units: 'Inteligencia',
+      pep: 'PEP',
+      metrics: 'Métricas',
+      backing: 'Infraestructura',
+      raptor: 'Palantirr',
+      crisis: 'Protocolo de Incidentes',
       evaluation: 'Evaluación',
-      cta: 'Solicitar Auditoría',
+      cta: 'Solicitar Evaluación',
+      mobileCta: 'Solicitar Evaluación',
+      menuOpen: 'Menú',
+      menuClose: 'Cerrar',
+      menuOpenAria: 'Abrir menú de navegación',
+      menuCloseAria: 'Cerrar menú de navegación',
+      mobileUnitsLabel: 'Unidades bajo demanda',
+      mobileLangLabel: 'Idioma',
       ariaMain: 'Navegación principal',
       langSelectorAria: 'Seleccionar idioma',
     },
     hero: {
-      kicker: ['Safe', 'Trust', 'Cybersecurity'],
-      headline: 'Seguridad de grado corporativo simplificada para ti.',
-      body: 'Protegemos el patrimonio digital, la identidad y las operaciones de fundadores, creadores y figuras públicas, para que te concentres en lo que mejor sabes hacer.',
-      primaryCta: 'Solicitar Auditoría Privada',
-      emergencyTrigger: '¿Incidente activo?',
-      padlockAria: 'Candado de seguridad',
+      headline: 'Su identidad, blindada. Su reputación, intacta.',
+      body: 'Ciberseguridad e inteligencia OSINT de grado corporativo, dedicadas exclusivamente a proteger su patrimonio digital y su círculo cero.',
+      primaryCta: 'Solicitar Evaluación',
+      emergencyTrigger: 'Atención ante incidentes',
+      padlockAria: 'Escultura óptica de bóveda personal',
     },
-    services: {
-      headline: 'Nuestros Servicios',
-      subtitle: 'Dos niveles de protección según la estructura de tu operación.',
-      shieldAria: 'Escudo de seguridad',
-      argos: {
-        tierTag: 'Tier 1',
-        subtitleTag: 'Cimiento Esencial',
-        name: 'Argos',
-        audience: 'Para profesionales independientes, fundadores y creadores de contenido.',
-        items: [
-          {
-            title: 'Identidad Blindada',
-            desc: 'Bóveda centralizada de contraseñas y correos alias para ocultar tu rastro.',
-          },
-          {
-            title: 'Defensa Silenciosa',
-            desc: 'Protección y parcheo automático de tus dispositivos (PC/Mac/Móvil) en segundo plano, sin interrumpir tu trabajo.',
-          },
-          {
-            title: 'Diagnóstico de Exposición',
-            desc: 'Auditoría inicial para detectar si tus datos ya están comprometidos en la web.',
-          },
-        ],
-        cta: 'Elegir Argos',
-      },
-      atlas: {
-        tierTag: 'Tier 2',
-        subtitleTag: 'Blindaje Integral',
-        name: 'Atlas',
-        audience:
-          'Para operaciones de alto perfil que requieren delegar accesos a equipos, agencias o colaboradores.',
-        items: [
-          {
-            title: 'Delegación Zero-Knowledge',
-            desc: 'Tu equipo inicia sesión en tus plataformas críticas sin ver jamás las contraseñas ni los códigos de seguridad (2FA).',
-          },
-          {
-            title: 'Vigilancia Continua',
-            desc: 'Monitoreo activo contra robo de sesiones, suplantación de identidad y rastreo de credenciales en la Dark Web.',
-          },
-          {
-            title: 'Respuesta a Crisis (<30 min)',
-            desc: 'Aislamiento remoto de dispositivos hackeados, canal de comunicación encriptado y dossier inmutable para el rescate rápido de cuentas.',
-          },
-        ],
-        cta: 'Elegir Atlas',
-      },
-      raptorCallout: {
-        kicker: ['División Especial', 'Inteligencia OSINT'],
-        hook: 'Reconocimiento externo y pasivo para conocer qué revela hoy tu huella pública.',
-        cta: 'Palantir Raptor',
-      },
-      crisisCallout: {
-        kicker: ['Protocolo Abierto', 'Respuesta en 30 min'],
-        hook: 'Acciones inmediatas y enlaces oficiales ante secuestro de cuentas, extorsión o suplantación.',
-        cta: 'Guía de Crisis',
-      },
-    },
-    pep: {
-      kicker: ['Protocolo PEP', 'Candidaturas y Exposición Pública'],
-      headline: 'Blindaje integral antes y durante la vida pública.',
-      body: 'Postular a un cargo de elección, asumir una función pública o presentar declaraciones legales expone tu entorno a doxeo y filtraciones. Reducimos tu superficie de riesgo antes del escrutinio.',
-      scopeLabel: 'Alcance',
-      scopes: [
-        'Candidaturas',
-        'Personas Políticamente Expuestas',
-        'Cargos públicos',
-        'Declaraciones legales',
-      ],
-      cta: 'Solicitar Blindaje PEP',
+    profiles: {
+      pitchLead:
+        'Un escolta élite para su seguridad física. Un banquero suizo para su privacidad financiera.',
+      pitchAnchor: 'Coto Privado para su identidad digital.',
+      pillarsLabel: 'Principios operativos',
       pillars: [
         {
           num: '01',
-          title: 'Saneamiento Pre-Candidatura y Anti-Doxeo',
-          desc: 'Retiro preventivo de domicilios, teléfonos filtrados, correos históricos y registros en buscadores o brókers de datos antes del anuncio oficial.',
+          title: 'Soberanía Digital',
+          desc: 'Recupere el control total sobre lo que internet sabe de usted y su familia.',
         },
         {
           num: '02',
-          title: 'Frontera entre Transparencia Legal y Vida Privada',
-          desc: 'Aislamiento técnico entre los datos exigidos por ley y tu infraestructura personal, familiar y patrimonial para evitar extorsión o acoso.',
+          title: 'Ejecución en Segundo Plano',
+          desc: 'Neutralizamos riesgos antes del impacto para que usted lidere sin interrupciones.',
         },
         {
           num: '03',
-          title: 'Blindaje del Núcleo Familiar y Círculo Cercano',
-          desc: 'Protección contra robo de línea (SIM Swap), bóvedas y endurecimiento de equipos para cónyuges, hijos y asesores directos.',
+          title: 'Asimetría a su Favor',
+          desc: 'Dedicamos infraestructura de defensa bancaria a proteger su patrimonio personal.',
+        },
+      ],
+      audiencesLabel: 'Para quién actuamos',
+      audiences: [
+        {
+          id: 'pep',
+          num: '01',
+          title: 'Figuras Públicas y PEPs',
+          desc: 'Neutralizamos fugas de datos y riesgos reputacionales bajo escrutinio público.',
+          cta: 'Ver Protocolo PEP',
+        },
+        {
+          id: 'creators',
+          num: '02',
+          title: 'Creadores y Visionarios',
+          desc: 'Impedimos el secuestro de cuentas, el doxxing y los ataques a sus ingresos.',
+          cta: 'Proteger cuentas',
+        },
+        {
+          id: 'private',
+          num: '03',
+          title: 'Intereses Privados',
+          desc: 'Retiramos registros expuestos y aislamos su patrimonio digital de terceros.',
+          cta: 'Evaluar alcance',
+        },
+      ],
+    },
+    services: {
+      headline: 'Niveles de Servicio',
+      subtitle: 'Dos alcances definidos según administre sus cuentas personalmente o delegue accesos.',
+      shieldAria: 'Escultura óptica de blindaje de activos',
+      argos: {
+        tierTag: 'Nivel I',
+        scopeTag: 'Gestión Personal',
+        name: 'Argos',
+        scopeSummary: 'Cobertura directa sobre sus cuentas, dispositivos y registros personales.',
+        bullets: [
+          'Aislamos sus cuentas bancarias y personales mediante identidades separadas.',
+          'Retiramos domicilios, teléfonos y filtraciones históricas expuestas en la red.',
+          'Protegemos sus teléfonos y portátiles frente a intrusiones y robo de sesión.',
+          'Bloqueamos el secuestro de líneas móviles y accesos no autorizados.',
+        ],
+        cta: 'Solicitar Nivel Argos',
+      },
+      atlas: {
+        tierTag: 'Nivel II',
+        scopeTag: 'Delegación de Accesos',
+        name: 'Atlas',
+        scopeSummary: 'Cobertura extendida a su familia, asistentes y equipos de comunicación.',
+        bullets: [
+          'Incluye todo el alcance de Gestión Personal (Argos).',
+          'Delegamos redes y canales a su equipo sin revelar contraseñas maestras.',
+          'Protegemos los dispositivos y cuentas de su cónyuge, hijos y círculo cero.',
+          'Aislamos incidentes y restituimos activos comprometidos en menos de 30 minutos.',
+        ],
+        cta: 'Solicitar Nivel Atlas',
+      },
+    },
+    units: {
+      headline: 'Inteligencia bajo demanda y respuesta crítica.',
+      subtitle: 'Unidades de activación directa para decisiones estratégicas o contención de incidentes.',
+      palantirr: {
+        num: '01',
+        tag: 'OSINT Pasivo',
+        name: 'Palantirr',
+        summary:
+          'Identificamos con exactitud qué expone hoy internet sobre usted, su familia o una contraparte.',
+        bullets: [
+          'Auditamos filtraciones, registros públicos y vínculos patrimoniales sin dejar rastro.',
+          'Verificamos riesgos reputacionales antes de cerrar alianzas, inversiones o acuerdos.',
+          'Entregamos un informe ejecutivo con hallazgos verificados y ruta de retiro.',
+        ],
+        cta: 'Explorar Palantirr',
+      },
+      incidentProtocol: {
+        num: '02',
+        tag: 'Respuesta Crítica',
+        name: 'Protocolo de Incidentes',
+        summary:
+          'Frene secuestros de cuentas, extorsiones o filtraciones durante los primeros 30 minutos.',
+        bullets: [
+          'Aislamos dispositivos afectados y cerramos sesiones intrusas de inmediato.',
+          'Preservamos pruebas íntegras y cortamos accesos abiertos en su nube personal.',
+          'Restituimos el control de perfiles oficiales, dominios y líneas telefónicas.',
+        ],
+        cta: 'Abrir Protocolo de Incidentes',
+        emergencyLink: 'Línea directa en Signal',
+      },
+    },
+    pep: {
+      kicker: 'Protocolo PEP',
+      headline: 'Proteja a su familia antes de entrar al escrutinio público.',
+      body: 'Retiramos datos vulnerables y blindamos su círculo cero antes de una candidatura, designación pública o declaración patrimonial.',
+      cta: 'Solicitar Protocolo PEP',
+      pillars: [
+        {
+          num: '01',
+          title: 'Retiro Preventivo de Datos',
+          desc: 'Eliminamos domicilios, teléfonos privados y registros expuestos antes del anuncio oficial.',
+        },
+        {
+          num: '02',
+          title: 'Frontera entre Ley y Vida Privada',
+          desc: 'Separamos la transparencia exigida por ley del patrimonio privado de su familia.',
+        },
+        {
+          num: '03',
+          title: 'Protección del Círculo Cero',
+          desc: 'Aseguramos los teléfonos y líneas móviles de cónyuge, hijos y asesores cercanos.',
         },
         {
           num: '04',
-          title: 'Delegación Zero-Knowledge para Campaña y Prensa',
-          desc: 'Acceso controlado a redes oficiales para jefes de prensa y agencias sin entregar contraseñas ni códigos 2FA, con revocación instantánea.',
+          title: 'Delegación de Prensa sin Claves',
+          desc: 'Habilitamos a su equipo de campaña para publicar sin poseer sus llaves maestras.',
         },
       ],
-      footnote:
-        'Operación apartidista bajo acuerdo NDA · Cualquier país o jurisdicción electoral',
-      raptorPrompt: '¿Qué revela hoy tu huella pública?',
-      raptorCta: 'Diagnóstico OSINT previo (Palantir Raptor)',
+      footnote: 'Actuación apartidista bajo acuerdo NDA · Cobertura internacional',
+      raptorCta: 'Analizar exposición con Palantirr',
+    },
+    metrics: {
+      headline: 'Reducción medible de su exposición pública.',
+      scopeSelectorAria: 'Seleccionar perfil de métricas',
+      longitudinalTitle: 'Índice de exposición (T+0 a T+90)',
+      chartAria:
+        'Gráfico longitudinal D3 de reducción de exposición pública entre el día 0 y el día 90',
+      legendBaseline: 'Sin intervención',
+      legendFootprint: 'Exposición pública',
+      legendRisk: 'Riesgos activos',
+      footprintReadoutLabel: 'Exposición actual',
+      mitigationDeltaLabel: 'Reducción neta',
+      radialTitle: 'Frentes mitigados',
+      radialAria: 'Diagrama polar D3 comparando cinco vectores en día 0 frente a día 90',
+      radialLegendBefore: 'Inicio (T+0)',
+      radialLegendAfter: 'Día 90 (T+90)',
+      footnote: 'Expedientes reales anonimizados bajo acuerdo NDA · Cortes a 15, 30, 60 y 90 días',
+      cta: 'Evaluar mi exposición actual',
+      scopes: [
+        {
+          id: 'consolidated',
+          tabLabel: 'Consolidado',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Auditoría inicial',
+              protocolNote: 'Mapeamos datos filtrados, claves históricas y registros vinculados.',
+              exposure: 100,
+              residualRisk: 86,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Retiro de registros',
+              protocolNote: 'Eliminamos domicilios y teléfonos en corredores de datos y buscadores.',
+              exposure: 54,
+              residualRisk: 38,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Aislamiento de cuentas',
+              protocolNote: 'Separamos banca y correo principal mediante alias y llaves físicas.',
+              exposure: 26,
+              residualRisk: 16,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Protección de equipos',
+              protocolNote: 'Aseguramos móviles, portátiles y líneas frente a clonación de SIM.',
+              exposure: 13,
+              residualRisk: 7,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Monitoreo continuo',
+              protocolNote: 'Mantenemos su huella al mínimo con alertas tempranas ante filtraciones.',
+              exposure: 8.4,
+              residualRisk: 2.8,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Datos personales y directorios',
+              shortLabel: 'Registros',
+              baseline: 94,
+              mitigated: 8,
+            },
+            {
+              label: 'Cuentas y claves históricas',
+              shortLabel: 'Credenciales',
+              baseline: 88,
+              mitigated: 4,
+            },
+            {
+              label: 'Dominios e imagen pública',
+              shortLabel: 'Dominios',
+              baseline: 79,
+              mitigated: 9,
+            },
+            {
+              label: 'Teléfonos y equipos personales',
+              shortLabel: 'Equipos',
+              baseline: 84,
+              mitigated: 6,
+            },
+            {
+              label: 'Accesos del círculo cero',
+              shortLabel: 'Círculo cero',
+              baseline: 91,
+              mitigated: 5,
+            },
+          ],
+          kpis: [
+            {
+              value: '-91.6%',
+              label: 'Datos personales expuestos tras 90 días',
+            },
+            {
+              value: '98.4%',
+              label: 'Bajas efectivas en buscadores y directorios',
+            },
+            {
+              value: '< 24 min',
+              label: 'Tiempo medio de contención remota',
+            },
+            {
+              value: '0',
+              label: 'Claves maestras compartidas con terceros',
+            },
+          ],
+        },
+        {
+          id: 'pep',
+          tabLabel: 'Figuras Públicas',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Diagnóstico previo',
+              protocolNote: 'Localizamos residencias, líneas familiares y archivos vulnerables.',
+              exposure: 100,
+              residualRisk: 92,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Depuración prioritaria',
+              protocolNote: 'Retiramos información sensible del titular y su familia antes del anuncio.',
+              exposure: 44,
+              residualRisk: 29,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Separación patrimonial',
+              protocolNote: 'Aislamos cuentas privadas de los canales públicos de campaña.',
+              exposure: 19,
+              residualRisk: 11,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Delegación de prensa',
+              protocolNote: 'Habilitamos a jefes de prensa sin acceso a contraseñas ni códigos.',
+              exposure: 9.5,
+              residualRisk: 4.5,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Vigilancia de mandato',
+              protocolNote: 'Detectamos cuentas falsas, dominios espejo e intentos de filtración.',
+              exposure: 6.2,
+              residualRisk: 1.9,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Domicilios y registros privados',
+              shortLabel: 'Registros',
+              baseline: 98,
+              mitigated: 6,
+            },
+            {
+              label: 'Correos y archivos históricos',
+              shortLabel: 'Credenciales',
+              baseline: 86,
+              mitigated: 3,
+            },
+            {
+              label: 'Perfiles oficiales y suplantación',
+              shortLabel: 'Dominios',
+              baseline: 82,
+              mitigated: 7,
+            },
+            {
+              label: 'Móviles del titular y familia',
+              shortLabel: 'Equipos',
+              baseline: 90,
+              mitigated: 5,
+            },
+            {
+              label: 'Equipo de prensa y asesores',
+              shortLabel: 'Círculo cero',
+              baseline: 95,
+              mitigated: 4,
+            },
+          ],
+          kpis: [
+            {
+              value: '-93.8%',
+              label: 'Rastro privado localizable antes de campaña',
+            },
+            {
+              value: '100%',
+              label: 'Líneas familiares bloqueadas ante clonación',
+            },
+            {
+              value: '< 18 min',
+              label: 'Respuesta directa durante agenda pública',
+            },
+            {
+              value: '0',
+              label: 'Claves expuestas ante agencias externas',
+            },
+          ],
+        },
+        {
+          id: 'atlas',
+          tabLabel: 'Creadores y Patrimonio',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Auditoría de activos',
+              protocolNote: 'Revisamos canales de ingresos, dominios y sesiones heredadas.',
+              exposure: 100,
+              residualRisk: 84,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Revocación de accesos',
+              protocolNote: 'Cerramos sesiones antiguas, permisos conectados y claves previas.',
+              exposure: 58,
+              residualRisk: 36,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Custodia delegada',
+              protocolNote: 'Protegemos canales monetizados y tesorería frente a colaboradores.',
+              exposure: 29,
+              residualRisk: 15,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Defensa de equipos',
+              protocolNote: 'Aseguramos móviles y ordenadores de estudio sin frenar su operación.',
+              exposure: 15,
+              residualRisk: 6.5,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Control consolidado',
+              protocolNote: 'Monitoreamos su entorno y respondemos ante intentos de extorsión.',
+              exposure: 11.0,
+              residualRisk: 2.4,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Exposición de vida privada y bienes',
+              shortLabel: 'Registros',
+              baseline: 85,
+              mitigated: 11,
+            },
+            {
+              label: 'Canales de ingresos y bancos',
+              shortLabel: 'Credenciales',
+              baseline: 94,
+              mitigated: 3,
+            },
+            {
+              label: 'Dominios personales y correo raíz',
+              shortLabel: 'Dominios',
+              baseline: 90,
+              mitigated: 8,
+            },
+            {
+              label: 'Dispositivos móviles y portátiles',
+              shortLabel: 'Equipos',
+              baseline: 88,
+              mitigated: 5,
+            },
+            {
+              label: 'Editores, asistentes y agencias',
+              shortLabel: 'Círculo cero',
+              baseline: 96,
+              mitigated: 4,
+            },
+          ],
+          kpis: [
+            {
+              value: '-89.0%',
+              label: 'Superficie expuesta sobre su patrimonio digital',
+            },
+            {
+              value: '99.2%',
+              label: 'Equipos protegidos sin fricción operativa',
+            },
+            {
+              value: '< 30 min',
+              label: 'Contención ante intento de secuestro de cuenta',
+            },
+            {
+              value: '0',
+              label: 'Filtraciones de claves tras delegar accesos',
+            },
+          ],
+        },
+      ],
     },
     raptor: {
       nav: {
-        backToMain: 'Volver',
+        backToMain: 'Inicio',
         overview: 'Resumen',
-        capabilities: 'Capacidades',
-        dossier: 'Dossier',
-        evaluation: 'Evaluación',
-        cta: 'Solicitar Inteligencia',
+        capabilities: 'Alcance',
+        dossier: 'Informe',
+        evaluation: 'Admisión',
+        cta: 'Solicitar Informe',
       },
       hero: {
-        kicker: ['División Especial', 'Ejecución 100% Externa y Pasiva'],
-        name: 'Palantir Raptor',
-        subtitle: 'Inteligencia y Reconocimiento OSINT',
-        body: 'Inteligencia táctica accionable basada en la recolección y análisis de fuentes abiertas (OSINT) para individuos y corporaciones. Ejecución 100% externa y pasiva.',
-        primaryCta: 'Solicitar Dossier OSINT',
-        eyeAria: 'Esfera Palantír y faro óptico de observación en cristal tornasol',
+        kicker: 'OSINT Pasivo',
+        name: 'Palantirr',
+        subtitle: 'Radiografía exacta de su exposición en internet.',
+        body: 'Identificamos qué datos suyos, de su familia o de una contraparte están hoy al alcance de terceros, sin alertar al objetivo.',
+        primaryCta: 'Solicitar Informe Palantirr',
+        eyeAria: 'Faro óptico de análisis pasivo',
       },
       capabilities: {
-        headline: 'Vectores de Reconocimiento',
-        subtitle:
-          'Recolección y correlación pasiva sobre fuentes públicas, registros técnicos y exposición filtrada.',
+        headline: 'Qué revelamos',
+        subtitle: 'Correlación directa sobre fuentes abiertas, filtraciones históricas y registros públicos.',
         items: [
           {
             num: '01',
-            title: 'Reconocimiento e Identificación',
-            desc: 'Perfilamiento de personas de interés, investigación de terceros (due diligence) y trazabilidad completa de la huella digital.',
+            title: 'Verificación de Contrapartes',
+            desc: 'Evaluamos antecedentes, litigios y vínculos reputacionales antes de firmar acuerdos.',
           },
           {
             num: '02',
-            title: 'Inteligencia Competitiva',
-            desc: 'Análisis del entorno corporativo, monitoreo de la reputación de marca y mapeo de la infraestructura pública de competidores.',
+            title: 'Exposición del Círculo Cero',
+            desc: 'Localizamos domicilios, teléfonos y rutinas expuestas de usted y su familia.',
           },
           {
             num: '03',
-            title: 'Análisis de Riesgo y Exposición',
-            desc: 'Rastreo profundo de credenciales, documentos confidenciales y datos personales filtrados en la Surface y Dark Web.',
+            title: 'Credenciales y Archivos Filtrados',
+            desc: 'Detectamos contraseñas comprometidas, documentos indexados y metadatos sensibles.',
           },
           {
             num: '04',
-            title: 'Superficie de Ataque',
-            desc: 'Detección de dominios clonados, campañas de suplantación de identidad y activos digitales expuestos que representan una amenaza.',
+            title: 'Suplantación y Dominios Espejo',
+            desc: 'Identificamos cuentas apócrifas y dominios creados para usurpar su identidad.',
           },
         ],
       },
       dossier: {
-        kicker: ['Entregable Confidencial', 'Cero Interacción con el Objetivo'],
-        title: 'Dossier Táctico',
-        body: 'Un reporte de inteligencia confidencial con evidencia directa y rutas de mitigación, estructurado a partir del análisis de información pública, sin alertar ni interactuar con la infraestructura del objetivo.',
-        cta: 'Coordinar Operación OSINT',
+        kicker: 'Entregable Ejecutivo',
+        title: 'Informe de Exposición y Ruta de Cierre',
+        body: 'Reciba cada hallazgo verificado por severidad junto con las acciones exactas para retirar su información.',
+        cta: 'Solicitar Informe Palantirr',
       },
     },
     tech: {
-      headline: 'Tecnología y Respaldo',
-      body: 'Operamos bajo una arquitectura de confianza cero impulsada por líderes de la industria: Keeper, Cloudflare, ESET, Action1 e iVerify.',
+      headline: 'Infraestructura de Inteligencia a su Medida',
+      body: 'Integramos estándares de defensa bancaria en sus dispositivos y cuentas personales sin fricción diaria.',
       partners: [
         {
           id: 'keeper',
           name: 'Keeper',
-          role: 'Bóveda criptográfica',
-          desc: 'Cifrado a nivel de dispositivo para credenciales, llaves de acceso y secretos críticos.',
+          role: 'Custodia y delegación',
+          desc: 'Protegemos sus claves maestras y delegamos accesos sin mostrarlas.',
         },
         {
           id: 'cloudflare',
           name: 'Cloudflare',
-          role: 'Perímetro y DNS privado',
-          desc: 'Filtrado de red, túneles encriptados y bloqueo preventivo de dominios de phishing.',
+          role: 'Blindaje de red y dominios',
+          desc: 'Bloqueamos enlaces fraudulentos, rastreadores y ataques a sus dominios.',
         },
         {
           id: 'eset',
           name: 'ESET',
-          role: 'Protección de endpoints',
-          desc: 'Defensa antimalware ligera en macOS y Windows contra infostealers y troyanos.',
+          role: 'Defensa de ordenadores',
+          desc: 'Frenamos el robo de sesiones y el software espía en Mac y Windows.',
         },
         {
           id: 'action1',
           name: 'Action1',
-          role: 'Gestión de vulnerabilidades',
-          desc: 'Cierre autónomo de brechas en sistemas operativos, navegadores y aplicaciones.',
+          role: 'Cierre de vulnerabilidades',
+          desc: 'Sellamos brechas críticas en sus aplicaciones de forma automática.',
         },
         {
           id: 'iverify',
           name: 'iVerify',
           role: 'Integridad móvil',
-          desc: 'Detección avanzada de spyware y endurecimiento de seguridad en iOS y Android.',
+          desc: 'Detectamos intrusiones avanzadas en iPhone y Android.',
         },
       ],
     },
     form: {
-      headline: 'Formulario de Evaluación',
-      body: 'Completa estos datos esenciales —puedes usar un alias— para coordinar tu diagnóstico inicial. Nunca solicitamos contraseñas ni acceso a dispositivos en esta etapa.',
-      raptorHeadline: 'Solicitud de Inteligencia — Palantir Raptor',
+      headline: 'Solicitar Evaluación',
+      body: 'Indique su nombre, un alias o un representante para estructurar su protección. Jamás solicitamos contraseñas.',
+      raptorHeadline: 'Admisión: Palantirr',
       raptorBody:
-        'Completa estos datos esenciales —puedes usar un alias— para coordinar el alcance de reconocimiento pasivo. Ejecución confidencial sin alertar ni tocar infraestructura.',
-      crisisHeadline: 'Registro de Incidente o Contención',
+        'Indique un nombre, alias o representante para definir el alcance de su informe OSINT bajo acuerdo NDA.',
+      crisisHeadline: 'Atención de Incidentes',
       crisisBody:
-        'Registra tu caso —puedes emplear un alias— para coordinar contención, recuperación de accesos o blindaje posterior al incidente. Nunca pedimos contraseñas en este formulario.',
-      pepHeadline: 'Evaluación Confidencial — Protocolo PEP',
+        'Registre su situación para activar contención técnica inmediata y restitución de cuentas.',
+      pepHeadline: 'Admisión: Protocolo PEP',
       pepBody:
-        'Coordina el blindaje previo a una candidatura, designación pública o proceso de alta exposición —puedes registrar tu solicitud mediante un alias o representante—. Operación estrictamente reservada bajo acuerdo NDA.',
+        'Coordine la protección suya y de su familia antes de una candidatura, cargo público o declaración patrimonial.',
       pepSwitchToGeneral: 'Cambiar a evaluación general (Argos / Atlas)',
       fields: {
-        nameLabel: 'Nombre o alias',
-        namePlaceholder: 'Ej. Martín V. o alias privado',
-        roleLabel: 'Rol o perfil',
-        rolePlaceholder: 'Fundador, Candidato, Figura pública...',
-        refLabel: 'Sitio web o perfil principal',
-        refPlaceholder: 'https://tuproyecto.com o @perfil',
-        modeLabel: 'Estructura operativa',
-        modeAria: 'Modalidad operativa',
-        soloOption: 'Individual',
-        teamOption: 'Con equipo / agencia',
-        concernLabel: 'Contexto o inquietud reciente',
+        nameLabel: 'Nombre, alias o representante',
+        namePlaceholder: 'Ej. M. Valdés',
+        roleLabel: 'Actividad o perfil',
+        rolePlaceholder: 'Figura pública, Creador, Empresario, Candidatura...',
+        refLabel: 'Perfil o dominio de referencia',
+        refPlaceholder: '@usuario o https://sudominio.com',
+        modeLabel: 'Alcance',
+        modeAria: 'Alcance de servicio',
+        soloOption: 'Gestión personal',
+        teamOption: 'Con delegación',
+        concernLabel: 'Prioridad o fecha clave',
         optionalTag: 'Opcional',
-        concernPlaceholder: 'Contexto breve o fecha estimada de transición pública...',
-        submitIdle: 'Solicitar Auditoría Privada',
-        raptorSubmitIdle: 'Solicitar Operación Palantir Raptor',
-        crisisSubmitIdle: 'Registrar Caso Prioritario',
-        pepSubmitIdle: 'Solicitar Blindaje PEP',
-        submitLoading: 'Enviando solicitud...',
+        concernPlaceholder: 'Objetivo principal o próximo anuncio público...',
+        submitIdle: 'Solicitar Evaluación',
+        raptorSubmitIdle: 'Solicitar Informe Palantirr',
+        crisisSubmitIdle: 'Activar Contención',
+        pepSubmitIdle: 'Solicitar Protocolo PEP',
+        submitLoading: 'Registrando solicitud...',
       },
       validation: {
-        errorPrefix: 'Error',
-        nameLength: (min, max) => `Ingresa tu nombre o alias (${min} a ${max} caracteres).`,
-        roleLength: (min, max) => `Especifica tu rol principal (${min} a ${max} caracteres).`,
-        refEmpty: 'Comparte el enlace de tu proyecto o perfil principal.',
-        refInvalid: 'Introduce un dominio válido (ej. tuproyecto.com) o usuario (ej. @usuario).',
+        errorPrefix: 'Verificación',
+        nameLength: (min, max) =>
+          `Indique un nombre, alias o representante (${min} a ${max} caracteres).`,
+        roleLength: (min, max) => `Indique su perfil (${min} a ${max} caracteres).`,
+        refEmpty: 'Indique un perfil (@usuario) o dominio.',
+        refInvalid: 'Ingrese un dominio válido (ej. sudominio.com) o perfil (@usuario).',
         concernMax: (max) => `Máximo ${max} caracteres.`,
-        idGenFailed: 'No fue posible generar un identificador seguro. Intenta nuevamente.',
-        quotaExceeded:
-          'Se alcanzó el límite diario de base de datos. Intenta mañana o contacta por correo.',
-        genericSubmitError:
-          'Ocurrió un inconveniente al registrar tu solicitud. Verifica tu conexión e inténtalo de nuevo.',
+        idGenFailed: 'No fue posible generar el código de expediente. Intente de nuevo.',
+        quotaExceeded: 'Recepción diaria completa. Escríbanos directamente por Signal o correo.',
+        genericSubmitError: 'No fue posible enviar la solicitud. Verifique su conexión.',
       },
       confirmation: {
-        title: 'Solicitud Privada Registrada',
-        folioLabel: 'Folio',
-        tierLabel: 'Servicio asignado',
-        nameLabel: 'Nombre / Alias',
-        roleLabel: 'Rol principal',
-        refLabel: 'Enlace de referencia',
+        title: 'Solicitud Registrada',
+        folioLabel: 'Expediente',
+        tierLabel: 'Alcance asignado',
+        nameLabel: 'Titular / Alias',
+        roleLabel: 'Perfil',
+        refLabel: 'Referencia',
         modeLabel: 'Modalidad',
-        modeSoloDesc: 'Solo',
-        modeTeamDesc: 'Equipo',
-        downloadBtn: 'Descargar comprobante',
+        modeSoloDesc: 'Gestión personal',
+        modeTeamDesc: 'Delegación de accesos',
+        downloadBtn: 'Descargar constancia',
         emailBtn: 'App de correo',
         gmailBtn: 'Gmail Web',
         resetBtn: 'Nueva solicitud',
-        tierDisplayArgos: 'Tier 1: Argos',
-        tierDisplayAtlas: 'Tier 2: Atlas',
-        tierDisplayRaptor: 'Palantir Raptor',
+        tierDisplayArgos: 'Nivel I · Argos',
+        tierDisplayAtlas: 'Nivel II · Atlas',
+        tierDisplayRaptor: 'Palantirr',
         tierDisplayPep: 'Protocolo PEP',
-        receiptHeader: 'COTO PRIVADO — SOLICITUD CONFIDENCIAL',
-        receiptFolio: 'Folio',
+        receiptHeader: 'COTO PRIVADO · CONSTANCIA DE EXPEDIENTE',
+        receiptFolio: 'Expediente',
         receiptDate: 'Fecha',
-        receiptName: 'Nombre / Alias',
-        receiptRole: 'Rol principal',
+        receiptName: 'Titular / Alias',
+        receiptRole: 'Perfil',
         receiptRef: 'Referencia',
         receiptMode: 'Modalidad',
-        receiptModeSolo: 'Solo',
-        receiptModeTeam: 'Equipo',
+        receiptModeSolo: 'Gestión personal',
+        receiptModeTeam: 'Delegación de accesos',
         receiptTier: 'Servicio',
         receiptNotes: 'Notas',
-        receiptNoNotes: 'Sin incidentes reportados',
-        mailSubjectPrefix: 'Solicitud Confidencial',
+        receiptNoNotes: 'Sin notas adicionales',
+        mailSubjectPrefix: 'Expediente Coto Privado',
         openSignalBtn: 'Abrir Signal',
       },
       signalCard: {
-        emergencyToggle: '¿Incidente de seguridad activo?',
+        emergencyToggle: '¿Enfrenta un incidente activo ahora mismo?',
         emergencyNotice:
-          'Vía exclusiva para brechas en curso, secuestro de cuentas o extorsión activa. Para diagnósticos preventivos o dudas generales, completa la evaluación.',
-        emergencySignalLabel: 'Línea de emergencia',
-        emergencySignalSubtitle: 'Canal cifrado en Signal',
-        unlockedKicker: (folio) => ['Canales habilitados', `Folio ${folio}`],
-        unlockedTitle: 'Contacto directo habilitado',
+          'Canal directo para secuestro de cuentas en curso, extorsión activa o filtración inminente.',
+        emergencySignalLabel: 'Respuesta inmediata',
+        emergencySignalSubtitle: 'Canal directo en Signal',
+        unlockedKicker: (folio) => ['Canal directo habilitado', `Expediente ${folio}`],
+        unlockedTitle: 'Contacto directo disponible',
         unlockedBody: (folio) =>
-          `Tu expediente está registrado. Puedes escribirnos directamente por Signal o correo con tu referencia ${folio} prellenada.`,
-        userLabel: 'Canal cifrado Signal',
-        signalSubtitle: 'Mensajería directa de extremo a extremo',
+          `Escríbanos por Signal o correo indicando su expediente ${folio} para agilizar la atención.`,
+        userLabel: 'Signal directo',
+        signalSubtitle: 'Cifrado de extremo a extremo',
         openSignalBtn: 'Abrir Signal',
-        emailLabel: 'Correo institucional',
+        emailLabel: 'Correo directo',
         openMailAppBtn: 'App de correo',
         openGmailBtn: 'Gmail Web',
         openOutlookBtn: 'Outlook Web',
         copyEmailBtn: 'Copiar correo',
-        copiedEmailBtn: 'Correo copiado',
-        privacyTrigger: 'Compromiso de privacidad y confidencialidad',
+        copiedEmailBtn: 'Copiado',
+        privacyTrigger: 'Acuerdo NDA y tratamiento de datos',
       },
     },
     footer: {
-      crisisLink: 'Guía de Crisis',
-      contactTrigger: 'Contacto y Emergencias',
-      privacyLink: 'Privacidad y Confidencialidad',
-      privateAccess: 'Acceso Privado',
+      raptorLink: 'Palantirr',
+      crisisLink: 'Protocolo de Incidentes',
+      contactTrigger: 'Línea Directa',
+      privacyLink: 'Acuerdo NDA',
+      privateAccess: 'Acceso',
     },
     privacy: {
-      dialogAria: 'Compromiso de privacidad y confidencialidad de Coto Privado',
-      kicker: ['Coto Privado', 'Protocolo de Reserva'],
-      title: 'Privacidad y Confidencialidad',
-      intro:
-        'Cada acercamiento, consulta o reporte de incidente se gestiona bajo estricta discreción operativa y minimización absoluta de información.',
+      dialogAria: 'Acuerdo NDA y soberanía de datos de Coto Privado',
+      kicker: 'Coto Privado',
+      title: 'Acuerdo NDA y Soberanía de Datos',
+      intro: 'Recolectamos únicamente los datos mínimos necesarios para evaluar su caso.',
       clauses: [
         {
           num: '01',
-          title: 'Reserva profesional y acuerdo NDA',
-          desc: 'Toda comunicación, identidad, alias o contexto operativo compartido está protegido bajo secreto profesional desde el primer contacto. Firmamos acuerdos de no divulgación (NDA) previos a cualquier alcance técnico cuando la operación lo requiera.',
+          title: 'Acuerdo legal de no divulgación (NDA)',
+          desc: 'Protegemos su identidad y la de su familia desde el primer contacto mediante contrato legal.',
         },
         {
           num: '02',
-          title: 'Minimización de datos y cero terceros',
-          desc: 'Recopilamos únicamente los datos mínimos necesarios para coordinar tu evaluación, admitiendo el uso de alias. Jamás comercializamos, cedemos ni exponemos información a terceros, anunciantes ni rastreadores externos.',
+          title: 'Admisión mediante alias o representante',
+          desc: 'Aceptamos alias operativos y jamás compartimos ni comercializamos su información.',
         },
         {
           num: '03',
-          title: 'Comunicaciones cifradas y atención de emergencias',
-          desc: 'Nunca solicitamos contraseñas, códigos 2FA ni acceso a dispositivos mediante este sitio web. Para consultas sensibles o incidentes activos, operamos mediante nuestro canal oficial cifrado de extremo a extremo en Signal.',
+          title: 'Cero solicitud de claves en esta web',
+          desc: 'Nunca pedimos contraseñas ni códigos SMS aquí; toda coordinación técnica ocurre vía Signal.',
         },
         {
           num: '04',
-          title: 'Retención controlada y supresión inmediata',
-          desc: 'Los expedientes de evaluación se conservan únicamente durante la coordinación del servicio. Puedes solicitar la eliminación definitiva e inmediata de cualquier registro a través de nuestro canal en Signal o escribiendo a help@coto.lat.',
+          title: 'Eliminación inmediata a petición suya',
+          desc: 'Usted puede ordenar el borrado definitivo de su expediente en cualquier momento.',
         },
       ],
-      directLabel: 'Canal cifrado directo',
-      openSignalBtn: 'Abrir canal en Signal',
-      closeBtn: 'Entendido',
-      closeAria: 'Cerrar aviso de privacidad y confidencialidad',
+      directLabel: 'Canal directo',
+      openSignalBtn: 'Escribir por Signal',
+      closeBtn: 'Cerrar',
+      closeAria: 'Cerrar ventana',
     },
     emergencyModal: {
-      dialogAria: 'Protocolo de atención a incidentes de seguridad activos',
-      kicker: ['Coto Privado', 'Atención de Crisis'],
-      title: '¿Incidente de seguridad activo?',
-      body: 'Vía exclusiva para brechas en curso, secuestro de cuentas o extorsión activa. Comunicación directa cifrada de extremo a extremo sin intermediarios.',
-      signalLabel: 'Línea de emergencia',
-      signalSubtitle: 'Canal oficial cifrado en Signal',
-      openSignalBtn: 'Abrir Signal',
-      crisisGuideCta: 'Ver guía paso a paso ante hackeo o crisis',
-      preventivePrompt: '¿Buscas una auditoría preventiva o tienes dudas generales?',
-      preventiveCta: 'Ir al formulario de evaluación',
-      privacyLink: 'Privacidad y confidencialidad',
-      closeAria: 'Cerrar protocolo de emergencia',
+      dialogAria: 'Atención inmediata ante incidentes activos',
+      kicker: 'Respuesta Crítica',
+      title: 'Atención inmediata ante incidentes',
+      body: 'Si sufre robo de cuentas, extorsión o filtración de datos en curso, contacte directamente a un especialista.',
+      signalLabel: 'Especialista en línea',
+      signalSubtitle: 'Comunicación directa vía Signal',
+      openSignalBtn: 'Conectar por Signal',
+      crisisGuideCta: 'Ver pasos para los primeros 30 minutos',
+      preventivePrompt: '¿Busca protección preventiva?',
+      preventiveCta: 'Ir a Solicitar Evaluación',
+      privacyLink: 'Acuerdo NDA',
+      closeAria: 'Cerrar ventana',
     },
     crisisPage: {
       nav: {
-        backToMain: 'Volver',
+        backToMain: 'Inicio',
         overview: 'Resumen',
-        protocol: 'Protocolo',
-        hygiene: 'Prevención',
-        evaluation: 'Contacto',
-        cta: 'Solicitar Apoyo',
+        protocol: 'Pasos',
+        hygiene: 'Reglas',
+        evaluation: 'Asistencia',
+        cta: 'Solicitar Contención',
       },
       hero: {
-        kicker: ['Recurso Abierto', 'Primeros 30 Minutos'],
-        headline: 'Qué hacer ante un hackeo o crisis de reputación.',
-        body: 'Una guía práctica de referencia para actuar con criterio en los primeros minutos, preservar evidencia técnica y recuperar el control sin cometer errores irreversibles.',
-        primaryCta: 'Consultar protocolo',
-        signalCta: 'Emergencia en Signal',
-        chamberAria: 'Cámara tridimensional de contención criptográfica en cristal tornasol',
+        kicker: 'Primeros 30 Minutos',
+        headline: 'Contenga un ataque a sus cuentas antes de que escale.',
+        body: 'Siga este orden exacto y utilice únicamente los enlaces oficiales para frenar el daño y conservar pruebas.',
+        primaryCta: 'Ver pasos de acción',
+        signalCta: 'Línea directa en Signal',
+        chamberAria: 'Escultura óptica de cámara de contención',
       },
       protocol: {
-        kicker: ['Guía por Escenario', 'Acciones y enlaces oficiales'],
-        title: 'Pasos específicos según el incidente',
-        subtitle:
-          'Consulta la ruta correspondiente a tu caso. Incluye los portales oficiales directos para evitar anuncios falsos de soporte.',
-        tabAria: 'Escenarios de incidente',
-        resourcesTitle: 'Accesos oficiales directos',
-        resourcesNote: 'Portales verificados sin intermediarios',
-        helpPrompt: '¿El incidente supera tu margen operativo?',
-        helpCta: 'Coordinar atención confidencial',
+        kicker: 'Actuación Inmediata',
+        title: 'Seleccione el incidente en curso',
+        subtitle: 'Ejecute cada paso en orden y acceda sin intermediarios a los portales oficiales.',
+        tabAria: 'Tipos de incidente',
+        resourcesTitle: 'Portales oficiales de recuperación',
+        resourcesNote: 'Acceso directo verificado',
+        helpPrompt: '¿Requiere que asumamos el control técnico?',
+        helpCta: 'Solicitar intervención',
         scenarios: [
           {
             id: 'hack',
@@ -770,149 +1229,149 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
             steps: [
               {
                 num: '01',
-                title: 'Corta la red del equipo sospechoso sin formatear',
-                desc: 'Apaga Wi-Fi y datos móviles de inmediato. Si entraron por un infostealer (robo de cookies en Mac o Windows), cambiar claves desde ese mismo equipo entregará la nueva contraseña al atacante.',
+                title: 'Corte internet del equipo afectado sin formatearlo',
+                desc: 'Apague Wi-Fi y datos de inmediato; cambiar claves desde un equipo infectado las entrega al atacante.',
               },
               {
                 num: '02',
-                title: 'Asegura tu correo raíz y borra reenvíos ocultos',
-                desc: 'Desde otro dispositivo limpio, cambia la clave de tu correo principal, cierra todas las sesiones y revisa Configuración → Reenvío y filtros: suelen dejar reglas silenciosas que copian tus códigos.',
+                title: 'Asegure su correo raíz desde un dispositivo limpio',
+                desc: 'Cambie la contraseña desde otro equipo, cierre sesiones activas y elimine reenvíos ocultos.',
               },
               {
                 num: '03',
-                title: 'Revoca dispositivos vinculados y permisos OAuth',
-                desc: 'En WhatsApp o Telegram entra a Dispositivos vinculados y cierra accesos ajenos. En Google, Apple o Microsoft retira apps de terceros conectadas y cambia tu 2FA de SMS a app autenticadora.',
+                title: 'Revocar sesiones y migrar de SMS a llave o app 2FA',
+                desc: 'Desvincule equipos extraños en WhatsApp, Google, Apple o Meta y active verificación por aplicación.',
               },
               {
                 num: '04',
-                title: 'Descarta SIM Swapping y congela retiros',
-                desc: 'Si tu celular quedó de golpe Sin servicio, llama a tu operador desde otra línea para bloquear reposición de chip o eSIM y solicita bloqueo preventivo temporal en tu banca o exchange.',
+                title: 'Bloquee su línea móvil y alerte a su banco',
+                desc: 'Si perdió señal celular, exija a su operadora bloquear duplicados de SIM y frene transferencias.',
               },
             ],
-            avoidLabel: 'Error crítico a evitar',
+            avoidLabel: 'Qué evitar',
             avoidAction:
-              'Jamás contrates supuestos "hackers de recuperación" en redes o comentarios: son fraudes secundarios que cobran por adelantado y no tienen acceso a los servidores de ninguna plataforma.',
+              'Nunca pague a supuestos recuperadores en redes sociales; ningún tercero externo tiene acceso legítimo.',
             resources: [
               {
                 name: 'Google Security Checkup',
-                desc: 'Cerrar sesiones, auditar reenvíos y revocar apps OAuth',
+                desc: 'Cierre de sesiones, filtros y permisos activos',
                 url: 'https://myaccount.google.com/security-checkup',
               },
               {
                 name: 'Apple Account Recovery',
-                desc: 'Restablecer acceso oficial y revisar equipos vinculados',
+                desc: 'Restitución de Apple ID y dispositivos autorizados',
                 url: 'https://iforgot.apple.com/',
               },
               {
                 name: 'Microsoft Security',
-                desc: 'Actividad de inicio de sesión y cierre global en Outlook',
+                desc: 'Historial de accesos y cierre global de sesiones',
                 url: 'https://account.microsoft.com/security',
               },
               {
-                name: 'Instagram / Meta Hacked',
-                desc: 'Flujo oficial de rescate por selfie o historial de cuenta',
+                name: 'Meta Account Recovery',
+                desc: 'Recuperación oficial para Instagram y Facebook',
                 url: 'https://www.instagram.com/hacked/',
               },
             ],
           },
           {
             id: 'extortion',
-            label: 'Extorsión o filtración',
+            label: 'Doxxing o extorsión',
             steps: [
               {
                 num: '01',
-                title: 'Verifica si es una campaña automatizada o real',
-                desc: 'Muchos correos citan una contraseña tuya antigua filtrada años atrás para fingir que grabaron tu pantalla. Compruébala en Have I Been Pwned; sin prueba específica, suele ser envío masivo.',
+                title: 'Compruebe si es una filtración real o un correo falso',
+                desc: 'La mayoría de extorsiones citan contraseñas antiguas para simular control actual sobre su equipo.',
               },
               {
                 num: '02',
-                title: 'Preserva cabeceras y capturas antes de bloquear',
-                desc: 'Si existen archivos o accesos reales comprometidos, no borres el hilo. Guarda capturas completas (usuario, fecha, billetera o URL) y descarga el correo original en formato .eml.',
+                title: 'Conserve los mensajes originales sin editarlos',
+                desc: 'Descargue los correos en formato .eml y guarde capturas con fecha, hora y enlaces completos.',
               },
               {
                 num: '03',
-                title: 'Corta enlaces compartidos en nube y bóvedas',
-                desc: 'Desde un equipo limpio, cierra sesiones abiertas y revisa carpetas o enlaces públicos en Google Drive, iCloud, Dropbox o Notion para frenar cualquier extracción adicional.',
+                title: 'Cierre carpetas y enlaces públicos en su nube',
+                desc: 'Desde un equipo limpio, revoque enlaces activos en Google Drive, iCloud, Dropbox o Notion.',
               },
               {
                 num: '04',
-                title: 'No negocies en caliente ni pagues por impulso',
-                desc: 'Transferir fondos rara vez garantiza la eliminación del material y suele marcar al objetivo para nuevas exigencias. Gana tiempo mientras cierras todos los vectores abiertos.',
+                title: 'No transfiera dinero sin haber cerrado la brecha',
+                desc: 'Pagar con la intrusión abierta nunca detiene la difusión y multiplica las exigencias.',
               },
             ],
-            avoidLabel: 'Error crítico a evitar',
+            avoidLabel: 'Qué evitar',
             avoidAction:
-              'No confrontes ni amenaces al remitente mientras sigas teniendo sesiones activas, carpetas en nube compartidas o respaldos sin asegurar.',
+              'No responda ni negocie con el extorsionador mientras persistan sesiones ajenas en su correo o nube.',
             resources: [
               {
                 name: 'Have I Been Pwned',
-                desc: 'Comprobar si la clave citada proviene de una brecha antigua',
+                desc: 'Verificación de filtraciones históricas de su correo',
                 url: 'https://haveibeenpwned.com/',
               },
               {
                 name: 'Google Security Checkup',
-                desc: 'Auditar terceros con lectura sobre Gmail y Google Drive',
+                desc: 'Auditoría de aplicaciones con acceso a sus archivos',
                 url: 'https://myaccount.google.com/security-checkup',
               },
               {
                 name: 'Google Content Removal',
-                desc: 'Solicitar desindexación de datos personales expuestos (doxxing)',
+                desc: 'Baja de datos personales expuestos en el buscador',
                 url: 'https://reportcontent.google.com/',
               },
               {
                 name: 'StopNCII.org',
-                desc: 'Bloqueo preventivo por huella digital (hash) sin subir el archivo',
+                desc: 'Bloqueo preventivo de difusión íntima no consentida',
                 url: 'https://stopncii.org/',
               },
             ],
           },
           {
             id: 'reputation',
-            label: 'Suplantación o reputación',
+            label: 'Suplantación de identidad',
             steps: [
               {
                 num: '01',
-                title: 'Respalda evidencia con URL y hora antes de denunciar',
-                desc: 'Antes de reportar una cuenta clonada o publicación difamatoria, toma capturas con la URL completa visible y archiva el enlace en Wayback Machine para conservar prueba verificable.',
+                title: 'Respalde las URLs falsas antes de reportarlas',
+                desc: 'Archive el enlace exacto con sello de tiempo antes de solicitar el derribo de la página o perfil.',
               },
               {
                 num: '02',
-                title: 'Localiza el proveedor del dominio espejo',
-                desc: 'Si crearon una web falsa con tu nombre o marca, búscala en ICANN Lookup para obtener el correo Abuse del registrador del dominio y repórtala en Google Safe Browsing.',
+                title: 'Identifique el proveedor del dominio apócrifo',
+                desc: 'Consulte ICANN para exigir la baja por abuso al registrador y bloquéelo en navegadores.',
               },
               {
                 num: '03',
-                title: 'Blinda las cuentas de tu entorno directo',
-                desc: 'En ataques coordinados contra figuras públicas o fundadores, suelen intentar vulnerar a socios, agencias o familiares para extraer chats fuera de contexto. Revisa su 2FA y sesiones.',
+                title: 'Avise por voz a su familia y colaboradores',
+                desc: 'Los suplantadores contactan en paralelo a su entorno pidiendo transferencias o códigos urgentes.',
               },
               {
                 num: '04',
-                title: 'Aclara desde tu canal oficial sin citar el ataque',
-                desc: 'Si debes prevenir a clientes o audiencia, publica un aviso breve en tus cuentas verificadas sin incluir enlaces ni capturas de los perfiles falsos para no amplificar su alcance.',
+                title: 'Desmienta desde su cuenta real sin enlazar el fraude',
+                desc: 'Publique una aclaración breve en su canal verificado sin dar tráfico al sitio falso.',
               },
             ],
-            avoidLabel: 'Error crítico a evitar',
+            avoidLabel: 'Qué evitar',
             avoidAction:
-              'No abras enlaces sospechosos enviados por desconocidos desde tu red habitual: ciertos sitios de difamación se diseñan como señuelo para capturar tu dirección IP o sesión.',
+              'No abra enlaces sospechosos desde su red doméstica o móvil; suelen capturar su ubicación IP real.',
             resources: [
               {
                 name: 'ICANN Registration Lookup',
-                desc: 'Consultar registrador y contacto Abuse de un dominio clonado',
+                desc: 'Consulta del proveedor que aloja un dominio falso',
                 url: 'https://lookup.icann.org/',
               },
               {
                 name: 'Google Safe Browsing',
-                desc: 'Reportar dominio falso para activar bloqueo en navegadores',
+                desc: 'Bloqueo de sitios fraudulentos en navegadores',
                 url: 'https://safebrowsing.google.com/safebrowsing/report_phish/',
               },
               {
                 name: 'Wayback Machine Save',
-                desc: 'Congelar copia pública con sello de tiempo antes de su borrado',
+                desc: 'Captura verificable previa al retiro de una página',
                 url: 'https://web.archive.org/save',
               },
               {
                 name: 'Google Legal Removal',
-                desc: 'Reporte formal por suplantación o difamación en resultados',
+                desc: 'Baja legal por suplantación o difamación',
                 url: 'https://reportcontent.google.com/',
               },
             ],
@@ -920,50 +1379,50 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         ],
       },
       hygiene: {
-        headline: 'Cuatro hábitos que evitan el 90% de los incidentes',
-        subtitle: 'Estándar mínimo recomendado cuando no existe una emergencia en curso.',
+        headline: 'Cuatro reglas permanentes de control',
+        subtitle: 'Medidas directas que neutralizan la mayoría de ataques dirigidos.',
         items: [
           {
             num: '01',
-            title: 'Correo exclusivo para bancos y recuperación',
-            desc: 'Usa una dirección privada que nadie conozca únicamente para banca, dominios y bóvedas; deja tu correo público solo para contacto comercial.',
+            title: 'Aísle un correo exclusivo para bancos y patrimonio',
+            desc: 'Nunca utilice su dirección pública para banca, inversiones o dominios principales.',
           },
           {
             num: '02',
-            title: 'App autenticadora o llave física en lugar de SMS',
-            desc: 'Desvincula tus códigos 2FA del número telefónico para que un robo de línea (SIM Swap) no permita restablecer tus cuentas.',
+            title: 'Elimine el SMS como factor de seguridad',
+            desc: 'Proteja sus cuentas críticas con llaves físicas o aplicaciones autenticadoras.',
           },
           {
             num: '03',
-            title: 'Delegación a equipos sin compartir contraseñas',
-            desc: 'Entrega acceso a colaboradores o agencias mediante bóvedas Zero-Knowledge o roles nativos, nunca enviando claves ni códigos por chat.',
+            title: 'Delegue accesos sin compartir contraseñas',
+            desc: 'Otorgue permisos revocables a su equipo mediante bóvedas de custodia.',
           },
           {
             num: '04',
-            title: 'Verificación por segunda vía ante urgencias',
-            desc: 'Mantén navegadores actualizados y confirma por llamada directa cualquier aviso urgente de soporte, derechos de autor o cambio de cuenta bancaria.',
+            title: 'Valide por llamada cualquier urgencia financiera',
+            desc: 'Confirme siempre por voz directa toda solicitud inusual de fondos o documentos.',
           },
         ],
-        auditCta: 'Solicitar auditoría preventiva',
+        auditCta: 'Proteger mi entorno personal',
       },
     },
     admin: {
-      dialogAria: 'Panel privado de evaluaciones Coto Privado',
-      headerTitle: 'Solicitudes — Coto Privado',
+      dialogAria: 'Panel de expedientes Coto Privado',
+      headerTitle: 'Expedientes · Coto Privado',
       exportCsv: 'Exportar CSV',
       signOut: 'Salir',
       closeAria: 'Cerrar panel',
       verifying: 'Verificando credenciales...',
-      signInTitle: 'Acceso Administrativo',
-      signInDesc: 'Inicia sesión con tu cuenta corporativa @coto.lat para gestionar las solicitudes.',
-      signInBtn: 'Autenticar con Google',
-      signInFailed: 'No se pudo completar el inicio de sesión con Google.',
-      unauthorizedTitle: 'Cuenta sin permisos',
-      unauthorizedPrefix: 'La sesión actual',
-      unauthorizedMiddle: 'no tiene acceso. Inicia sesión con una cuenta corporativa',
-      switchAccountBtn: 'Cambiar de cuenta Google',
+      signInTitle: 'Acceso Autorizado',
+      signInDesc: 'Ingrese con su cuenta @coto.lat para gestionar los expedientes.',
+      signInBtn: 'Acceder con Google',
+      signInFailed: 'No fue posible completar la autenticación.',
+      unauthorizedTitle: 'Cuenta no autorizada',
+      unauthorizedPrefix: 'La sesión',
+      unauthorizedMiddle: 'no tiene permisos. Ingrese con una cuenta',
+      switchAccountBtn: 'Cambiar cuenta',
       tabs: {
-        all: (count) => `Todas (${count})`,
+        all: (count) => `Todos (${count})`,
         pendiente: (count) => `Pendientes (${count})`,
         en_revision: (count) => `En revisión (${count})`,
         contactado: (count) => `Contactados (${count})`,
@@ -975,58 +1434,58 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         contactado: 'Contactado',
         cerrado: 'Cerrado',
       },
-      searchPlaceholder: 'Buscar por folio, nombre, rol, referencia o notas...',
+      searchPlaceholder: 'Filtrar por expediente, titular, perfil o notas...',
       clearSearchAria: 'Limpiar búsqueda',
       serviceFilterAria: 'Filtrar por servicio',
       serviceAll: 'Todos los servicios',
       sortNewest: 'Más recientes',
-      sortOldest: 'Más antiguas',
+      sortOldest: 'Más antiguos',
       queueCount: (shown, total) =>
         shown === total
-          ? `${total} ${total === 1 ? 'solicitud' : 'solicitudes'}`
-          : `${shown} de ${total} solicitudes`,
-      selectPrompt: 'Selecciona una fila para gestionar',
-      openDossier: 'Ver detalle',
-      backToList: (count) => `Volver a la lista (${count})`,
-      dossierPosition: (index, total) => `Solicitud ${index} de ${total}`,
+          ? `${total} ${total === 1 ? 'expediente' : 'expedientes'}`
+          : `${shown} de ${total} expedientes`,
+      selectPrompt: 'Seleccione un expediente',
+      openDossier: 'Abrir',
+      backToList: (count) => `Volver (${count})`,
+      dossierPosition: (index, total) => `Expediente ${index} de ${total}`,
       prevRequest: 'Anterior',
       nextRequest: 'Siguiente',
-      emptyFiltered: 'Ninguna solicitud coincide con los filtros actuales.',
-      clearFiltersBtn: 'Restablecer filtros',
+      emptyFiltered: 'Sin coincidencias con los filtros activos.',
+      clearFiltersBtn: 'Limpiar filtros',
       serviceLabel: 'Servicio asignado',
-      modeLabel: 'Modalidad operativa',
-      dateLabel: 'Fecha de registro',
+      modeLabel: 'Modalidad',
+      dateLabel: 'Fecha',
       copyBtn: 'Copiar',
       copiedBtn: 'Copiado',
       openLinkBtn: 'Abrir enlace',
       deleteBtn: 'Eliminar',
-      unsavedNotes: 'Cambios sin guardar',
-      hasNotesTag: 'Con notas internas registradas',
-      loadingDocs: 'Cargando solicitudes...',
-      emptyDocs: 'No hay solicitudes registradas todavía.',
+      unsavedNotes: 'Sin guardar',
+      hasNotesTag: 'Con notas',
+      loadingDocs: 'Cargando expedientes...',
+      emptyDocs: 'Sin expedientes registrados.',
       recentFallback: 'Reciente',
       confirmDelete: 'Confirmar borrado',
       cancelDelete: 'Cancelar',
-      deleteAria: 'Eliminar solicitud',
+      deleteAria: 'Eliminar expediente',
       modeAndTier: 'Modalidad y Servicio',
-      soloShort: 'Solo',
-      teamShort: 'Equipo',
-      refLink: 'Enlace o perfil de referencia',
-      reportedConcern: 'Preocupación o incidente reportado',
-      noComments: 'Sin comentarios adicionales.',
-      dossierStatus: 'Estado del expediente',
-      closedLockedMsg: 'Expediente cerrado (edición bloqueada).',
-      reopenBtn: 'Reabrir expediente',
-      internalNotesLabel: 'Notas internas de seguimiento',
-      internalNotesPlaceholder: 'Registra acuerdos, contexto de contacto o siguientes pasos...',
+      soloShort: 'Personal',
+      teamShort: 'Delegación',
+      refLink: 'Perfil o dominio',
+      reportedConcern: 'Contexto del titular',
+      noComments: 'Sin notas registradas.',
+      dossierStatus: 'Estado',
+      closedLockedMsg: 'Expediente cerrado.',
+      reopenBtn: 'Reabrir',
+      internalNotesLabel: 'Notas internas',
+      internalNotesPlaceholder: 'Acuerdos, responsable o seguimiento...',
       savingBtn: 'Guardando...',
       saveNotesBtn: 'Guardar notas',
-      feedbackSyncError: 'No fue posible sincronizar las solicitudes.',
-      feedbackStatusUpdated: (label) => `Estado actualizado a ${label}.`,
-      feedbackStatusError: 'Error al actualizar el estado.',
+      feedbackSyncError: 'Error al sincronizar expedientes.',
+      feedbackStatusUpdated: (label) => `Estado cambiado a ${label}.`,
+      feedbackStatusError: 'No se pudo actualizar el estado.',
       feedbackNotesSaved: 'Notas guardadas.',
       feedbackNotesError: 'No se pudieron guardar las notas.',
-      feedbackDeleteError: 'No fue posible eliminar el registro.',
+      feedbackDeleteError: 'No se pudo eliminar el expediente.',
     },
   },
 
@@ -1035,388 +1494,745 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
     raptorMetaTitle: '\u2800',
     crisisMetaTitle: '\u2800',
     nav: {
-      overview: 'Overview',
-      services: 'Services',
-      pep: 'Public Exposure',
-      backing: 'Technology',
-      crisis: 'Crisis',
+      overview: 'Home',
+      profiles: 'Profiles',
+      services: 'Tiers',
+      units: 'Intelligence',
+      pep: 'PEP',
+      metrics: 'Metrics',
+      backing: 'Infrastructure',
+      raptor: 'Palantirr',
+      crisis: 'Incident Protocol',
       evaluation: 'Assessment',
-      cta: 'Request Audit',
+      cta: 'Request Assessment',
+      mobileCta: 'Request Assessment',
+      menuOpen: 'Menu',
+      menuClose: 'Close',
+      menuOpenAria: 'Open navigation menu',
+      menuCloseAria: 'Close navigation menu',
+      mobileUnitsLabel: 'On-demand units',
+      mobileLangLabel: 'Language',
       ariaMain: 'Primary navigation',
       langSelectorAria: 'Select language',
     },
     hero: {
-      kicker: ['Safe', 'Trust', 'Cybersecurity'],
-      headline: 'Corporate-grade security simplified for you.',
-      body: 'We protect the digital wealth, identity, and operations of founders, creators, and public figures, so you can focus on what you do best.',
-      primaryCta: 'Request Private Audit',
-      emergencyTrigger: 'Active incident?',
-      padlockAria: 'Security padlock',
+      headline: 'Your identity, armored. Your reputation, intact.',
+      body: 'Corporate-grade cybersecurity and OSINT intelligence, dedicated exclusively to protecting your digital patrimony and your zero circle.',
+      primaryCta: 'Request Assessment',
+      emergencyTrigger: 'Active incident response',
+      padlockAria: 'Optical personal vault sculpture',
     },
-    services: {
-      headline: 'Our Services',
-      subtitle: 'Two protection tiers structured around your operation.',
-      shieldAria: 'Security shield',
-      argos: {
-        tierTag: 'Tier 1',
-        subtitleTag: 'Essential Foundation',
-        name: 'Argos',
-        audience: 'For independent professionals, founders, and content creators.',
-        items: [
-          {
-            title: 'Shielded Identity',
-            desc: 'Centralized password vault and alias emails to conceal your digital footprint.',
-          },
-          {
-            title: 'Silent Defense',
-            desc: 'Automated protection and background patching across your devices (PC/Mac/Mobile) without interrupting your workflow.',
-          },
-          {
-            title: 'Exposure Diagnostic',
-            desc: 'Initial baseline audit to detect whether your personal data is already compromised online.',
-          },
-        ],
-        cta: 'Select Argos',
-      },
-      atlas: {
-        tierTag: 'Tier 2',
-        subtitleTag: 'Comprehensive Shielding',
-        name: 'Atlas',
-        audience:
-          'For high-profile operations that delegate access to teams, agencies, or collaborators.',
-        items: [
-          {
-            title: 'Zero-Knowledge Delegation',
-            desc: 'Your team logs into critical platforms without ever seeing your passwords or security codes (2FA).',
-          },
-          {
-            title: 'Continuous Vigilance',
-            desc: 'Active monitoring against session hijacking, impersonation, and Dark Web credential leaks.',
-          },
-          {
-            title: 'Crisis Response (<30 min)',
-            desc: 'Remote isolation of compromised devices, encrypted communication channel, and immutable recovery dossier.',
-          },
-        ],
-        cta: 'Select Atlas',
-      },
-      raptorCallout: {
-        kicker: ['Special Division', 'OSINT Intelligence'],
-        hook: 'External, passive reconnaissance to uncover what public records reveal today.',
-        cta: 'Palantir Raptor',
-      },
-      crisisCallout: {
-        kicker: ['Open Protocol', 'First 30-Min Response'],
-        hook: 'Immediate actions and verified portals for account takeovers, extortion, or impersonation.',
-        cta: 'Crisis Guide',
-      },
-    },
-    pep: {
-      kicker: ['PEP Protocol', 'Candidacies & Public Exposure'],
-      headline: 'Comprehensive shielding before and during public life.',
-      body: 'Running for office, assuming a public appointment, or filing statutory asset disclosures exposes your inner circle to doxxing and targeted leaks. We reduce your attack surface ahead of public scrutiny.',
-      scopeLabel: 'Scope',
-      scopes: [
-        'Candidacies',
-        'Politically Exposed Persons',
-        'Public officials',
-        'Statutory disclosures',
-      ],
-      cta: 'Request PEP Shielding',
+    profiles: {
+      pitchLead:
+        'An elite close-protection detail for your physical safety. A Swiss banker for your financial privacy.',
+      pitchAnchor: 'Coto Privado for your digital identity.',
+      pillarsLabel: 'Operating principles',
       pillars: [
         {
           num: '01',
-          title: 'Pre-Candidacy Scrubbing & Anti-Doxxing',
-          desc: 'Preemptive removal of home addresses, leaked phone numbers, legacy emails, and data-broker records before any official announcement.',
+          title: 'Digital Sovereignty',
+          desc: 'Regain full control over what the internet knows about you and your family.',
         },
         {
           num: '02',
-          title: 'Boundary Between Legal Disclosure & Private Life',
-          desc: 'Technical isolation between mandated public filings and your personal, family, and financial infrastructure to prevent extortion.',
+          title: 'Background Execution',
+          desc: 'We neutralize threats before impact so you lead without disruption.',
         },
         {
           num: '03',
-          title: 'Immediate Family & Inner-Circle Hardening',
-          desc: 'Anti-SIM-Swap locks, encrypted vaults, and device hardening for spouses, children, and key advisors.',
+          title: 'Asymmetry in Your Favor',
+          desc: 'We dedicate banking-grade defense infrastructure to your personal patrimony.',
+        },
+      ],
+      audiencesLabel: 'Who we protect',
+      audiences: [
+        {
+          id: 'pep',
+          num: '01',
+          title: 'Public Figures & PEPs',
+          desc: 'We neutralize data leaks and reputational risks under public scrutiny.',
+          cta: 'View PEP Protocol',
+        },
+        {
+          id: 'creators',
+          num: '02',
+          title: 'Creators & Visionaries',
+          desc: 'We prevent account hijacking, doxxing, and attacks on your revenue channels.',
+          cta: 'Protect accounts',
+        },
+        {
+          id: 'private',
+          num: '03',
+          title: 'Private Principals',
+          desc: 'We remove exposed records and isolate your digital patrimony from third parties.',
+          cta: 'Assess scope',
+        },
+      ],
+    },
+    services: {
+      headline: 'Service Tiers',
+      subtitle: 'Two defined scopes depending on whether you manage accounts directly or delegate access.',
+      shieldAria: 'Optical asset shield sculpture',
+      argos: {
+        tierTag: 'Tier I',
+        scopeTag: 'Personal Management',
+        name: 'Argos',
+        scopeSummary: 'Direct coverage across your personal accounts, devices, and exposed records.',
+        bullets: [
+          'We isolate your banking and personal accounts through segregated identities.',
+          'We remove home addresses, phone numbers, and historical leaks from the web.',
+          'We protect your phones and laptops against intrusion and session theft.',
+          'We block SIM swapping and unauthorized account recovery attempts.',
+        ],
+        cta: 'Request Argos Tier',
+      },
+      atlas: {
+        tierTag: 'Tier II',
+        scopeTag: 'Access Delegation',
+        name: 'Atlas',
+        scopeSummary: 'Extended coverage for your family, assistants, and communications teams.',
+        bullets: [
+          'Includes the full Personal Management scope (Argos).',
+          'We delegate social and press channels to your team without exposing master keys.',
+          'We protect devices and accounts for your spouse, children, and zero circle.',
+          'We isolate incidents and restore compromised assets in under 30 minutes.',
+        ],
+        cta: 'Request Atlas Tier',
+      },
+    },
+    units: {
+      headline: 'On-demand intelligence and critical response.',
+      subtitle: 'Standalone units for high-stakes decisions or live incident containment.',
+      palantirr: {
+        num: '01',
+        tag: 'Passive OSINT',
+        name: 'Palantirr',
+        summary:
+          'We map every piece of data exposed online about you, your family, or a counterparty.',
+        bullets: [
+          'We audit leaks, public filings, and asset links without leaving a trace.',
+          'We verify reputational risk prior to partnerships, investments, or agreements.',
+          'We deliver an executive briefing with verified findings and removal steps.',
+        ],
+        cta: 'Explore Palantirr',
+      },
+      incidentProtocol: {
+        num: '02',
+        tag: 'Critical Response',
+        name: 'Incident Protocol',
+        summary:
+          'Contain account takeovers, extortion, or active leaks within the first 30 minutes.',
+        bullets: [
+          'We isolate compromised devices and terminate intruder sessions immediately.',
+          'We preserve admissible evidence and sever exposed cloud sharing links.',
+          'We restore control over official profiles, domains, and mobile lines.',
+        ],
+        cta: 'Open Incident Protocol',
+        emergencyLink: 'Direct Signal line',
+      },
+    },
+    pep: {
+      kicker: 'PEP Protocol',
+      headline: 'Protect your family before stepping into public scrutiny.',
+      body: 'We remove vulnerable records and secure your zero circle ahead of candidacies, public appointments, or asset disclosures.',
+      cta: 'Request PEP Protocol',
+      pillars: [
+        {
+          num: '01',
+          title: 'Preventive Data Removal',
+          desc: 'We purge private addresses, phone lines, and broker listings before launch.',
+        },
+        {
+          num: '02',
+          title: 'Boundary Between Law and Private Life',
+          desc: 'We separate statutory public disclosures from your family private patrimony.',
+        },
+        {
+          num: '03',
+          title: 'Zero Circle Protection',
+          desc: 'We harden mobile lines and devices for your spouse, children, and key advisors.',
         },
         {
           num: '04',
-          title: 'Zero-Knowledge Campaign & Press Delegation',
-          desc: 'Controlled access to official channels for press teams and agencies without sharing passwords or 2FA codes, with instant revocation.',
+          title: 'Keyless Press Delegation',
+          desc: 'We enable campaign teams to publish on verified accounts without master passwords.',
         },
       ],
-      footnote:
-        'Non-partisan execution under mutual NDA · Any country or electoral jurisdiction',
-      raptorPrompt: 'What do public records already reveal?',
-      raptorCta: 'Pre-candidacy OSINT diagnostic (Palantir Raptor)',
+      footnote: 'Strictly non-partisan under NDA · International coverage',
+      raptorCta: 'Assess exposure with Palantirr',
+    },
+    metrics: {
+      headline: 'Measurable reduction of your public exposure.',
+      scopeSelectorAria: 'Select metrics profile',
+      longitudinalTitle: 'Exposure index (T+0 to T+90)',
+      chartAria: 'D3 longitudinal chart of public exposure reduction from day 0 to day 90',
+      legendBaseline: 'Unprotected',
+      legendFootprint: 'Public exposure',
+      legendRisk: 'Active risks',
+      footprintReadoutLabel: 'Current exposure',
+      mitigationDeltaLabel: 'Net reduction',
+      radialTitle: 'Mitigated vectors',
+      radialAria: 'D3 polar chart comparing five exposure vectors at day 0 versus day 90',
+      radialLegendBefore: 'Start (T+0)',
+      radialLegendAfter: 'Day 90 (T+90)',
+      footnote: 'Anonymized real client engagements under NDA · Verified at days 15, 30, 60, and 90',
+      cta: 'Assess my current exposure',
+      scopes: [
+        {
+          id: 'consolidated',
+          tabLabel: 'Consolidated',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Initial audit',
+              protocolNote: 'We map leaked credentials, private addresses, and linked accounts.',
+              exposure: 100,
+              residualRisk: 86,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Record removal',
+              protocolNote: 'We remove personal listings from data brokers and search indexes.',
+              exposure: 54,
+              residualRisk: 38,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Account isolation',
+              protocolNote: 'We segregate banking and primary email with aliases and hardware keys.',
+              exposure: 26,
+              residualRisk: 16,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Device hardening',
+              protocolNote: 'We secure phones, laptops, and carrier lines against SIM cloning.',
+              exposure: 13,
+              residualRisk: 7,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Continuous monitoring',
+              protocolNote: 'We keep your public footprint minimal with early leak alerts.',
+              exposure: 8.4,
+              residualRisk: 2.8,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Personal records & directories',
+              shortLabel: 'Records',
+              baseline: 94,
+              mitigated: 8,
+            },
+            {
+              label: 'Accounts & historical keys',
+              shortLabel: 'Credentials',
+              baseline: 88,
+              mitigated: 4,
+            },
+            {
+              label: 'Domains & public identity',
+              shortLabel: 'Domains',
+              baseline: 79,
+              mitigated: 9,
+            },
+            {
+              label: 'Phones & personal devices',
+              shortLabel: 'Devices',
+              baseline: 84,
+              mitigated: 6,
+            },
+            {
+              label: 'Zero circle access',
+              shortLabel: 'Zero circle',
+              baseline: 91,
+              mitigated: 5,
+            },
+          ],
+          kpis: [
+            {
+              value: '-91.6%',
+              label: 'Exposed personal records after 90 days',
+            },
+            {
+              value: '98.4%',
+              label: 'Verified removals across brokers and search',
+            },
+            {
+              value: '< 24 min',
+              label: 'Mean remote containment time',
+            },
+            {
+              value: '0',
+              label: 'Master passwords shared with third parties',
+            },
+          ],
+        },
+        {
+          id: 'pep',
+          tabLabel: 'Public Figures',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Pre-announcement audit',
+              protocolNote: 'We locate exposed residences, family lines, and vulnerable archives.',
+              exposure: 100,
+              residualRisk: 92,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Priority purge',
+              protocolNote: 'We remove sensitive principal and family records ahead of launch.',
+              exposure: 44,
+              residualRisk: 29,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Patrimony isolation',
+              protocolNote: 'We separate private family accounts from public campaign channels.',
+              exposure: 19,
+              residualRisk: 11,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Press delegation',
+              protocolNote: 'We enable communications staff without sharing passwords or codes.',
+              exposure: 9.5,
+              residualRisk: 4.5,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Term monitoring',
+              protocolNote: 'We detect impersonation accounts, lookalike domains, and leaks.',
+              exposure: 6.2,
+              residualRisk: 1.9,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Residences & private filings',
+              shortLabel: 'Records',
+              baseline: 98,
+              mitigated: 6,
+            },
+            {
+              label: 'Historical mail & archives',
+              shortLabel: 'Credentials',
+              baseline: 86,
+              mitigated: 3,
+            },
+            {
+              label: 'Official profiles & impersonation',
+              shortLabel: 'Domains',
+              baseline: 82,
+              mitigated: 7,
+            },
+            {
+              label: 'Principal & family phones',
+              shortLabel: 'Devices',
+              baseline: 90,
+              mitigated: 5,
+            },
+            {
+              label: 'Press team & advisors',
+              shortLabel: 'Zero circle',
+              baseline: 95,
+              mitigated: 4,
+            },
+          ],
+          kpis: [
+            {
+              value: '-93.8%',
+              label: 'Traceable private data prior to campaign',
+            },
+            {
+              value: '100%',
+              label: 'Family mobile lines locked against port-out',
+            },
+            {
+              value: '< 18 min',
+              label: 'Direct response during public engagements',
+            },
+            {
+              value: '0',
+              label: 'Passwords exposed to external agencies',
+            },
+          ],
+        },
+        {
+          id: 'atlas',
+          tabLabel: 'Creators & Patrimony',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Asset audit',
+              protocolNote: 'We review monetized channels, core domains, and legacy sessions.',
+              exposure: 100,
+              residualRisk: 84,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Access revocation',
+              protocolNote: 'We terminate stale sessions, third-party apps, and shared keys.',
+              exposure: 58,
+              residualRisk: 36,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Delegated custody',
+              protocolNote: 'We protect revenue channels and treasury across collaborators.',
+              exposure: 29,
+              residualRisk: 15,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Device defense',
+              protocolNote: 'We secure phones and studio workstations without workflow friction.',
+              exposure: 15,
+              residualRisk: 6.5,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Consolidated control',
+              protocolNote: 'We monitor your perimeter and respond to hijack or extortion attempts.',
+              exposure: 11.0,
+              residualRisk: 2.4,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Private life & asset exposure',
+              shortLabel: 'Records',
+              baseline: 85,
+              mitigated: 11,
+            },
+            {
+              label: 'Revenue channels & banking',
+              shortLabel: 'Credentials',
+              baseline: 94,
+              mitigated: 3,
+            },
+            {
+              label: 'Personal domains & root email',
+              shortLabel: 'Domains',
+              baseline: 90,
+              mitigated: 8,
+            },
+            {
+              label: 'Mobile & laptop devices',
+              shortLabel: 'Devices',
+              baseline: 88,
+              mitigated: 5,
+            },
+            {
+              label: 'Editors, assistants & agencies',
+              shortLabel: 'Zero circle',
+              baseline: 96,
+              mitigated: 4,
+            },
+          ],
+          kpis: [
+            {
+              value: '-89.0%',
+              label: 'Exposed surface across digital patrimony',
+            },
+            {
+              value: '99.2%',
+              label: 'Personal devices protected without friction',
+            },
+            {
+              value: '< 30 min',
+              label: 'Containment on account takeover attempts',
+            },
+            {
+              value: '0',
+              label: 'Key leaks after activating delegated access',
+            },
+          ],
+        },
+      ],
     },
     raptor: {
       nav: {
-        backToMain: 'Back',
+        backToMain: 'Home',
         overview: 'Overview',
-        capabilities: 'Capabilities',
-        dossier: 'Dossier',
-        evaluation: 'Assessment',
-        cta: 'Request Intelligence',
+        capabilities: 'Scope',
+        dossier: 'Briefing',
+        evaluation: 'Intake',
+        cta: 'Request Briefing',
       },
       hero: {
-        kicker: ['Special Division', '100% External & Passive Execution'],
-        name: 'Palantir Raptor',
-        subtitle: 'OSINT Intelligence & Reconnaissance',
-        body: 'Actionable tactical intelligence based on Open-Source Intelligence (OSINT) collection and analysis for individuals and corporations. 100% external and passive execution.',
-        primaryCta: 'Request OSINT Dossier',
-        eyeAria: 'Iridescent crystal Palantír orb and optical observation beacon',
+        kicker: 'Passive OSINT',
+        name: 'Palantirr',
+        subtitle: 'Complete assessment of your public online exposure.',
+        body: 'We identify what data about you, your family, or a counterparty is accessible to third parties today, without alerting the target.',
+        primaryCta: 'Request Palantirr Briefing',
+        eyeAria: 'Optical passive analysis beacon',
       },
       capabilities: {
-        headline: 'Reconnaissance Vectors',
-        subtitle:
-          'Passive collection and correlation across public records, technical infrastructure, and leaked exposure.',
+        headline: 'What we uncover',
+        subtitle: 'Direct correlation across open records, historical breaches, and public filings.',
         items: [
           {
             num: '01',
-            title: 'Reconnaissance & Identification',
-            desc: 'Profiling of persons of interest, third-party due diligence investigations, and full end-to-end digital footprint traceability.',
+            title: 'Counterparty Verification',
+            desc: 'We vet backgrounds, litigation, and reputational links before signing agreements.',
           },
           {
             num: '02',
-            title: 'Competitive Intelligence',
-            desc: 'Corporate environment analysis, brand reputation monitoring, and mapping of competitors’ public infrastructure.',
+            title: 'Zero Circle Exposure',
+            desc: 'We locate exposed home addresses, phone lines, and routines of your family.',
           },
           {
             num: '03',
-            title: 'Risk & Exposure Analysis',
-            desc: 'Deep tracking of credentials, confidential documents, and leaked personal data across the Surface and Dark Web.',
+            title: 'Leaked Credentials & Files',
+            desc: 'We detect compromised passwords, indexed documents, and sensitive metadata.',
           },
           {
             num: '04',
-            title: 'Attack Surface',
-            desc: 'Detection of cloned domains, impersonation campaigns, and exposed digital assets that represent an active threat.',
+            title: 'Impersonation & Mirror Domains',
+            desc: 'We identify fake profiles and lookalike domains registered to exploit your name.',
           },
         ],
       },
       dossier: {
-        kicker: ['Confidential Deliverable', 'Zero Target Interaction'],
-        title: 'Tactical Dossier',
-        body: 'A confidential intelligence report with direct evidence and mitigation pathways, structured strictly from public information analysis without alerting or interacting with the target’s infrastructure.',
-        cta: 'Coordinate OSINT Operation',
+        kicker: 'Executive Deliverable',
+        title: 'Exposure Briefing & Remediation Plan',
+        body: 'Receive every verified finding ranked by severity alongside the exact steps to remove your exposed data.',
+        cta: 'Request Palantirr Briefing',
       },
     },
     tech: {
-      headline: 'Technology & Backing',
-      body: 'We operate on a zero-trust architecture powered by industry leaders: Keeper, Cloudflare, ESET, Action1, and iVerify.',
+      headline: 'Tailored Intelligence Infrastructure',
+      body: 'We integrate banking-grade defense standards across your personal devices and accounts without daily friction.',
       partners: [
         {
           id: 'keeper',
           name: 'Keeper',
-          role: 'Cryptographic vault',
-          desc: 'Device-level encryption for credentials, passkeys, and critical secrets.',
+          role: 'Custody & delegation',
+          desc: 'We secure master keys and delegate account access without revealing them.',
         },
         {
           id: 'cloudflare',
           name: 'Cloudflare',
-          role: 'Perimeter & private DNS',
-          desc: 'Network filtering, encrypted tunnels, and preemptive phishing domain blocking.',
+          role: 'Network & domain shield',
+          desc: 'We block phishing links, trackers, and attacks targeting your domains.',
         },
         {
           id: 'eset',
           name: 'ESET',
-          role: 'Endpoint protection',
-          desc: 'Lightweight anti-malware defense on macOS and Windows against infostealers.',
+          role: 'Workstation defense',
+          desc: 'We stop session theft and spyware across Mac and Windows.',
         },
         {
           id: 'action1',
           name: 'Action1',
-          role: 'Vulnerability management',
-          desc: 'Autonomous security updates across operating systems, browsers, and apps.',
+          role: 'Vulnerability closure',
+          desc: 'We patch critical application vulnerabilities automatically.',
         },
         {
           id: 'iverify',
           name: 'iVerify',
           role: 'Mobile integrity',
-          desc: 'Advanced spyware detection and system hardening for iOS and Android.',
+          desc: 'We detect advanced mobile intrusions across iPhone and Android.',
         },
       ],
     },
     form: {
-      headline: 'Assessment Form',
-      body: 'Complete these essential details—you may use an alias—to coordinate your initial diagnostic. We never request passwords or device access at this stage.',
-      raptorHeadline: 'Intelligence Request — Palantir Raptor',
+      headline: 'Request Assessment',
+      body: 'Provide your name, an alias, or a representative to structure your protection. We never request passwords.',
+      raptorHeadline: 'Intake: Palantirr',
       raptorBody:
-        'Complete these essential details—you may use an alias—to coordinate your passive reconnaissance scope. Confidential execution without alerting or touching infrastructure.',
-      crisisHeadline: 'Incident & Containment Intake',
+        'Provide a name, alias, or representative to scope your OSINT briefing under NDA.',
+      crisisHeadline: 'Incident Response',
       crisisBody:
-        'Register your case—aliases are welcome—to coordinate containment, account recovery, or post-incident hardening. We never request passwords through this form.',
-      pepHeadline: 'Confidential Assessment — PEP Protocol',
+        'Log your case to trigger immediate technical containment and account recovery.',
+      pepHeadline: 'Intake: PEP Protocol',
       pepBody:
-        'Coordinate preventive shielding ahead of a candidacy, public appointment, or high-scrutiny transition—you may register under an alias or authorized representative. Strictly confidential under NDA.',
+        'Coordinate protection for yourself and your family ahead of a candidacy, appointment, or disclosure.',
       pepSwitchToGeneral: 'Switch to general assessment (Argos / Atlas)',
       fields: {
-        nameLabel: 'Name or alias',
-        namePlaceholder: 'E.g. Martin V. or private alias',
-        roleLabel: 'Role or profile',
-        rolePlaceholder: 'Founder, Candidate, Public Figure...',
-        refLabel: 'Website or primary profile',
-        refPlaceholder: 'https://yourproject.com or @handle',
-        modeLabel: 'Operating structure',
-        modeAria: 'Operating mode',
-        soloOption: 'Individual',
-        teamOption: 'With team / agency',
-        concernLabel: 'Recent context or concern',
+        nameLabel: 'Name, alias, or representative',
+        namePlaceholder: 'e.g. M. Valdes',
+        roleLabel: 'Primary activity or profile',
+        rolePlaceholder: 'Public figure, Creator, Founder, Candidate...',
+        refLabel: 'Reference profile or domain',
+        refPlaceholder: '@handle or https://yourdomain.com',
+        modeLabel: 'Scope',
+        modeAria: 'Service scope',
+        soloOption: 'Personal management',
+        teamOption: 'With delegation',
+        concernLabel: 'Priority or target date',
         optionalTag: 'Optional',
-        concernPlaceholder: 'Brief context or estimated timeline for public transition...',
-        submitIdle: 'Request Private Audit',
-        raptorSubmitIdle: 'Request Palantir Raptor Operation',
-        crisisSubmitIdle: 'Submit Priority Case',
-        pepSubmitIdle: 'Request PEP Shielding',
-        submitLoading: 'Submitting request...',
+        concernPlaceholder: 'Primary objective or upcoming public milestone...',
+        submitIdle: 'Request Assessment',
+        raptorSubmitIdle: 'Request Palantirr Briefing',
+        crisisSubmitIdle: 'Activate Containment',
+        pepSubmitIdle: 'Request PEP Protocol',
+        submitLoading: 'Recording request...',
       },
       validation: {
-        errorPrefix: 'Error',
-        nameLength: (min, max) => `Enter your name or alias (${min} to ${max} characters).`,
-        roleLength: (min, max) => `Specify your primary role (${min} to ${max} characters).`,
-        refEmpty: 'Share your project website or primary social profile.',
-        refInvalid: 'Enter a valid domain (e.g. yourproject.com) or handle (e.g. @handle).',
+        errorPrefix: 'Check',
+        nameLength: (min, max) =>
+          `Enter a name, alias, or representative (${min} to ${max} characters).`,
+        roleLength: (min, max) => `Enter your profile (${min} to ${max} characters).`,
+        refEmpty: 'Enter a profile (@handle) or domain.',
+        refInvalid: 'Enter a valid domain (e.g. yourdomain.com) or handle (@handle).',
         concernMax: (max) => `Maximum ${max} characters.`,
-        idGenFailed: 'Unable to generate a secure identifier. Please try again.',
-        quotaExceeded: 'Daily database quota reached. Please try again tomorrow or contact via email.',
-        genericSubmitError:
-          'An issue occurred while saving your request. Check your connection and try again.',
+        idGenFailed: 'Could not generate case code. Please try again.',
+        quotaExceeded: 'Daily intake reached. Contact us directly via Signal or email.',
+        genericSubmitError: 'Could not submit request. Check your connection.',
       },
       confirmation: {
-        title: 'Private Request Registered',
-        folioLabel: 'Reference',
-        tierLabel: 'Assigned service',
-        nameLabel: 'Name / Alias',
-        roleLabel: 'Primary role',
-        refLabel: 'Reference link',
-        modeLabel: 'Mode',
-        modeSoloDesc: 'Solo',
-        modeTeamDesc: 'Team',
+        title: 'Request Recorded',
+        folioLabel: 'Case ID',
+        tierLabel: 'Assigned scope',
+        nameLabel: 'Principal / Alias',
+        roleLabel: 'Profile',
+        refLabel: 'Reference',
+        modeLabel: 'Modality',
+        modeSoloDesc: 'Personal management',
+        modeTeamDesc: 'Access delegation',
         downloadBtn: 'Download receipt',
         emailBtn: 'Mail app',
         gmailBtn: 'Gmail Web',
         resetBtn: 'New request',
-        tierDisplayArgos: 'Tier 1: Argos',
-        tierDisplayAtlas: 'Tier 2: Atlas',
-        tierDisplayRaptor: 'Palantir Raptor',
+        tierDisplayArgos: 'Tier I · Argos',
+        tierDisplayAtlas: 'Tier II · Atlas',
+        tierDisplayRaptor: 'Palantirr',
         tierDisplayPep: 'PEP Protocol',
-        receiptHeader: 'COTO PRIVADO — CONFIDENTIAL REQUEST',
-        receiptFolio: 'Reference',
+        receiptHeader: 'COTO PRIVADO · CASE RECORD',
+        receiptFolio: 'Case ID',
         receiptDate: 'Date',
-        receiptName: 'Name / Alias',
-        receiptRole: 'Primary role',
-        receiptRef: 'Link',
-        receiptMode: 'Mode',
-        receiptModeSolo: 'Solo',
-        receiptModeTeam: 'Team',
+        receiptName: 'Principal / Alias',
+        receiptRole: 'Profile',
+        receiptRef: 'Reference',
+        receiptMode: 'Modality',
+        receiptModeSolo: 'Personal management',
+        receiptModeTeam: 'Access delegation',
         receiptTier: 'Service',
         receiptNotes: 'Notes',
-        receiptNoNotes: 'No recent incidents reported',
-        mailSubjectPrefix: 'Confidential Request',
+        receiptNoNotes: 'No additional notes',
+        mailSubjectPrefix: 'Coto Privado Case',
         openSignalBtn: 'Open Signal',
       },
       signalCard: {
-        emergencyToggle: 'Active security incident?',
+        emergencyToggle: 'Facing an active incident right now?',
         emergencyNotice:
-          'Strictly reserved for ongoing breaches, account takeovers, or active extortion. For preventive audits or general inquiries, complete the assessment form.',
-        emergencySignalLabel: 'Emergency line',
-        emergencySignalSubtitle: 'Encrypted Signal channel',
-        unlockedKicker: (folio) => ['Channels enabled', `Ref ${folio}`],
-        unlockedTitle: 'Direct contact enabled',
+          'Direct line for live account hijacking, active extortion, or imminent leaks.',
+        emergencySignalLabel: 'Immediate response',
+        emergencySignalSubtitle: 'Direct channel on Signal',
+        unlockedKicker: (folio) => ['Direct channel active', `Case ${folio}`],
+        unlockedTitle: 'Direct contact unlocked',
         unlockedBody: (folio) =>
-          `Your dossier is registered. Reach us directly via Signal or email with your reference ${folio} prefilled.`,
-        userLabel: 'Encrypted Signal channel',
-        signalSubtitle: 'Direct end-to-end encrypted messaging',
+          `Message us via Signal or email quoting case ${folio} to expedite handling.`,
+        userLabel: 'Direct Signal',
+        signalSubtitle: 'End-to-end encrypted',
         openSignalBtn: 'Open Signal',
-        emailLabel: 'Institutional email',
+        emailLabel: 'Direct email',
         openMailAppBtn: 'Mail app',
         openGmailBtn: 'Gmail Web',
         openOutlookBtn: 'Outlook Web',
         copyEmailBtn: 'Copy email',
-        copiedEmailBtn: 'Email copied',
-        privacyTrigger: 'Privacy & confidentiality commitment',
+        copiedEmailBtn: 'Copied',
+        privacyTrigger: 'NDA & data handling',
       },
     },
     footer: {
-      crisisLink: 'Crisis Guide',
-      contactTrigger: 'Contact & Emergencies',
-      privacyLink: 'Privacy & Confidentiality',
-      privateAccess: 'Private Access',
+      raptorLink: 'Palantirr',
+      crisisLink: 'Incident Protocol',
+      contactTrigger: 'Direct Line',
+      privacyLink: 'NDA Terms',
+      privateAccess: 'Access',
     },
     privacy: {
-      dialogAria: 'Coto Privado privacy and confidentiality commitment',
-      kicker: ['Coto Privado', 'Discretion Protocol'],
-      title: 'Privacy & Confidentiality',
-      intro:
-        'Every inquiry, assessment, or incident report is handled under strict operational discretion and data minimization.',
+      dialogAria: 'Coto Privado NDA and data sovereignty terms',
+      kicker: 'Coto Privado',
+      title: 'NDA & Data Sovereignty',
+      intro: 'We collect only the minimum information required to evaluate your case.',
       clauses: [
         {
           num: '01',
-          title: 'Professional secrecy & NDA availability',
-          desc: 'All communications, identities, aliases, and operational context are treated as strictly confidential from first contact. Mutual non-disclosure agreements (NDAs) are available prior to any technical engagement.',
+          title: 'Binding non-disclosure agreement (NDA)',
+          desc: 'We protect your identity and your family from first contact under legal contract.',
         },
         {
           num: '02',
-          title: 'Data minimization & zero third-party sharing',
-          desc: 'We collect only the minimum details required to coordinate your assessment and fully support aliases. Information is never sold, shared, or exposed to third parties, advertisers, or external trackers.',
+          title: 'Alias or representative intake',
+          desc: 'We accept operational aliases and never share or monetize your data.',
         },
         {
           num: '03',
-          title: 'End-to-end encrypted channel & emergencies',
-          desc: 'We never ask for passwords, 2FA codes, or device access through this website. For sensitive inquiries or active security emergencies, contact us through our official end-to-end encrypted Signal channel.',
+          title: 'Zero password requests on this site',
+          desc: 'We never ask for passwords or SMS codes here; all technical coordination happens on Signal.',
         },
         {
           num: '04',
-          title: 'Controlled retention & immediate deletion',
-          desc: 'Assessment records are retained solely to coordinate your case. You may request immediate, permanent deletion of any record at any time via our official Signal channel or help@coto.lat.',
+          title: 'Immediate deletion upon request',
+          desc: 'You may order permanent deletion of your case record at any time.',
         },
       ],
-      directLabel: 'Direct encrypted channel',
-      openSignalBtn: 'Open Signal channel',
+      directLabel: 'Direct channel',
+      openSignalBtn: 'Message on Signal',
       closeBtn: 'Close',
-      closeAria: 'Close privacy and confidentiality notice',
+      closeAria: 'Close window',
     },
     emergencyModal: {
-      dialogAria: 'Active security incident response protocol',
-      kicker: ['Coto Privado', 'Crisis Response'],
-      title: 'Active security incident?',
-      body: 'Strictly reserved for ongoing breaches, account takeovers, or active extortion. Direct end-to-end encrypted communication with zero intermediaries.',
-      signalLabel: 'Emergency line',
-      signalSubtitle: 'Official encrypted Signal channel',
-      openSignalBtn: 'Open Signal',
-      crisisGuideCta: 'Read step-by-step breach & crisis guide',
-      preventivePrompt: 'Looking for a preventive audit or general inquiry?',
-      preventiveCta: 'Go to assessment form',
-      privacyLink: 'Privacy & confidentiality',
-      closeAria: 'Close emergency protocol',
+      dialogAria: 'Immediate response for active incidents',
+      kicker: 'Critical Response',
+      title: 'Active incident response',
+      body: 'If you are facing live account theft, extortion, or data leakage, connect directly with a specialist.',
+      signalLabel: 'On-duty specialist',
+      signalSubtitle: 'Direct communication via Signal',
+      openSignalBtn: 'Connect on Signal',
+      crisisGuideCta: 'View steps for the first 30 minutes',
+      preventivePrompt: 'Looking for preventive protection?',
+      preventiveCta: 'Go to Request Assessment',
+      privacyLink: 'NDA Terms',
+      closeAria: 'Close window',
     },
     crisisPage: {
       nav: {
-        backToMain: 'Back',
+        backToMain: 'Home',
         overview: 'Overview',
-        protocol: 'Protocol',
-        hygiene: 'Prevention',
-        evaluation: 'Contact',
-        cta: 'Request Support',
+        protocol: 'Steps',
+        hygiene: 'Rules',
+        evaluation: 'Support',
+        cta: 'Request Containment',
       },
       hero: {
-        kicker: ['Open Resource', 'First 30 Minutes'],
-        headline: 'What to do during a breach or reputation crisis.',
-        body: 'A practical reference guide to act calmly in the first minutes, preserve technical evidence, and regain control without making irreversible mistakes.',
-        primaryCta: 'Read protocol',
-        signalCta: 'Emergency on Signal',
-        chamberAria: '3D iridescent crystal cryptographic containment chamber',
+        kicker: 'First 30 Minutes',
+        headline: 'Contain an attack on your accounts before it escalates.',
+        body: 'Follow this exact sequence and use verified official portals to halt damage and preserve evidence.',
+        primaryCta: 'View action steps',
+        signalCta: 'Direct Signal line',
+        chamberAria: 'Optical containment chamber sculpture',
       },
       protocol: {
-        kicker: ['Scenario Reference', 'Specific steps & official portals'],
-        title: 'Specific steps for your situation',
-        subtitle:
-          'Select the scenario you are facing. Includes verified direct portals so you avoid fake support ads and phishing links.',
-        tabAria: 'Incident scenarios',
-        resourcesTitle: 'Direct official portals',
-        resourcesNote: 'Verified links with zero intermediaries',
-        helpPrompt: 'Facing an incident beyond self-remediation?',
-        helpCta: 'Coordinate confidential support',
+        kicker: 'Immediate Action',
+        title: 'Select the active incident',
+        subtitle: 'Execute each step in order and access official recovery portals directly.',
+        tabAria: 'Incident types',
+        resourcesTitle: 'Official recovery portals',
+        resourcesNote: 'Verified direct access',
+        helpPrompt: 'Need our team to take technical control?',
+        helpCta: 'Request intervention',
         scenarios: [
           {
             id: 'hack',
@@ -1424,149 +2240,149 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
             steps: [
               {
                 num: '01',
-                title: 'Take the suspected device offline without wiping',
-                desc: 'Turn off Wi-Fi and cellular immediately. If an infostealer stole your browser cookies on Mac or Windows, resetting passwords on that machine hands the new credentials straight back to the attacker.',
+                title: 'Disconnect the affected device without wiping it',
+                desc: 'Turn off Wi-Fi and cellular data immediately; changing passwords on an infected device hands them to the attacker.',
               },
               {
                 num: '02',
-                title: 'Secure root email and delete hidden forwarding rules',
-                desc: 'From a separate clean device, rotate your primary email password, sign out all open sessions, and inspect Settings → Forwarding & Filters—attackers frequently hide rules that copy reset codes.',
+                title: 'Secure your root email from a clean device',
+                desc: 'Reset your primary email password from a separate device, revoke sessions, and remove hidden forwarding rules.',
               },
               {
                 num: '03',
-                title: 'Revoke linked devices and third-party OAuth apps',
-                desc: 'In WhatsApp or Telegram open Linked Devices and remove unfamiliar sessions. In Google, Apple, or Microsoft revoke connected third-party apps and move 2FA off SMS onto an authenticator app.',
+                title: 'Revoke sessions and switch from SMS to hardware or app 2FA',
+                desc: 'Unlink unknown devices on WhatsApp, Google, Apple, or Meta and enable authenticator verification.',
               },
               {
                 num: '04',
-                title: 'Rule out SIM Swapping and freeze transfers',
-                desc: 'If mobile signal suddenly drops to No Service, call your carrier from another phone to lock SIM/eSIM port-outs and place a temporary precautionary hold on banking and exchanges.',
+                title: 'Lock your mobile line and alert your private bank',
+                desc: 'If cellular service dropped suddenly, instruct your carrier to block SIM swaps and freeze outbound wires.',
               },
             ],
-            avoidLabel: 'Critical mistake to avoid',
+            avoidLabel: 'What to avoid',
             avoidAction:
-              'Never pay self-proclaimed "recovery hackers" in comments or DMs—they are secondary advance-fee scams with zero internal access to any platform.',
+              'Never pay self-proclaimed recovery agents on social media; no external party holds legitimate access.',
             resources: [
               {
                 name: 'Google Security Checkup',
-                desc: 'Kill active sessions, audit mail forwarding, and revoke OAuth',
+                desc: 'Session termination, mail filters, and app permissions',
                 url: 'https://myaccount.google.com/security-checkup',
               },
               {
                 name: 'Apple Account Recovery',
-                desc: 'Official access recovery and trusted device management',
+                desc: 'Official Apple ID recovery and trusted devices',
                 url: 'https://iforgot.apple.com/',
               },
               {
                 name: 'Microsoft Security',
-                desc: 'Sign-in activity log and global session sign-out for Outlook',
+                desc: 'Sign-in history and global session sign-out',
                 url: 'https://account.microsoft.com/security',
               },
               {
-                name: 'Instagram / Meta Hacked',
-                desc: 'Official account recovery and video-selfie verification flow',
+                name: 'Meta Account Recovery',
+                desc: 'Official recovery for Instagram and Facebook',
                 url: 'https://www.instagram.com/hacked/',
               },
             ],
           },
           {
             id: 'extortion',
-            label: 'Extortion or leak',
+            label: 'Doxxing or extortion',
             steps: [
               {
                 num: '01',
-                title: 'Check whether the threat is an automated bluff',
-                desc: 'Many extortion emails quote an old password leaked years ago to pretend they recorded your screen. Look up the address on Have I Been Pwned; without concrete proof, it is usually mass spam.',
+                title: 'Verify whether the breach is real or an automated bluff',
+                desc: 'Most extortion emails quote old leaked passwords to fake live control over your device.',
               },
               {
                 num: '02',
-                title: 'Preserve full headers and screenshots before blocking',
-                desc: 'If real files or accounts are involved, do not delete the thread. Capture full screenshots (handle, timestamp, wallet, or URL) and download the original email as an .eml file.',
+                title: 'Preserve original messages without editing them',
+                desc: 'Export emails as .eml files and capture full URLs and timestamps intact.',
               },
               {
                 num: '03',
-                title: 'Cut shared cloud links and active vault sessions',
-                desc: 'From a clean device, terminate open sessions and audit public links or shared folders in Google Drive, iCloud, Dropbox, or Notion to stop further exfiltration.',
+                title: 'Sever shared folders and links in your cloud',
+                desc: 'From a clean device, revoke active share links across Google Drive, iCloud, Dropbox, or Notion.',
               },
               {
                 num: '04',
-                title: 'Do not negotiate in panic or send impulsive payments',
-                desc: 'Paying rarely guarantees deletion and routinely flags victims for repeat demands. Buy time while locking down every exposed account.',
+                title: 'Never wire funds while the breach remains open',
+                desc: 'Paying before closing intruder access never stops publication and invites repeat demands.',
               },
             ],
-            avoidLabel: 'Critical mistake to avoid',
+            avoidLabel: 'What to avoid',
             avoidAction:
-              'Do not confront or threaten the sender while open sessions, shared cloud folders, or unrotated backups remain accessible.',
+              'Do not reply or negotiate while unauthorized sessions persist in your email or cloud backups.',
             resources: [
               {
                 name: 'Have I Been Pwned',
-                desc: 'Check if a quoted password came from an older public breach',
+                desc: 'Historical breach verification for your email',
                 url: 'https://haveibeenpwned.com/',
               },
               {
                 name: 'Google Security Checkup',
-                desc: 'Audit third-party read permissions on Gmail and Drive',
+                desc: 'Audit third-party apps reading your files and mail',
                 url: 'https://myaccount.google.com/security-checkup',
               },
               {
                 name: 'Google Content Removal',
-                desc: 'Request de-indexing of exposed personal data (doxxing)',
+                desc: 'Removal of exposed personal data from search',
                 url: 'https://reportcontent.google.com/',
               },
               {
                 name: 'StopNCII.org',
-                desc: 'Hash-based protection for intimate images without uploading files',
+                desc: 'Preventive hash blocking for intimate media',
                 url: 'https://stopncii.org/',
               },
             ],
           },
           {
             id: 'reputation',
-            label: 'Impersonation or reputation',
+            label: 'Impersonation',
             steps: [
               {
                 num: '01',
-                title: 'Archive URLs and timestamps before reporting',
-                desc: 'Before filing takedowns against fake profiles or coordinated posts, capture full-URL screenshots and archive the page on Wayback Machine as verifiable evidence.',
+                title: 'Archive fraudulent URLs before reporting them',
+                desc: 'Record timestamped evidence of the exact URL before requesting takedowns.',
               },
               {
                 num: '02',
-                title: 'Identify the registrar behind lookalike domains',
-                desc: 'If someone launched a cloned website under your name or brand, query ICANN Lookup to find the registrar Abuse email and report the URL to Google Safe Browsing.',
+                title: 'Identify the registrar hosting the fake domain',
+                desc: 'Query ICANN to file registrar abuse takedowns and flag the site in browsers.',
               },
               {
                 num: '03',
-                title: 'Harden accounts across your inner circle',
-                desc: 'During targeted campaigns against founders or public figures, attackers often pivot to partners, assistants, or family to leak out-of-context chats. Verify their 2FA and active sessions.',
+                title: 'Alert your family and staff by voice call',
+                desc: 'Impersonators contact your circle simultaneously requesting urgent wires or codes.',
               },
               {
                 num: '04',
-                title: 'Publish factual notices without linking the attack',
-                desc: 'If you need to warn clients or your audience, post a brief notice on verified channels without quoting or linking fake accounts so you do not amplify their algorithmic reach.',
+                title: 'Clarify from your verified account without linking the scam',
+                desc: 'Post a brief notice from your official profile without driving traffic to the fake URL.',
               },
             ],
-            avoidLabel: 'Critical mistake to avoid',
+            avoidLabel: 'What to avoid',
             avoidAction:
-              'Never open suspicious links sent by strangers from your home network—some defamation pages act as lures to log your IP address or browser session.',
+              'Do not open suspicious links from your home or mobile network; trap pages log your real IP.',
             resources: [
               {
                 name: 'ICANN Registration Lookup',
-                desc: 'Find the domain registrar and official Abuse contact',
+                desc: 'Identify the registrar behind a fraudulent domain',
                 url: 'https://lookup.icann.org/',
               },
               {
                 name: 'Google Safe Browsing',
-                desc: 'Report phishing or cloned domains for browser-wide warnings',
+                desc: 'Flag phishing pages across browsers',
                 url: 'https://safebrowsing.google.com/safebrowsing/report_phish/',
               },
               {
                 name: 'Wayback Machine Save',
-                desc: 'Freeze a timestamped public snapshot before deletion',
+                desc: 'Timestamped web archive prior to takedown',
                 url: 'https://web.archive.org/save',
               },
               {
                 name: 'Google Legal Removal',
-                desc: 'Formal impersonation and legal removal requests in Search',
+                desc: 'Legal removal for impersonation or defamation',
                 url: 'https://reportcontent.google.com/',
               },
             ],
@@ -1574,48 +2390,48 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         ],
       },
       hygiene: {
-        headline: 'Four habits that prevent 90% of incidents',
-        subtitle: 'Recommended baseline when you are not dealing with an active emergency.',
+        headline: 'Four permanent rules of control',
+        subtitle: 'Direct habits that neutralize the vast majority of targeted attacks.',
         items: [
           {
             num: '01',
-            title: 'Dedicated private email for banking and recovery',
-            desc: 'Use an undisclosed email address strictly for banks, domains, and vaults; keep your public address solely for press and business.',
+            title: 'Isolate one dedicated email for banking and patrimony',
+            desc: 'Never use your public email address for banking, investments, or core domains.',
           },
           {
             num: '02',
-            title: 'Authenticator app or hardware key instead of SMS',
-            desc: 'Decouple 2FA codes from your phone number so a carrier SIM swap cannot reset your core accounts.',
+            title: 'Eliminate SMS as a security factor',
+            desc: 'Protect critical accounts with hardware security keys or authenticator apps.',
           },
           {
             num: '03',
-            title: 'Team delegation without sharing raw passwords',
-            desc: 'Grant access to agencies or staff through Zero-Knowledge vaults or native roles—never send credentials over chat.',
+            title: 'Delegate access without sharing passwords',
+            desc: 'Grant revocable permissions to staff through custody vaults.',
           },
           {
             num: '04',
-            title: 'Out-of-band verification for urgent requests',
-            desc: 'Keep browsers updated and confirm any urgent support, copyright, or wire-transfer notice via a direct call on a known number.',
+            title: 'Verify any financial urgency by voice call',
+            desc: 'Always confirm unusual requests for funds or documents over a direct phone call.',
           },
         ],
-        auditCta: 'Request preventive audit',
+        auditCta: 'Protect my personal perimeter',
       },
     },
     admin: {
-      dialogAria: 'Coto Privado private assessments panel',
-      headerTitle: 'Requests — Coto Privado',
+      dialogAria: 'Coto Privado case inbox',
+      headerTitle: 'Cases · Coto Privado',
       exportCsv: 'Export CSV',
       signOut: 'Sign out',
       closeAria: 'Close panel',
       verifying: 'Verifying credentials...',
-      signInTitle: 'Administrative Access',
-      signInDesc: 'Sign in with your @coto.lat corporate account to manage audit requests.',
-      signInBtn: 'Authenticate with Google',
-      signInFailed: 'Could not complete Google sign-in.',
+      signInTitle: 'Authorized Access',
+      signInDesc: 'Sign in with your @coto.lat account to manage case records.',
+      signInBtn: 'Sign in with Google',
+      signInFailed: 'Authentication could not be completed.',
       unauthorizedTitle: 'Unauthorized account',
-      unauthorizedPrefix: 'The current session',
-      unauthorizedMiddle: 'does not have access. Sign in with a corporate account',
-      switchAccountBtn: 'Switch Google account',
+      unauthorizedPrefix: 'Active session',
+      unauthorizedMiddle: 'is not authorized. Sign in with an account under',
+      switchAccountBtn: 'Switch account',
       tabs: {
         all: (count) => `All (${count})`,
         pendiente: (count) => `Pending (${count})`,
@@ -1629,58 +2445,58 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         contactado: 'Contacted',
         cerrado: 'Closed',
       },
-      searchPlaceholder: 'Search by ID, name, role, reference, or notes...',
+      searchPlaceholder: 'Filter by case ID, name, profile, or notes...',
       clearSearchAria: 'Clear search',
       serviceFilterAria: 'Filter by service',
       serviceAll: 'All services',
-      sortNewest: 'Newest first',
-      sortOldest: 'Oldest first',
+      sortNewest: 'Newest',
+      sortOldest: 'Oldest',
       queueCount: (shown, total) =>
         shown === total
-          ? `${total} ${total === 1 ? 'request' : 'requests'}`
-          : `${shown} of ${total} requests`,
-      selectPrompt: 'Select a row to manage',
-      openDossier: 'View details',
-      backToList: (count) => `Back to list (${count})`,
-      dossierPosition: (index, total) => `Request ${index} of ${total}`,
+          ? `${total} ${total === 1 ? 'case' : 'cases'}`
+          : `${shown} of ${total} cases`,
+      selectPrompt: 'Select a case',
+      openDossier: 'Open',
+      backToList: (count) => `Back (${count})`,
+      dossierPosition: (index, total) => `Case ${index} of ${total}`,
       prevRequest: 'Previous',
       nextRequest: 'Next',
-      emptyFiltered: 'No requests match the current filters.',
+      emptyFiltered: 'No cases match active filters.',
       clearFiltersBtn: 'Reset filters',
       serviceLabel: 'Assigned service',
-      modeLabel: 'Operating mode',
-      dateLabel: 'Submitted on',
+      modeLabel: 'Modality',
+      dateLabel: 'Date',
       copyBtn: 'Copy',
       copiedBtn: 'Copied',
       openLinkBtn: 'Open link',
       deleteBtn: 'Delete',
-      unsavedNotes: 'Unsaved changes',
-      hasNotesTag: 'Internal notes recorded',
-      loadingDocs: 'Loading requests...',
-      emptyDocs: 'No requests recorded yet.',
-      recentFallback: 'Just now',
+      unsavedNotes: 'Unsaved',
+      hasNotesTag: 'With notes',
+      loadingDocs: 'Loading cases...',
+      emptyDocs: 'No cases recorded.',
+      recentFallback: 'Recent',
       confirmDelete: 'Confirm delete',
       cancelDelete: 'Cancel',
-      deleteAria: 'Delete request',
-      modeAndTier: 'Mode & Service',
-      soloShort: 'Solo',
-      teamShort: 'Team',
-      refLink: 'Reference link or profile',
-      reportedConcern: 'Reported concern or incident',
-      noComments: 'No additional notes.',
-      dossierStatus: 'Dossier status',
-      closedLockedMsg: 'Closed dossier (editing locked).',
-      reopenBtn: 'Reopen dossier',
-      internalNotesLabel: 'Internal follow-up notes',
-      internalNotesPlaceholder: 'Record contact context, agreements, or next steps...',
+      deleteAria: 'Delete case',
+      modeAndTier: 'Modality & Service',
+      soloShort: 'Personal',
+      teamShort: 'Delegation',
+      refLink: 'Profile or domain',
+      reportedConcern: 'Principal context',
+      noComments: 'No notes recorded.',
+      dossierStatus: 'Status',
+      closedLockedMsg: 'Case closed.',
+      reopenBtn: 'Reopen',
+      internalNotesLabel: 'Internal notes',
+      internalNotesPlaceholder: 'Agreements, owner, or next steps...',
       savingBtn: 'Saving...',
       saveNotesBtn: 'Save notes',
-      feedbackSyncError: 'Could not synchronize requests.',
-      feedbackStatusUpdated: (label) => `Status updated to ${label}.`,
-      feedbackStatusError: 'Failed to update status.',
+      feedbackSyncError: 'Failed to sync cases.',
+      feedbackStatusUpdated: (label) => `Status set to ${label}.`,
+      feedbackStatusError: 'Could not update status.',
       feedbackNotesSaved: 'Notes saved.',
-      feedbackNotesError: 'Failed to save notes.',
-      feedbackDeleteError: 'Failed to delete record.',
+      feedbackNotesError: 'Could not save notes.',
+      feedbackDeleteError: 'Could not delete case.',
     },
   },
 
@@ -1690,388 +2506,745 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
     crisisMetaTitle: '\u2800',
     nav: {
       overview: 'Início',
-      services: 'Serviços',
-      pep: 'Exposição Pública',
-      backing: 'Tecnologia',
-      crisis: 'Crise',
+      profiles: 'Perfis',
+      services: 'Níveis',
+      units: 'Inteligência',
+      pep: 'PEP',
+      metrics: 'Métricas',
+      backing: 'Infraestrutura',
+      raptor: 'Palantirr',
+      crisis: 'Protocolo de Incidentes',
       evaluation: 'Avaliação',
-      cta: 'Solicitar Auditoria',
+      cta: 'Solicitar Avaliação',
+      mobileCta: 'Solicitar Avaliação',
+      menuOpen: 'Menu',
+      menuClose: 'Fechar',
+      menuOpenAria: 'Abrir menu de navegação',
+      menuCloseAria: 'Fechar menu de navegação',
+      mobileUnitsLabel: 'Unidades sob demanda',
+      mobileLangLabel: 'Idioma',
       ariaMain: 'Navegação principal',
       langSelectorAria: 'Selecionar idioma',
     },
     hero: {
-      kicker: ['Safe', 'Trust', 'Cybersecurity'],
-      headline: 'Segurança de nível corporativo simplificada para você.',
-      body: 'Protegemos o patrimônio digital, a identidade e as operações de fundadores, criadores e figuras públicas, para que você se concentre no que sabe fazer de melhor.',
-      primaryCta: 'Solicitar Auditoria Privada',
-      emergencyTrigger: 'Incidente ativo?',
-      padlockAria: 'Cadeado de segurança',
+      headline: 'Sua identidade, blindada. Sua reputação, intacta.',
+      body: 'Cibersegurança e inteligência OSINT de grau corporativo, dedicadas exclusivamente a proteger seu patrimônio digital e seu círculo zero.',
+      primaryCta: 'Solicitar Avaliação',
+      emergencyTrigger: 'Atendimento a incidentes',
+      padlockAria: 'Escultura óptica de cofre pessoal',
     },
-    services: {
-      headline: 'Nossos Serviços',
-      subtitle: 'Dois níveis de proteção conforme a estrutura da sua operação.',
-      shieldAria: 'Escudo de segurança',
-      argos: {
-        tierTag: 'Tier 1',
-        subtitleTag: 'Alicerce Essencial',
-        name: 'Argos',
-        audience: 'Para profissionais independentes, fundadores e criadores de conteúdo.',
-        items: [
-          {
-            title: 'Identidade Blindada',
-            desc: 'Cofre centralizado de senhas e e-mails alias para ocultar seu rastro digital.',
-          },
-          {
-            title: 'Defesa Silenciosa',
-            desc: 'Proteção e atualização automática dos seus dispositivos (PC/Mac/Celular) em segundo plano, sem interromper seu trabalho.',
-          },
-          {
-            title: 'Diagnóstico de Exposição',
-            desc: 'Auditoria inicial para detectar se seus dados já estão comprometidos na web.',
-          },
-        ],
-        cta: 'Escolher Argos',
-      },
-      atlas: {
-        tierTag: 'Tier 2',
-        subtitleTag: 'Blindagem Integral',
-        name: 'Atlas',
-        audience:
-          'Para operações de alto perfil que exigem delegar acessos a equipes, agências ou colaboradores.',
-        items: [
-          {
-            title: 'Delegação Zero-Knowledge',
-            desc: 'Sua equipe acessa plataformas críticas sem jamais visualizar senhas ou códigos de segurança (2FA).',
-          },
-          {
-            title: 'Vigilância Contínua',
-            desc: 'Monitoramento ativo contra sequestro de sessão, falsidade ideológica e vazamento de credenciais na Dark Web.',
-          },
-          {
-            title: 'Resposta a Crises (<30 min)',
-            desc: 'Isolamento remoto de dispositivos comprometidos, canal de comunicação criptografado e dossiê imutável para resgate rápido de contas.',
-          },
-        ],
-        cta: 'Escolher Atlas',
-      },
-      raptorCallout: {
-        kicker: ['Divisão Especial', 'Inteligência OSINT'],
-        hook: 'Reconhecimento externo e passivo para saber o que sua pegada pública revela hoje.',
-        cta: 'Palantir Raptor',
-      },
-      crisisCallout: {
-        kicker: ['Protocolo Aberto', 'Resposta em 30 min'],
-        hook: 'Ações imediatas e links oficiais diante de invasão de conta, extorsão ou falsidade.',
-        cta: 'Guia de Crise',
-      },
-    },
-    pep: {
-      kicker: ['Protocolo PEP', 'Candidaturas e Exposição Pública'],
-      headline: 'Blindagem integral antes e durante a vida pública.',
-      body: 'Disputar eleições, assumir um cargo público ou apresentar declarações legais expõe seu círculo próximo a doxxing e vazamentos. Reduzimos sua superfície de risco antes do escrutínio.',
-      scopeLabel: 'Escopo',
-      scopes: [
-        'Candidaturas',
-        'Pessoas Politicamente Expostas',
-        'Cargos públicos',
-        'Declarações legais',
-      ],
-      cta: 'Solicitar Blindagem PEP',
+    profiles: {
+      pitchLead:
+        'Uma escolta de elite para sua segurança física. Um banqueiro suíço para sua privacidade financeira.',
+      pitchAnchor: 'Coto Privado para sua identidade digital.',
+      pillarsLabel: 'Princípios operacionais',
       pillars: [
         {
           num: '01',
-          title: 'Saneamento Pré-Candidatura e Anti-Doxxing',
-          desc: 'Remoção preventiva de endereços, telefones vazados, e-mails antigos e registros em corretores de dados antes do anúncio oficial.',
+          title: 'Soberania Digital',
+          desc: 'Recupere o controle total sobre o que a internet sabe sobre você e sua família.',
         },
         {
           num: '02',
-          title: 'Fronteira entre Transparência Legal e Vida Privada',
-          desc: 'Isolamento técnico entre os dados exigidos por lei e sua infraestrutura pessoal, familiar e patrimonial para evitar extorsão.',
+          title: 'Execução em Segundo Plano',
+          desc: 'Neutralizamos riscos antes do impacto para que você lidere sem interrupções.',
         },
         {
           num: '03',
-          title: 'Blindagem do Núcleo Familiar e Círculo Próximo',
-          desc: 'Proteção contra SIM Swap, cofres criptografados e endurecimento de dispositivos para cônjuges, filhos e assessores diretos.',
+          title: 'Assimetria a seu Favor',
+          desc: 'Dedicamos infraestrutura de defesa bancária para proteger seu patrimônio pessoal.',
+        },
+      ],
+      audiencesLabel: 'Quem protegemos',
+      audiences: [
+        {
+          id: 'pep',
+          num: '01',
+          title: 'Figuras Públicas e PEPs',
+          desc: 'Neutralizamos vazamentos e riscos reputacionais sob escrutínio público.',
+          cta: 'Ver Protocolo PEP',
+        },
+        {
+          id: 'creators',
+          num: '02',
+          title: 'Criadores e Visionários',
+          desc: 'Impedimos sequestro de contas, doxxing e ataques às suas fontes de receita.',
+          cta: 'Proteger contas',
+        },
+        {
+          id: 'private',
+          num: '03',
+          title: 'Interesses Privados',
+          desc: 'Removemos registros expostos e isolamos seu patrimônio digital de terceiros.',
+          cta: 'Avaliar escopo',
+        },
+      ],
+    },
+    services: {
+      headline: 'Níveis de Serviço',
+      subtitle: 'Dois escopos definidos conforme gerencie suas contas diretamente ou delegue acessos.',
+      shieldAria: 'Escultura óptica de blindagem de ativos',
+      argos: {
+        tierTag: 'Nível I',
+        scopeTag: 'Gestão Pessoal',
+        name: 'Argos',
+        scopeSummary: 'Cobertura direta sobre suas contas, dispositivos e registros pessoais.',
+        bullets: [
+          'Isolamos suas contas bancárias e pessoais por meio de identidades separadas.',
+          'Removemos endereços, telefones e vazamentos históricos expostos na rede.',
+          'Protegemos seus celulares e notebooks contra intrusões e roubo de sessão.',
+          'Bloqueamos clonagem de linha móvel e tentativas de acesso não autorizado.',
+        ],
+        cta: 'Solicitar Nível Argos',
+      },
+      atlas: {
+        tierTag: 'Nível II',
+        scopeTag: 'Delegação de Acessos',
+        name: 'Atlas',
+        scopeSummary: 'Cobertura estendida à sua família, assistentes e equipes de comunicação.',
+        bullets: [
+          'Inclui todo o escopo de Gestão Pessoal (Argos).',
+          'Delegamos redes e canais à sua equipe sem revelar senhas mestras.',
+          'Protegemos os dispositivos e contas de cônjuge, filhos e círculo zero.',
+          'Isolamos incidentes e restituímos ativos comprometidos em menos de 30 minutos.',
+        ],
+        cta: 'Solicitar Nível Atlas',
+      },
+    },
+    units: {
+      headline: 'Inteligência sob demanda e resposta crítica.',
+      subtitle: 'Unidades de ativação direta para decisões estratégicas ou contenção de incidentes.',
+      palantirr: {
+        num: '01',
+        tag: 'OSINT Passivo',
+        name: 'Palantirr',
+        summary:
+          'Identificamos com precisão o que a internet expõe hoje sobre você, sua família ou uma contraparte.',
+        bullets: [
+          'Auditamos vazamentos, registros públicos e vínculos patrimoniais sem deixar rastro.',
+          'Verificamos riscos reputacionais antes de firmar alianças, investimentos ou acordos.',
+          'Entregamos um relatório executivo com achados verificados e rota de remoção.',
+        ],
+        cta: 'Explorar Palantirr',
+      },
+      incidentProtocol: {
+        num: '02',
+        tag: 'Resposta Crítica',
+        name: 'Protocolo de Incidentes',
+        summary:
+          'Contenha sequestro de contas, extorsão ou vazamentos durante os primeiros 30 minutos.',
+        bullets: [
+          'Isolamos dispositivos afetados e encerramos sessões intrusas imediatamente.',
+          'Preservamos provas íntegras e cortamos links abertos na sua nuvem pessoal.',
+          'Restituímos o controle de perfis oficiais, domínios e linhas móveis.',
+        ],
+        cta: 'Abrir Protocolo de Incidentes',
+        emergencyLink: 'Linha direta no Signal',
+      },
+    },
+    pep: {
+      kicker: 'Protocolo PEP',
+      headline: 'Proteja sua família antes de entrar no escrutínio público.',
+      body: 'Removemos dados vulneráveis e blindamos seu círculo zero antes de candidaturas, cargos públicos ou declarações patrimoniais.',
+      cta: 'Solicitar Protocolo PEP',
+      pillars: [
+        {
+          num: '01',
+          title: 'Remoção Preventiva de Dados',
+          desc: 'Eliminamos endereços, telefones privados e registros expostos antes do anúncio.',
+        },
+        {
+          num: '02',
+          title: 'Fronteira entre Lei e Vida Privada',
+          desc: 'Separamos a transparência legal do patrimônio privado da sua família.',
+        },
+        {
+          num: '03',
+          title: 'Proteção do Círculo Zero',
+          desc: 'Protegemos celulares e linhas móveis de cônjuge, filhos e assessores diretos.',
         },
         {
           num: '04',
-          title: 'Delegação Zero-Knowledge para Campanha e Imprensa',
-          desc: 'Acesso controlado a redes oficiais para assessoria e agências sem compartilhar senhas nem códigos 2FA, com revogação imediata.',
+          title: 'Delegação de Imprensa sem Senhas',
+          desc: 'Habilitamos sua equipe de campanha a publicar sem possuir chaves mestras.',
         },
       ],
-      footnote:
-        'Atuação apartidária sob acordo NDA · Qualquer país ou jurisdição eleitoral',
-      raptorPrompt: 'O que sua pegada pública já revela?',
-      raptorCta: 'Diagnóstico OSINT prévio (Palantir Raptor)',
+      footnote: 'Atuação apartidária sob acordo NDA · Cobertura internacional',
+      raptorCta: 'Analisar exposição com Palantirr',
+    },
+    metrics: {
+      headline: 'Redução mensurável da sua exposição pública.',
+      scopeSelectorAria: 'Selecionar perfil de métricas',
+      longitudinalTitle: 'Índice de exposição (T+0 a T+90)',
+      chartAria:
+        'Gráfico longitudinal D3 de redução de exposição pública entre o dia 0 e o dia 90',
+      legendBaseline: 'Sem intervenção',
+      legendFootprint: 'Exposição pública',
+      legendRisk: 'Riscos ativos',
+      footprintReadoutLabel: 'Exposição atual',
+      mitigationDeltaLabel: 'Redução líquida',
+      radialTitle: 'Frentes mitigadas',
+      radialAria: 'Diagrama polar D3 comparando cinco vetores no dia 0 frente ao dia 90',
+      radialLegendBefore: 'Início (T+0)',
+      radialLegendAfter: 'Dia 90 (T+90)',
+      footnote: 'Casos reais anonimizados sob acordo NDA · Cortes em 15, 30, 60 e 90 dias',
+      cta: 'Avaliar minha exposição atual',
+      scopes: [
+        {
+          id: 'consolidated',
+          tabLabel: 'Consolidado',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Auditoria inicial',
+              protocolNote: 'Mapeamos dados vazados, senhas históricas e registros vinculados.',
+              exposure: 100,
+              residualRisk: 86,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Remoção de registros',
+              protocolNote: 'Eliminamos endereços e telefones em corretores de dados e buscadores.',
+              exposure: 54,
+              residualRisk: 38,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Isolamento de contas',
+              protocolNote: 'Separamos bancos e e-mail raiz com aliases e chaves físicas.',
+              exposure: 26,
+              residualRisk: 16,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Proteção de dispositivos',
+              protocolNote: 'Protegemos celulares, notebooks e linhas contra clonagem de SIM.',
+              exposure: 13,
+              residualRisk: 7,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Monitoramento contínuo',
+              protocolNote: 'Mantemos sua exposição mínima com alertas imediatos contra vazamentos.',
+              exposure: 8.4,
+              residualRisk: 2.8,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Dados pessoais e diretórios',
+              shortLabel: 'Registros',
+              baseline: 94,
+              mitigated: 8,
+            },
+            {
+              label: 'Contas e senhas históricas',
+              shortLabel: 'Credenciais',
+              baseline: 88,
+              mitigated: 4,
+            },
+            {
+              label: 'Domínios e imagem pública',
+              shortLabel: 'Domínios',
+              baseline: 79,
+              mitigated: 9,
+            },
+            {
+              label: 'Celulares e equipamentos pessoais',
+              shortLabel: 'Equipamentos',
+              baseline: 84,
+              mitigated: 6,
+            },
+            {
+              label: 'Acessos do círculo zero',
+              shortLabel: 'Círculo zero',
+              baseline: 91,
+              mitigated: 5,
+            },
+          ],
+          kpis: [
+            {
+              value: '-91.6%',
+              label: 'Dados pessoais expostos após 90 dias',
+            },
+            {
+              value: '98.4%',
+              label: 'Remoções efetivas em buscadores e diretórios',
+            },
+            {
+              value: '< 24 min',
+              label: 'Tempo médio de contenção remota',
+            },
+            {
+              value: '0',
+              label: 'Senhas mestras compartilhadas com terceiros',
+            },
+          ],
+        },
+        {
+          id: 'pep',
+          tabLabel: 'Figuras Públicas',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Diagnóstico prévio',
+              protocolNote: 'Localizamos residências, linhas familiares e arquivos vulneráveis.',
+              exposure: 100,
+              residualRisk: 92,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Remoção prioritária',
+              protocolNote: 'Retiramos informações sensíveis do titular e família antes do anúncio.',
+              exposure: 44,
+              residualRisk: 29,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Separação patrimonial',
+              protocolNote: 'Isolamos contas privadas dos canais públicos de campanha.',
+              exposure: 19,
+              residualRisk: 11,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Delegação de imprensa',
+              protocolNote: 'Habilitamos assessores sem acesso a senhas ou códigos.',
+              exposure: 9.5,
+              residualRisk: 4.5,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Vigilância de mandato',
+              protocolNote: 'Detectamos perfis falsos, domínios espelho e tentativas de vazamento.',
+              exposure: 6.2,
+              residualRisk: 1.9,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Endereços e registros privados',
+              shortLabel: 'Registros',
+              baseline: 98,
+              mitigated: 6,
+            },
+            {
+              label: 'E-mails e arquivos históricos',
+              shortLabel: 'Credenciais',
+              baseline: 86,
+              mitigated: 3,
+            },
+            {
+              label: 'Perfis oficiais e falsificação',
+              shortLabel: 'Domínios',
+              baseline: 82,
+              mitigated: 7,
+            },
+            {
+              label: 'Celulares do titular e família',
+              shortLabel: 'Equipamentos',
+              baseline: 90,
+              mitigated: 5,
+            },
+            {
+              label: 'Imprensa e assessores',
+              shortLabel: 'Círculo zero',
+              baseline: 95,
+              mitigated: 4,
+            },
+          ],
+          kpis: [
+            {
+              value: '-93.8%',
+              label: 'Rastro privado localizável antes da campanha',
+            },
+            {
+              value: '100%',
+              label: 'Linhas familiares bloqueadas contra clonagem',
+            },
+            {
+              value: '< 18 min',
+              label: 'Resposta direta durante agenda pública',
+            },
+            {
+              value: '0',
+              label: 'Senhas expostas a agências externas',
+            },
+          ],
+        },
+        {
+          id: 'atlas',
+          tabLabel: 'Criadores e Patrimônio',
+          milestones: [
+            {
+              day: 0,
+              code: 'T+0',
+              phase: 'Auditoria de ativos',
+              protocolNote: 'Revisamos canais monetizados, domínios e sessões antigas.',
+              exposure: 100,
+              residualRisk: 84,
+            },
+            {
+              day: 15,
+              code: 'T+15',
+              phase: 'Revogação de acessos',
+              protocolNote: 'Encerramos sessões esquecidas, apps conectados e chaves antigas.',
+              exposure: 58,
+              residualRisk: 36,
+            },
+            {
+              day: 30,
+              code: 'T+30',
+              phase: 'Custódia delegada',
+              protocolNote: 'Protegemos canais de receita e tesouraria perante colaboradores.',
+              exposure: 29,
+              residualRisk: 15,
+            },
+            {
+              day: 60,
+              code: 'T+60',
+              phase: 'Defesa de dispositivos',
+              protocolNote: 'Protegemos celulares e computadores sem interromper sua operação.',
+              exposure: 15,
+              residualRisk: 6.5,
+            },
+            {
+              day: 90,
+              code: 'T+90',
+              phase: 'Controle consolidado',
+              protocolNote: 'Monitoramos seu ambiente e respondemos a tentativas de extorsão.',
+              exposure: 11.0,
+              residualRisk: 2.4,
+            },
+          ],
+          vectors: [
+            {
+              label: 'Exposição de vida privada e bens',
+              shortLabel: 'Registros',
+              baseline: 85,
+              mitigated: 11,
+            },
+            {
+              label: 'Canais de receita e bancos',
+              shortLabel: 'Credenciais',
+              baseline: 94,
+              mitigated: 3,
+            },
+            {
+              label: 'Domínios pessoais e e-mail raiz',
+              shortLabel: 'Domínios',
+              baseline: 90,
+              mitigated: 8,
+            },
+            {
+              label: 'Celulares e notebooks',
+              shortLabel: 'Equipamentos',
+              baseline: 88,
+              mitigated: 5,
+            },
+            {
+              label: 'Editores, assistentes e agências',
+              shortLabel: 'Círculo zero',
+              baseline: 96,
+              mitigated: 4,
+            },
+          ],
+          kpis: [
+            {
+              value: '-89.0%',
+              label: 'Superfície exposta sobre seu patrimônio digital',
+            },
+            {
+              value: '99.2%',
+              label: 'Equipamentos protegidos sem atrito operacional',
+            },
+            {
+              value: '< 30 min',
+              label: 'Contenção diante de tentativa de sequestro',
+            },
+            {
+              value: '0',
+              label: 'Vazamentos de senhas após delegar acessos',
+            },
+          ],
+        },
+      ],
     },
     raptor: {
       nav: {
-        backToMain: 'Voltar',
+        backToMain: 'Início',
         overview: 'Resumo',
-        capabilities: 'Capacidades',
-        dossier: 'Dossiê',
-        evaluation: 'Avaliação',
-        cta: 'Solicitar Inteligência',
+        capabilities: 'Escopo',
+        dossier: 'Relatório',
+        evaluation: 'Admissão',
+        cta: 'Solicitar Relatório',
       },
       hero: {
-        kicker: ['Divisão Especial', 'Execução 100% Externa e Passiva'],
-        name: 'Palantir Raptor',
-        subtitle: 'Inteligência e Reconhecimento OSINT',
-        body: 'Inteligência tática acionável baseada na coleta e análise de fontes abertas (OSINT) para indivíduos e corporações. Execução 100% externa e passiva.',
-        primaryCta: 'Solicitar Dossiê OSINT',
-        eyeAria: 'Esfera Palantír e farol óptico de observação em cristal furta-cor',
+        kicker: 'OSINT Passivo',
+        name: 'Palantirr',
+        subtitle: 'Radiografia exata da sua exposição na internet.',
+        body: 'Identificamos quais dados seus, da sua família ou de uma contraparte estão hoje acessíveis a terceiros, sem alertar o alvo.',
+        primaryCta: 'Solicitar Relatório Palantirr',
+        eyeAria: 'Farol óptico de análise passiva',
       },
       capabilities: {
-        headline: 'Vetores de Reconhecimento',
-        subtitle:
-          'Coleta e correlação passiva em fontes públicas, registros técnicos e exposição vazada.',
+        headline: 'O que revelamos',
+        subtitle: 'Correlação direta sobre fontes abertas, vazamentos históricos e registros públicos.',
         items: [
           {
             num: '01',
-            title: 'Reconhecimento e Identificação',
-            desc: 'Perfilamento de pessoas de interesse, investigação de terceiros (due diligence) e rastreabilidade completa da pegada digital.',
+            title: 'Verificação de Contrapartes',
+            desc: 'Avaliamos antecedentes, litígios e vínculos reputacionais antes de firmar acordos.',
           },
           {
             num: '02',
-            title: 'Inteligência Competitiva',
-            desc: 'Análise do ambiente corporativo, monitoramento de reputação de marca e mapeamento da infraestrutura pública de concorrentes.',
+            title: 'Exposição do Círculo Zero',
+            desc: 'Localizamos endereços, telefones e rotinas expostas de você e sua família.',
           },
           {
             num: '03',
-            title: 'Análise de Risco e Exposição',
-            desc: 'Rastreamento profundo de credenciais, documentos confidenciais e dados pessoais vazados na Surface e Dark Web.',
+            title: 'Credenciais e Arquivos Vazados',
+            desc: 'Detectamos senhas comprometidas, documentos indexados e metadados sensíveis.',
           },
           {
             num: '04',
-            title: 'Superfície de Ataque',
-            desc: 'Detecção de domínios clonados, campanhas de falsidade ideológica e ativos digitais expostos que representam uma ameaça.',
+            title: 'Falsificação e Domínios Espelho',
+            desc: 'Identificamos perfis falsos e domínios criados para usurpar sua identidade.',
           },
         ],
       },
       dossier: {
-        kicker: ['Entregável Confidencial', 'Zero Interação com o Alvo'],
-        title: 'Dossiê Tático',
-        body: 'Um relatório de inteligência confidencial com evidências diretas e rotas de mitigação, estruturado a partir da análise de informações públicas, sem alertar nem interagir com a infraestrutura do alvo.',
-        cta: 'Coordenar Operação OSINT',
+        kicker: 'Entregável Executivo',
+        title: 'Relatório de Exposição e Plano de Remoção',
+        body: 'Receba cada achado verificado por severidade junto com as ações exatas para retirar suas informações.',
+        cta: 'Solicitar Relatório Palantirr',
       },
     },
     tech: {
-      headline: 'Tecnologia e Respaldo',
-      body: 'Operamos sob uma arquitetura de confiança zero impulsionada por líderes do setor: Keeper, Cloudflare, ESET, Action1 e iVerify.',
+      headline: 'Infraestrutura de Inteligência sob Medida',
+      body: 'Integramos padrões de defesa bancária aos seus dispositivos e contas pessoais sem atrito diário.',
       partners: [
         {
           id: 'keeper',
           name: 'Keeper',
-          role: 'Cofre criptográfico',
-          desc: 'Criptografia local para credenciais, chaves de acesso e segredos críticos.',
+          role: 'Custódia e delegação',
+          desc: 'Protegemos chaves mestras e delegamos acessos sem revelá-las.',
         },
         {
           id: 'cloudflare',
           name: 'Cloudflare',
-          role: 'Perímetro e DNS privado',
-          desc: 'Filtragem de rede, túneis criptografados e bloqueio preventivo de phishing.',
+          role: 'Blindagem de rede e domínios',
+          desc: 'Bloqueamos links falsos, rastreadores e ataques aos seus domínios.',
         },
         {
           id: 'eset',
           name: 'ESET',
-          role: 'Proteção de endpoints',
-          desc: 'Defesa antimalware leve em macOS e Windows contra infostealers e trojans.',
+          role: 'Defesa de computadores',
+          desc: 'Impedimos roubo de sessão e spyware em Mac e Windows.',
         },
         {
           id: 'action1',
           name: 'Action1',
-          role: 'Gestão de vulnerabilidades',
-          desc: 'Correção autônoma de falhas em sistemas operacionais, navegadores e apps.',
+          role: 'Fechamento de brechas',
+          desc: 'Corrigimos vulnerabilidades críticas nos seus aplicativos automaticamente.',
         },
         {
           id: 'iverify',
           name: 'iVerify',
           role: 'Integridade móvel',
-          desc: 'Detecção avançada de spyware e fortalecimento de segurança no iOS e Android.',
+          desc: 'Detectamos intrusões avançadas no iPhone e Android.',
         },
       ],
     },
     form: {
-      headline: 'Formulário de Avaliação',
-      body: 'Preencha estes dados essenciais — você pode usar um alias — para coordenar seu diagnóstico inicial. Jamais solicitamos senhas ou acesso a dispositivos nesta etapa.',
-      raptorHeadline: 'Solicitação de Inteligência — Palantir Raptor',
+      headline: 'Solicitar Avaliação',
+      body: 'Informe seu nome, um alias ou representante para estruturar sua proteção. Nunca solicitamos senhas.',
+      raptorHeadline: 'Admissão: Palantirr',
       raptorBody:
-        'Preencha estes dados essenciais — você pode usar um alias — para coordenar o escopo de reconhecimento passivo. Execução confidencial sem alertar nem tocar na infraestrutura.',
-      crisisHeadline: 'Registro de Incidente ou Contenção',
+        'Informe um nome, alias ou representante para definir o escopo do seu relatório OSINT sob NDA.',
+      crisisHeadline: 'Atendimento a Incidentes',
       crisisBody:
-        'Registre seu caso — você pode usar um alias — para coordenar contenção, recuperação de acessos ou blindagem pós-incidente. Nunca pedimos senhas neste formulário.',
-      pepHeadline: 'Avaliação Confidencial — Protocolo PEP',
+        'Registre sua situação para ativar contenção técnica imediata e restituição de contas.',
+      pepHeadline: 'Admissão: Protocolo PEP',
       pepBody:
-        'Coordene a blindagem prévia a uma candidatura, nomeação pública ou transição de alta exposição — você pode registrar sob um alias ou representante autorizado. Atendimento sob estrito acordo NDA.',
-      pepSwitchToGeneral: 'Alternar para avaliação geral (Argos / Atlas)',
+        'Coordene a proteção sua e da sua família antes de uma candidatura, cargo público ou declaração patrimonial.',
+      pepSwitchToGeneral: 'Mudar para avaliação geral (Argos / Atlas)',
       fields: {
-        nameLabel: 'Nome ou alias',
-        namePlaceholder: 'Ex.: Martín V. ou alias privado',
-        roleLabel: 'Função ou perfil',
-        rolePlaceholder: 'Fundador, Candidato, Figura pública...',
-        refLabel: 'Site ou perfil principal',
-        refPlaceholder: 'https://seuprojeto.com ou @perfil',
-        modeLabel: 'Estrutura operacional',
-        modeAria: 'Modalidade operacional',
-        soloOption: 'Individual',
-        teamOption: 'Com equipe / agência',
-        concernLabel: 'Contexto ou preocupação recente',
+        nameLabel: 'Nome, alias ou representante',
+        namePlaceholder: 'Ex. M. Valdés',
+        roleLabel: 'Atividade ou perfil',
+        rolePlaceholder: 'Figura pública, Criador, Empresário, Candidatura...',
+        refLabel: 'Perfil ou domínio de referência',
+        refPlaceholder: '@usuario ou https://seudominio.com',
+        modeLabel: 'Escopo',
+        modeAria: 'Escopo do serviço',
+        soloOption: 'Gestão pessoal',
+        teamOption: 'Com delegação',
+        concernLabel: 'Prioridade ou data-chave',
         optionalTag: 'Opcional',
-        concernPlaceholder: 'Contexto breve ou prazo estimado para transição pública...',
-        submitIdle: 'Solicitar Auditoria Privada',
-        raptorSubmitIdle: 'Solicitar Operação Palantir Raptor',
-        crisisSubmitIdle: 'Registrar Caso Prioritário',
-        pepSubmitIdle: 'Solicitar Blindagem PEP',
-        submitLoading: 'Enviando solicitação...',
+        concernPlaceholder: 'Objetivo principal ou próximo anúncio público...',
+        submitIdle: 'Solicitar Avaliação',
+        raptorSubmitIdle: 'Solicitar Relatório Palantirr',
+        crisisSubmitIdle: 'Ativar Contenção',
+        pepSubmitIdle: 'Solicitar Protocolo PEP',
+        submitLoading: 'Registrando solicitação...',
       },
       validation: {
-        errorPrefix: 'Erro',
-        nameLength: (min, max) => `Informe seu nome ou alias (${min} a ${max} caracteres).`,
-        roleLength: (min, max) => `Especifique sua função principal (${min} a ${max} caracteres).`,
-        refEmpty: 'Compartilhe o link do seu projeto ou perfil principal.',
-        refInvalid: 'Insira um domínio válido (ex.: seuprojeto.com) ou usuário (ex.: @usuario).',
+        errorPrefix: 'Verificação',
+        nameLength: (min, max) =>
+          `Informe um nome, alias ou representante (${min} a ${max} caracteres).`,
+        roleLength: (min, max) => `Informe seu perfil (${min} a ${max} caracteres).`,
+        refEmpty: 'Informe um perfil (@usuario) ou domínio.',
+        refInvalid: 'Insira um domínio válido (ex. seudominio.com) ou perfil (@usuario).',
         concernMax: (max) => `Máximo de ${max} caracteres.`,
-        idGenFailed: 'Não foi possível gerar um identificador seguro. Tente novamente.',
-        quotaExceeded:
-          'Limite diário do banco de dados atingido. Tente amanhã ou entre em contato por e-mail.',
-        genericSubmitError:
-          'Ocorreu um problema ao registrar sua solicitação. Verifique sua conexão e tente novamente.',
+        idGenFailed: 'Não foi possível gerar o código do processo. Tente novamente.',
+        quotaExceeded: 'Limite diário atingido. Fale conosco pelo Signal ou e-mail.',
+        genericSubmitError: 'Não foi possível enviar a solicitação. Verifique sua conexão.',
       },
       confirmation: {
-        title: 'Solicitação Privada Registrada',
-        folioLabel: 'Código',
-        tierLabel: 'Serviço atribuído',
-        nameLabel: 'Nome / Alias',
-        roleLabel: 'Função principal',
-        refLabel: 'Link de referência',
+        title: 'Solicitação Registrada',
+        folioLabel: 'Processo',
+        tierLabel: 'Escopo atribuído',
+        nameLabel: 'Titular / Alias',
+        roleLabel: 'Perfil',
+        refLabel: 'Referência',
         modeLabel: 'Modalidade',
-        modeSoloDesc: 'Solo',
-        modeTeamDesc: 'Equipe',
+        modeSoloDesc: 'Gestão pessoal',
+        modeTeamDesc: 'Delegação de acessos',
         downloadBtn: 'Baixar comprovante',
         emailBtn: 'App de e-mail',
         gmailBtn: 'Gmail Web',
         resetBtn: 'Nova solicitação',
-        tierDisplayArgos: 'Tier 1: Argos',
-        tierDisplayAtlas: 'Tier 2: Atlas',
-        tierDisplayRaptor: 'Palantir Raptor',
+        tierDisplayArgos: 'Nível I · Argos',
+        tierDisplayAtlas: 'Nível II · Atlas',
+        tierDisplayRaptor: 'Palantirr',
         tierDisplayPep: 'Protocolo PEP',
-        receiptHeader: 'COTO PRIVADO — SOLICITAÇÃO CONFIDENCIAL',
-        receiptFolio: 'Código',
+        receiptHeader: 'COTO PRIVADO · COMPROVANTE DE PROCESSO',
+        receiptFolio: 'Processo',
         receiptDate: 'Data',
-        receiptName: 'Nome / Alias',
-        receiptRole: 'Função principal',
+        receiptName: 'Titular / Alias',
+        receiptRole: 'Perfil',
         receiptRef: 'Referência',
         receiptMode: 'Modalidade',
-        receiptModeSolo: 'Solo',
-        receiptModeTeam: 'Equipe',
+        receiptModeSolo: 'Gestão pessoal',
+        receiptModeTeam: 'Delegação de acessos',
         receiptTier: 'Serviço',
         receiptNotes: 'Notas',
-        receiptNoNotes: 'Nenhum incidente relatado',
-        mailSubjectPrefix: 'Solicitação Confidencial',
+        receiptNoNotes: 'Sem notas adicionais',
+        mailSubjectPrefix: 'Processo Coto Privado',
         openSignalBtn: 'Abrir Signal',
       },
       signalCard: {
-        emergencyToggle: 'Incidente de segurança ativo?',
+        emergencyToggle: 'Enfrenta um incidente ativo neste momento?',
         emergencyNotice:
-          'Via exclusiva para invasões em andamento, sequestro de contas ou extorsão ativa. Para auditorias preventivas ou dúvidas gerais, preencha a avaliação.',
-        emergencySignalLabel: 'Linha de emergência',
-        emergencySignalSubtitle: 'Canal criptografado no Signal',
-        unlockedKicker: (folio) => ['Canais habilitados', `Código ${folio}`],
-        unlockedTitle: 'Contato direto habilitado',
+          'Canal direto para sequestro de contas em curso, extorsão ativa ou vazamento iminente.',
+        emergencySignalLabel: 'Resposta imediata',
+        emergencySignalSubtitle: 'Canal direto no Signal',
+        unlockedKicker: (folio) => ['Canal direto habilitado', `Processo ${folio}`],
+        unlockedTitle: 'Contato direto disponível',
         unlockedBody: (folio) =>
-          `Seu dossiê está registrado. Fale diretamente pelo Signal ou e-mail com sua referência ${folio} preenchida.`,
-        userLabel: 'Canal criptografado Signal',
-        signalSubtitle: 'Mensagens diretas de ponta a ponta',
+          `Escreva pelo Signal ou e-mail informando seu processo ${folio} para agilizar o atendimento.`,
+        userLabel: 'Signal direto',
+        signalSubtitle: 'Criptografia de ponta a ponta',
         openSignalBtn: 'Abrir Signal',
-        emailLabel: 'E-mail institucional',
+        emailLabel: 'E-mail direto',
         openMailAppBtn: 'App de e-mail',
         openGmailBtn: 'Gmail Web',
         openOutlookBtn: 'Outlook Web',
         copyEmailBtn: 'Copiar e-mail',
-        copiedEmailBtn: 'E-mail copiado',
-        privacyTrigger: 'Compromisso de privacidade e confidencialidade',
+        copiedEmailBtn: 'Copiado',
+        privacyTrigger: 'Acordo NDA e tratamento de dados',
       },
     },
     footer: {
-      crisisLink: 'Guia de Crise',
-      contactTrigger: 'Contato e Emergências',
-      privacyLink: 'Privacidade e Confidencialidade',
-      privateAccess: 'Acesso Privado',
+      raptorLink: 'Palantirr',
+      crisisLink: 'Protocolo de Incidentes',
+      contactTrigger: 'Linha Direta',
+      privacyLink: 'Acordo NDA',
+      privateAccess: 'Acesso',
     },
     privacy: {
-      dialogAria: 'Compromisso de privacidade e confidencialidade da Coto Privado',
-      kicker: ['Coto Privado', 'Protocolo de Sigilo'],
-      title: 'Privacidade e Confidencialidade',
-      intro:
-        'Cada contato, avaliação ou relato de incidente é conduzido sob estrita discrição operacional e minimização absoluta de dados.',
+      dialogAria: 'Acordo NDA e soberania de dados da Coto Privado',
+      kicker: 'Coto Privado',
+      title: 'Acordo NDA e Soberania de Dados',
+      intro: 'Coletamos apenas os dados mínimos necessários para avaliar o seu caso.',
       clauses: [
         {
           num: '01',
-          title: 'Sigilo profissional e acordo NDA',
-          desc: 'Toda comunicação, identidade, alias ou contexto compartilhado é protegido por sigilo profissional desde o primeiro contato. Disponibilizamos acordo de confidencialidade (NDA) antes de qualquer escopo técnico.',
+          title: 'Acordo legal de não divulgação (NDA)',
+          desc: 'Protegemos sua identidade e a da sua família desde o primeiro contato sob contrato legal.',
         },
         {
           num: '02',
-          title: 'Minimização de dados e zero terceiros',
-          desc: 'Coletamos apenas os dados mínimos essenciais para coordenar sua avaliação, permitindo o uso de alias. Jamais comercializamos, cedemos ou expomos dados a terceiros, anunciantes ou rastreadores externos.',
+          title: 'Admissão por alias ou representante',
+          desc: 'Aceitamos aliases operacionais e jamais compartilhamos ou comercializamos seus dados.',
         },
         {
           num: '03',
-          title: 'Comunicação criptografada e emergências',
-          desc: 'Nunca solicitamos senhas, códigos 2FA ou acesso a dispositivos por este site. Para consultas sensíveis ou incidentes ativos, atendemos pelo nosso canal oficial criptografado de ponta a ponta no Signal.',
+          title: 'Zero solicitação de senhas neste site',
+          desc: 'Nunca pedimos senhas ou códigos SMS aqui; toda coordenação técnica ocorre via Signal.',
         },
         {
           num: '04',
-          title: 'Retenção controlada e exclusão imediata',
-          desc: 'Os registros de avaliação são mantidos exclusivamente para a coordenação do atendimento. Você pode solicitar a exclusão definitiva e imediata de qualquer registro pelo nosso canal no Signal ou pelo e-mail help@coto.lat.',
+          title: 'Exclusão imediata mediante solicitação',
+          desc: 'Você pode ordenar a exclusão definitiva do seu registro a qualquer momento.',
         },
       ],
-      directLabel: 'Canal criptografado direto',
-      openSignalBtn: 'Abrir canal no Signal',
+      directLabel: 'Canal direto',
+      openSignalBtn: 'Falar no Signal',
       closeBtn: 'Fechar',
-      closeAria: 'Fechar aviso de privacidade e confidencialidade',
+      closeAria: 'Fechar janela',
     },
     emergencyModal: {
-      dialogAria: 'Protocolo de resposta a incidentes de segurança ativos',
-      kicker: ['Coto Privado', 'Resposta a Crises'],
-      title: 'Incidente de segurança ativo?',
-      body: 'Via exclusiva para invasões em andamento, sequestro de contas ou extorsão ativa. Comunicação direta criptografada de ponta a ponta sem intermediários.',
-      signalLabel: 'Linha de emergência',
-      signalSubtitle: 'Canal oficial criptografado no Signal',
-      openSignalBtn: 'Abrir Signal',
-      crisisGuideCta: 'Ver guia passo a passo contra invasão ou crise',
-      preventivePrompt: 'Busca uma auditoria preventiva ou tem dúvidas gerais?',
-      preventiveCta: 'Ir ao formulário de avaliação',
-      privacyLink: 'Privacidade e confidencialidade',
-      closeAria: 'Fechar protocolo de emergência',
+      dialogAria: 'Atendimento imediato a incidentes ativos',
+      kicker: 'Resposta Crítica',
+      title: 'Atendimento imediato a incidentes',
+      body: 'Se sofre roubo de contas, extorsão ou vazamento em curso, fale diretamente com um especialista.',
+      signalLabel: 'Especialista de plantão',
+      signalSubtitle: 'Comunicação direta via Signal',
+      openSignalBtn: 'Conectar no Signal',
+      crisisGuideCta: 'Ver passos para os primeiros 30 minutos',
+      preventivePrompt: 'Busca proteção preventiva?',
+      preventiveCta: 'Ir para Solicitar Avaliação',
+      privacyLink: 'Acordo NDA',
+      closeAria: 'Fechar janela',
     },
     crisisPage: {
       nav: {
-        backToMain: 'Voltar',
+        backToMain: 'Início',
         overview: 'Resumo',
-        protocol: 'Protocolo',
-        hygiene: 'Prevenção',
-        evaluation: 'Contato',
-        cta: 'Solicitar Apoio',
+        protocol: 'Passos',
+        hygiene: 'Regras',
+        evaluation: 'Assistência',
+        cta: 'Solicitar Contenção',
       },
       hero: {
-        kicker: ['Recurso Aberto', 'Primeiros 30 Minutos'],
-        headline: 'O que fazer diante de uma invasão ou crise de reputação.',
-        body: 'Um guia prático de referência para agir com clareza nos primeiros minutos, preservar evidências técnicas e retomar o controle sem erros irreversíveis.',
-        primaryCta: 'Consultar protocolo',
-        signalCta: 'Emergência no Signal',
-        chamberAria: 'Câmara tridimensional de contenção criptográfica em cristal furta-cor',
+        kicker: 'Primeiros 30 Minutos',
+        headline: 'Contenha um ataque às suas contas antes que escale.',
+        body: 'Siga esta sequência exata e utilize apenas portais oficiais para frear danos e preservar provas.',
+        primaryCta: 'Ver passos de ação',
+        signalCta: 'Linha direta no Signal',
+        chamberAria: 'Escultura óptica de câmara de contenção',
       },
       protocol: {
-        kicker: ['Guia por Cenário', 'Passos e canais oficiais'],
-        title: 'Passos específicos conforme o incidente',
-        subtitle:
-          'Selecione o cenário correspondente ao seu caso. Inclui links oficiais diretos para evitar anúncios falsos de suporte.',
-        tabAria: 'Cenários de incidente',
-        resourcesTitle: 'Acessos oficiais diretos',
-        resourcesNote: 'Portais verificados sem intermediários',
-        helpPrompt: 'O incidente exige suporte técnico dedicado?',
-        helpCta: 'Coordenar atendimento confidencial',
+        kicker: 'Ação Imediata',
+        title: 'Selecione o incidente em curso',
+        subtitle: 'Execute cada passo em ordem e acesse diretamente os portais oficiais.',
+        tabAria: 'Tipos de incidente',
+        resourcesTitle: 'Portais oficiais de recuperação',
+        resourcesNote: 'Acesso direto verificado',
+        helpPrompt: 'Precisa que assumamos o controle técnico?',
+        helpCta: 'Solicitar intervenção',
         scenarios: [
           {
             id: 'hack',
@@ -2079,149 +3252,149 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
             steps: [
               {
                 num: '01',
-                title: 'Desconecte a rede do aparelho suspeito sem formatar',
-                desc: 'Desligue Wi-Fi e dados móveis na hora. Se entraram via infostealer (roubo de cookies no Mac ou Windows), trocar senhas nesse mesmo equipamento entregará a nova credencial ao invasor.',
+                title: 'Desconecte a internet do aparelho sem formatá-lo',
+                desc: 'Desligue Wi-Fi e dados imediatamente; trocar senhas num aparelho infectado as entrega ao invasor.',
               },
               {
                 num: '02',
-                title: 'Proteja seu e-mail raiz e apague encaminhamentos ocultos',
-                desc: 'Em outro aparelho limpo, altere a senha do e-mail principal, encerre todas as sessões e revise Configurações → Encaminhamento e filtros: invasores costumam esconder regras que copiam códigos.',
+                title: 'Proteja seu e-mail principal por um dispositivo limpo',
+                desc: 'Altere a senha em outro aparelho, encerre sessões ativas e remova redirecionamentos ocultos.',
               },
               {
                 num: '03',
-                title: 'Revogue aparelhos conectados e permissões OAuth',
-                desc: 'No WhatsApp ou Telegram abra Aparelhos conectados e desconecte acessos estranhos. No Google, Apple ou Microsoft remova apps de terceiros e troque o 2FA de SMS para app autenticador.',
+                title: 'Revogue sessões e migre do SMS para chave ou app 2FA',
+                desc: 'Desvincule aparelhos estranhos no WhatsApp, Google, Apple ou Meta e ative app autenticador.',
               },
               {
                 num: '04',
-                title: 'Descarte SIM Swapping e trave transferências',
-                desc: 'Se o celular ficou Sem serviço repentinamente, ligue para a operadora de outra linha para bloquear troca de chip/eSIM e peça bloqueio preventivo temporário em bancos e corretoras.',
+                title: 'Bloqueie sua linha móvel e avise seu banco',
+                desc: 'Se perdeu sinal celular, exija bloqueio contra troca de chip na operadora e trave transferências.',
               },
             ],
-            avoidLabel: 'Erro crítico a evitar',
+            avoidLabel: 'O que evitar',
             avoidAction:
-              'Jamais pague supostos "hackers de recuperação" em redes sociais: são golpes secundários que cobram adiantado sem qualquer acesso interno às plataformas.',
+              'Nunca pague a supostos recuperadores em redes sociais; nenhum terceiro externo possui acesso legítimo.',
             resources: [
               {
                 name: 'Google Security Checkup',
-                desc: 'Encerrar sessões, revisar encaminhamentos e revogar OAuth',
+                desc: 'Encerramento de sessões, filtros e permissões',
                 url: 'https://myaccount.google.com/security-checkup',
               },
               {
                 name: 'Apple Account Recovery',
-                desc: 'Recuperação oficial de acesso e gestão de aparelhos confiáveis',
+                desc: 'Recuperação oficial de Apple ID e aparelhos confiáveis',
                 url: 'https://iforgot.apple.com/',
               },
               {
                 name: 'Microsoft Security',
-                desc: 'Histórico de acessos e encerramento global no Outlook',
+                desc: 'Histórico de acessos e encerramento global de sessões',
                 url: 'https://account.microsoft.com/security',
               },
               {
-                name: 'Instagram / Meta Hacked',
-                desc: 'Fluxo oficial de recuperação e validação por vídeo-selfie',
+                name: 'Meta Account Recovery',
+                desc: 'Recuperação oficial para Instagram e Facebook',
                 url: 'https://www.instagram.com/hacked/',
               },
             ],
           },
           {
             id: 'extortion',
-            label: 'Extorsão ou vazamento',
+            label: 'Doxxing ou extorsão',
             steps: [
               {
                 num: '01',
-                title: 'Verifique se a ameaça é disparo automático antigo',
-                desc: 'Muitos e-mails exibem uma senha sua vazada há anos para fingir que gravaram sua tela. Consulte o endereço no Have I Been Pwned; sem prova concreta, costuma ser blefe em massa.',
+                title: 'Verifique se o vazamento é real ou um blefe automático',
+                desc: 'Muitas extorsões citam senhas antigas vazadas para simular controle atual do seu equipamento.',
               },
               {
                 num: '02',
-                title: 'Preserve cabeçalhos e capturas antes de bloquear',
-                desc: 'Se houver arquivos ou acessos reais comprometidos, não apague a conversa. Salve capturas completas (perfil, horário, carteira ou URL) e baixe o e-mail original em formato .eml.',
+                title: 'Preserve as mensagens originais sem editá-las',
+                desc: 'Baixe os e-mails em formato .eml e registre capturas com data, hora e links completos.',
               },
               {
                 num: '03',
-                title: 'Corte links públicos em nuvem e sessões abertas',
-                desc: 'De um equipamento limpo, encerre sessões ativas e revise pastas ou links compartilhados no Google Drive, iCloud, Dropbox ou Notion para interromper novos downloads.',
+                title: 'Corte pastas e links públicos na sua nuvem',
+                desc: 'De um aparelho limpo, revogue links ativos no Google Drive, iCloud, Dropbox ou Notion.',
               },
               {
                 num: '04',
-                title: 'Evite pagamentos impulsivos ou resposta sob pressão',
-                desc: 'Pagar raramente garante a exclusão do material e costuma gerar novas cobranças. Ganhe tempo enquanto fecha todos os acessos vulneráveis.',
+                title: 'Não transfira valores sem antes fechar a brecha',
+                desc: 'Pagar com o acesso intruso aberto nunca impede a divulgação e gera novas cobranças.',
               },
             ],
-            avoidLabel: 'Erro crítico a evitar',
+            avoidLabel: 'O que evitar',
             avoidAction:
-              'Não confronte nem ameace o remetente enquanto ainda houver sessões abertas, pastas compartilhadas em nuvem ou backups expostos.',
+              'Não responda nem negocie enquanto persistirem sessões abertas no seu e-mail ou nuvem.',
             resources: [
               {
                 name: 'Have I Been Pwned',
-                desc: 'Conferir se a senha citada veio de um vazamento antigo',
+                desc: 'Consulta de vazamentos históricos do seu e-mail',
                 url: 'https://haveibeenpwned.com/',
               },
               {
                 name: 'Google Security Checkup',
-                desc: 'Auditar permissões de leitura no Gmail e Google Drive',
+                desc: 'Auditoria de aplicativos com acesso aos seus arquivos',
                 url: 'https://myaccount.google.com/security-checkup',
               },
               {
                 name: 'Google Content Removal',
-                desc: 'Solicitar remoção de dados pessoais expostos na busca',
+                desc: 'Remoção de dados pessoais expostos na busca',
                 url: 'https://reportcontent.google.com/',
               },
               {
                 name: 'StopNCII.org',
-                desc: 'Bloqueio preventivo por hash de imagens íntimas sem enviá-las',
+                desc: 'Bloqueio preventivo de mídia íntima não consentida',
                 url: 'https://stopncii.org/',
               },
             ],
           },
           {
             id: 'reputation',
-            label: 'Falsidade ou reputação',
+            label: 'Falsidade ideológica',
             steps: [
               {
                 num: '01',
-                title: 'Arquive URLs e horários antes de denunciar',
-                desc: 'Antes de pedir a derrubada de perfis falsos ou postagens coordenadas, salve capturas com a URL visível e registre a página no Wayback Machine como prova verificável.',
+                title: 'Arquive as URLs falsas antes de denunciá-las',
+                desc: 'Salve o link exato com registro de data antes de solicitar a derrubada da página ou perfil.',
               },
               {
                 num: '02',
-                title: 'Identifique o registrador de domínios clonados',
-                desc: 'Se criaram um site falso com seu nome ou marca, consulte o ICANN Lookup para localizar o contato Abuse do registrador e denuncie a URL ao Google Safe Browsing.',
+                title: 'Identifique o provedor do domínio falso',
+                desc: 'Consulte a ICANN para exigir remoção por abuso ao registrador e bloqueie nos navegadores.',
               },
               {
                 num: '03',
-                title: 'Blinde as contas do seu círculo próximo',
-                desc: 'Em campanhas contra executivos ou figuras públicas, o alvo seguinte costuma ser sócios, assessoria ou familiares para vazar conversas fora de contexto. Revise o 2FA deles.',
+                title: 'Avise por voz sua família e assessores',
+                desc: 'Impostores contatam seu círculo ao mesmo tempo pedindo transferências ou códigos urgentes.',
               },
               {
                 num: '04',
-                title: 'Centralize comunicados sem citar os perfis falsos',
-                desc: 'Se precisar alertar clientes ou público, publique uma nota objetiva nos seus canais oficiais sem incluir links ou menções às contas maliciosas para não ampliar o alcance delas.',
+                title: 'Esclareça pelo perfil oficial sem divulgar a fraude',
+                desc: 'Publique nota breve na sua conta verificada sem inserir o link fraudulento.',
               },
             ],
-            avoidLabel: 'Erro crítico a evitar',
+            avoidLabel: 'O que evitar',
             avoidAction:
-              'Não abra links desconhecidos enviados por terceiros na sua rede pessoal: páginas difamatórias frequentemente servem de isca para capturar seu IP ou sessão.',
+              'Não abra links suspeitos na sua rede doméstica ou celular; páginas-armadilha capturam seu IP real.',
             resources: [
               {
                 name: 'ICANN Registration Lookup',
-                desc: 'Identificar o provedor de domínio e e-mail oficial de Abuse',
+                desc: 'Identificação do provedor de um domínio falso',
                 url: 'https://lookup.icann.org/',
               },
               {
                 name: 'Google Safe Browsing',
-                desc: 'Denunciar domínio clonado para bloqueio nos navegadores',
+                desc: 'Bloqueio de páginas fraudulentas nos navegadores',
                 url: 'https://safebrowsing.google.com/safebrowsing/report_phish/',
               },
               {
                 name: 'Wayback Machine Save',
-                desc: 'Congelar cópia pública com data e hora antes da remoção',
+                desc: 'Registro verificável antes da remoção de uma página',
                 url: 'https://web.archive.org/save',
               },
               {
                 name: 'Google Legal Removal',
-                desc: 'Solicitação formal por falsidade ideológica ou remoção legal',
+                desc: 'Remoção legal por falsificação ou difamação',
                 url: 'https://reportcontent.google.com/',
               },
             ],
@@ -2229,118 +3402,141 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
         ],
       },
       hygiene: {
-        headline: 'Quatro hábitos que evitam 90% dos incidentes',
-        subtitle: 'Padrão mínimo recomendado quando não há uma emergência em andamento.',
+        headline: 'Quatro regras permanentes de controle',
+        subtitle: 'Medidas diretas que neutralizam a maioria dos ataques direcionados.',
         items: [
           {
             num: '01',
-            title: 'E-mail exclusivo para bancos e recuperação',
-            desc: 'Mantenha um endereço privado desconhecido pelo público apenas para bancos, domínios e cofres; deixe seu e-mail público restrito a contato comercial.',
+            title: 'Isole um e-mail exclusivo para bancos e patrimônio',
+            desc: 'Nunca utilize seu endereço público para bancos, investimentos ou domínios principais.',
           },
           {
             num: '02',
-            title: 'App autenticador ou chave física no lugar de SMS',
-            desc: 'Desvincule seus códigos 2FA do número de telefone para que golpes de SIM Swap não permitam redefinir suas contas principais.',
+            title: 'Elimine o SMS como fator de segurança',
+            desc: 'Proteja contas críticas com chaves físicas de segurança ou aplicativos autenticadores.',
           },
           {
             num: '03',
-            title: 'Delegação à equipe sem expor senhas',
-            desc: 'Conceda acesso a colaboradores ou agências por cofres Zero-Knowledge ou permissões nativas, sem jamais enviar senhas por mensagem.',
+            title: 'Delegue acessos sem compartilhar senhas',
+            desc: 'Conceda permissões revogáveis à sua equipe por meio de cofres de custódia.',
           },
           {
             num: '04',
-            title: 'Confirmação por segundo canal em pedidos urgentes',
-            desc: 'Mantenha navegadores atualizados e valide por ligação direta qualquer aviso urgente de suporte, direitos autorais ou mudança bancária.',
+            title: 'Confirme por ligação qualquer urgência financeira',
+            desc: 'Valide sempre por voz direta qualquer pedido incomum de valores ou documentos.',
           },
         ],
-        auditCta: 'Solicitar auditoria preventiva',
+        auditCta: 'Proteger meu ambiente pessoal',
       },
     },
     admin: {
-      dialogAria: 'Painel privado de avaliações Coto Privado',
-      headerTitle: 'Solicitações — Coto Privado',
+      dialogAria: 'Painel de processos Coto Privado',
+      headerTitle: 'Processos · Coto Privado',
       exportCsv: 'Exportar CSV',
       signOut: 'Sair',
       closeAria: 'Fechar painel',
       verifying: 'Verificando credenciais...',
-      signInTitle: 'Acesso Administrativo',
-      signInDesc: 'Entre com sua conta corporativa @coto.lat para gerenciar as solicitações.',
-      signInBtn: 'Autenticar com Google',
-      signInFailed: 'Não foi possível concluir o login com o Google.',
-      unauthorizedTitle: 'Conta sem permissão',
-      unauthorizedPrefix: 'A sessão atual',
-      unauthorizedMiddle: 'não possui acesso. Entre com uma conta corporativa',
-      switchAccountBtn: 'Trocar conta do Google',
+      signInTitle: 'Acesso Autorizado',
+      signInDesc: 'Entre com sua conta @coto.lat para gerenciar os processos.',
+      signInBtn: 'Entrar com Google',
+      signInFailed: 'Não foi possível concluir a autenticação.',
+      unauthorizedTitle: 'Conta não autorizada',
+      unauthorizedPrefix: 'A sessão',
+      unauthorizedMiddle: 'não possui permissão. Entre com uma conta',
+      switchAccountBtn: 'Trocar conta',
       tabs: {
-        all: (count) => `Todas (${count})`,
+        all: (count) => `Todos (${count})`,
         pendiente: (count) => `Pendentes (${count})`,
-        en_revision: (count) => `Em revisão (${count})`,
+        en_revision: (count) => `Em análise (${count})`,
         contactado: (count) => `Contatados (${count})`,
         cerrado: (count) => `Encerrados (${count})`,
       },
       statusLabels: {
         pendiente: 'Pendente',
-        en_revision: 'Em revisão',
+        en_revision: 'Em análise',
         contactado: 'Contatado',
         cerrado: 'Encerrado',
       },
-      searchPlaceholder: 'Buscar por código, nome, função, referência ou notas...',
+      searchPlaceholder: 'Filtrar por código, titular, perfil ou notas...',
       clearSearchAria: 'Limpar busca',
       serviceFilterAria: 'Filtrar por serviço',
       serviceAll: 'Todos os serviços',
       sortNewest: 'Mais recentes',
-      sortOldest: 'Mais antigas',
+      sortOldest: 'Mais antigos',
       queueCount: (shown, total) =>
         shown === total
-          ? `${total} ${total === 1 ? 'solicitação' : 'solicitações'}`
-          : `${shown} de ${total} solicitações`,
-      selectPrompt: 'Selecione uma linha para gerenciar',
-      openDossier: 'Ver detalhes',
-      backToList: (count) => `Voltar à lista (${count})`,
-      dossierPosition: (index, total) => `Solicitação ${index} de ${total}`,
+          ? `${total} ${total === 1 ? 'processo' : 'processos'}`
+          : `${shown} de ${total} processos`,
+      selectPrompt: 'Selecione um processo',
+      openDossier: 'Abrir',
+      backToList: (count) => `Voltar (${count})`,
+      dossierPosition: (index, total) => `Processo ${index} de ${total}`,
       prevRequest: 'Anterior',
-      nextRequest: 'Próxima',
-      emptyFiltered: 'Nenhuma solicitação corresponde aos filtros atuais.',
+      nextRequest: 'Próximo',
+      emptyFiltered: 'Nenhum processo corresponde aos filtros ativos.',
       clearFiltersBtn: 'Limpar filtros',
       serviceLabel: 'Serviço atribuído',
-      modeLabel: 'Modalidade operacional',
-      dateLabel: 'Data de registro',
+      modeLabel: 'Modalidade',
+      dateLabel: 'Data',
       copyBtn: 'Copiar',
       copiedBtn: 'Copiado',
       openLinkBtn: 'Abrir link',
       deleteBtn: 'Excluir',
-      unsavedNotes: 'Alterações não salvas',
-      hasNotesTag: 'Com notas internas registradas',
-      loadingDocs: 'Carregando solicitações...',
-      emptyDocs: 'Nenhuma solicitação registrada ainda.',
+      unsavedNotes: 'Não salvo',
+      hasNotesTag: 'Com notas',
+      loadingDocs: 'Carregando processos...',
+      emptyDocs: 'Nenhum processo registrado.',
       recentFallback: 'Recente',
       confirmDelete: 'Confirmar exclusão',
       cancelDelete: 'Cancelar',
-      deleteAria: 'Excluir solicitação',
+      deleteAria: 'Excluir processo',
       modeAndTier: 'Modalidade e Serviço',
-      soloShort: 'Solo',
-      teamShort: 'Equipe',
-      refLink: 'Link ou perfil de referência',
-      reportedConcern: 'Preocupação ou incidente relatado',
-      noComments: 'Sem observações adicionais.',
-      dossierStatus: 'Status do dossiê',
-      closedLockedMsg: 'Expediente encerrado (edição bloqueada).',
-      reopenBtn: 'Reabrir expediente',
-      internalNotesLabel: 'Notas internas de acompanhamento',
-      internalNotesPlaceholder: 'Registre contexto de contato, acordos ou próximos passos...',
+      soloShort: 'Pessoal',
+      teamShort: 'Delegação',
+      refLink: 'Perfil ou domínio',
+      reportedConcern: 'Contexto do titular',
+      noComments: 'Sem notas registradas.',
+      dossierStatus: 'Status',
+      closedLockedMsg: 'Processo encerrado.',
+      reopenBtn: 'Reabrir',
+      internalNotesLabel: 'Notas internas',
+      internalNotesPlaceholder: 'Acordos, responsável ou próximos passos...',
       savingBtn: 'Salvando...',
       saveNotesBtn: 'Salvar notas',
-      feedbackSyncError: 'Não foi possível sincronizar as solicitações.',
-      feedbackStatusUpdated: (label) => `Status atualizado para ${label}.`,
-      feedbackStatusError: 'Erro ao atualizar o status.',
+      feedbackSyncError: 'Erro ao sincronizar processos.',
+      feedbackStatusUpdated: (label) => `Status alterado para ${label}.`,
+      feedbackStatusError: 'Não foi possível atualizar o status.',
       feedbackNotesSaved: 'Notas salvas.',
       feedbackNotesError: 'Não foi possível salvar as notas.',
-      feedbackDeleteError: 'Não foi possível excluir o registro.',
+      feedbackDeleteError: 'Não foi possível excluir o processo.',
     },
   },
 };
 
-const LANG_STORAGE_KEY = 'coto_privado_lang';
+const STORAGE_LANG_KEY = 'coto_privado_lang_v1';
+
+function detectInitialLanguage(): Language {
+  try {
+    const saved = localStorage.getItem(STORAGE_LANG_KEY);
+    if (saved === 'es' || saved === 'en' || saved === 'pt') {
+      return saved;
+    }
+  } catch {
+    // Ignore storage restrictions
+  }
+
+  if (typeof navigator !== 'undefined') {
+    const prefs = navigator.languages?.length ? navigator.languages : [navigator.language];
+    for (const raw of prefs) {
+      const code = String(raw || '').toLowerCase();
+      if (code.startsWith('es')) return 'es';
+      if (code.startsWith('pt')) return 'pt';
+      if (code.startsWith('en')) return 'en';
+    }
+  }
+
+  return 'es';
+}
 
 interface I18nContextValue {
   lang: Language;
@@ -2348,40 +3544,26 @@ interface I18nContextValue {
   t: TranslationDictionary;
 }
 
-const I18nContext = createContext<I18nContextValue | null>(null);
+const I18nContext = createContext<I18nContextValue>({
+  lang: 'es',
+  setLang: () => {},
+  t: DICTIONARIES.es,
+});
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Language>(() => {
-    try {
-      const stored = localStorage.getItem(LANG_STORAGE_KEY);
-      if (stored === 'es' || stored === 'en' || stored === 'pt') {
-        return stored;
-      }
-    } catch {
-      // Ignore storage access errors
-    }
-    return 'es';
-  });
+  const [lang, setLangState] = useState<Language>(() => detectInitialLanguage());
 
   const setLang = (next: Language) => {
     setLangState(next);
     try {
-      localStorage.setItem(LANG_STORAGE_KEY, next);
+      localStorage.setItem(STORAGE_LANG_KEY, next);
     } catch {
-      // Ignore
+      // Ignore private browsing errors
     }
   };
 
   useEffect(() => {
     document.documentElement.lang = lang;
-    const rawHash = window.location.hash.replace(/^#/, '').trim().toLowerCase();
-    const isRaptor = rawHash === 'palantir-raptor' || rawHash.startsWith('raptor-');
-    const isCrisis = rawHash === 'protocolo-crisis' || rawHash.startsWith('crisis-');
-    document.title = isRaptor
-      ? DICTIONARIES[lang].raptorMetaTitle
-      : isCrisis
-        ? DICTIONARIES[lang].crisisMetaTitle
-        : DICTIONARIES[lang].metaTitle;
   }, [lang]);
 
   return (
@@ -2392,9 +3574,5 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 }
 
 export function useI18n(): I18nContextValue {
-  const ctx = useContext(I18nContext);
-  if (!ctx) {
-    throw new Error('useI18n must be used inside I18nProvider');
-  }
-  return ctx;
+  return useContext(I18nContext);
 }
