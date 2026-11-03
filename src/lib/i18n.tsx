@@ -32,45 +32,26 @@ export interface CrisisScenarioItem {
 
 export type MetricsScopeId = 'consolidated' | 'pep' | 'atlas';
 
-export interface MetricsMilestoneItem {
+export interface MetricsPointItem {
   day: number;
-  code: string;
-  phase: string;
-  protocolNote: string;
+  label: string;
   exposure: number;
-  residualRisk: number;
 }
 
-export interface MetricsVectorItem {
+export interface MetricsBarItem {
   label: string;
-  shortLabel: string;
-  baseline: number;
-  mitigated: number;
+  before: number;
+  after: number;
 }
 
 export interface MetricsScopeTranslation {
   id: MetricsScopeId;
   tabLabel: string;
-  milestones: [
-    MetricsMilestoneItem,
-    MetricsMilestoneItem,
-    MetricsMilestoneItem,
-    MetricsMilestoneItem,
-    MetricsMilestoneItem,
-  ];
-  vectors: [
-    MetricsVectorItem,
-    MetricsVectorItem,
-    MetricsVectorItem,
-    MetricsVectorItem,
-    MetricsVectorItem,
-  ];
-  kpis: [
-    { value: string; label: string },
-    { value: string; label: string },
-    { value: string; label: string },
-    { value: string; label: string },
-  ];
+  headlineStat: string;
+  headlineLabel: string;
+  points: [MetricsPointItem, MetricsPointItem, MetricsPointItem];
+  bars: [MetricsBarItem, MetricsBarItem, MetricsBarItem, MetricsBarItem];
+  summaryNote: string;
 }
 
 export interface BoutiquePillarItem {
@@ -182,18 +163,9 @@ export interface TranslationDictionary {
   metrics: {
     headline: string;
     scopeSelectorAria: string;
-    longitudinalTitle: string;
     chartAria: string;
-    legendBaseline: string;
-    legendFootprint: string;
-    legendRisk: string;
-    footprintReadoutLabel: string;
-    mitigationDeltaLabel: string;
-    radialTitle: string;
-    radialAria: string;
-    radialLegendBefore: string;
-    radialLegendAfter: string;
-    footnote: string;
+    barsHeaderLeft: string;
+    barsHeaderRight: string;
     cta: string;
     scopes: [MetricsScopeTranslation, MetricsScopeTranslation, MetricsScopeTranslation];
   };
@@ -478,9 +450,9 @@ export interface TranslationDictionary {
 
 const DICTIONARIES: Record<Language, TranslationDictionary> = {
   es: {
-    metaTitle: '\u2800',
-    raptorMetaTitle: '\u2800',
-    crisisMetaTitle: '\u2800',
+    metaTitle: 'Privado',
+    raptorMetaTitle: 'Privado',
+    crisisMetaTitle: 'Privado',
     nav: {
       overview: 'Inicio',
       profiles: 'Perfiles',
@@ -650,310 +622,69 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       raptorCta: 'Analizar exposición con Palantirr',
     },
     metrics: {
-      headline: 'Reducción medible de su exposición pública.',
-      scopeSelectorAria: 'Seleccionar perfil de métricas',
-      longitudinalTitle: 'Índice de exposición (T+0 a T+90)',
-      chartAria:
-        'Gráfico longitudinal D3 de reducción de exposición pública entre el día 0 y el día 90',
-      legendBaseline: 'Sin intervención',
-      legendFootprint: 'Exposición pública',
-      legendRisk: 'Riesgos activos',
-      footprintReadoutLabel: 'Exposición actual',
-      mitigationDeltaLabel: 'Reducción neta',
-      radialTitle: 'Frentes mitigados',
-      radialAria: 'Diagrama polar D3 comparando cinco vectores en día 0 frente a día 90',
-      radialLegendBefore: 'Inicio (T+0)',
-      radialLegendAfter: 'Día 90 (T+90)',
-      footnote: 'Expedientes reales anonimizados bajo acuerdo NDA · Cortes a 15, 30, 60 y 90 días',
-      cta: 'Evaluar mi exposición actual',
+      headline: 'Reducción real en 90 días.',
+      scopeSelectorAria: 'Seleccionar perfil',
+      chartAria: 'Curva de reducción de exposición pública entre hoy y el día 90',
+      barsHeaderLeft: 'Frentes protegidos',
+      barsHeaderRight: 'Hoy → Día 90',
+      cta: 'Evaluar mi exposición',
       scopes: [
         {
           id: 'consolidated',
           tabLabel: 'Consolidado',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Auditoría inicial',
-              protocolNote: 'Mapeamos datos filtrados, claves históricas y registros vinculados.',
-              exposure: 100,
-              residualRisk: 86,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Retiro de registros',
-              protocolNote: 'Eliminamos domicilios y teléfonos en corredores de datos y buscadores.',
-              exposure: 54,
-              residualRisk: 38,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Aislamiento de cuentas',
-              protocolNote: 'Separamos banca y correo principal mediante alias y llaves físicas.',
-              exposure: 26,
-              residualRisk: 16,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Protección de equipos',
-              protocolNote: 'Aseguramos móviles, portátiles y líneas frente a clonación de SIM.',
-              exposure: 13,
-              residualRisk: 7,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Monitoreo continuo',
-              protocolNote: 'Mantenemos su huella al mínimo con alertas tempranas ante filtraciones.',
-              exposure: 8.4,
-              residualRisk: 2.8,
-            },
+          headlineStat: '-92%',
+          headlineLabel: 'de huella pública expuesta',
+          points: [
+            { day: 0, label: 'Hoy', exposure: 100 },
+            { day: 30, label: 'Día 30', exposure: 26 },
+            { day: 90, label: 'Día 90', exposure: 8 },
           ],
-          vectors: [
-            {
-              label: 'Datos personales y directorios',
-              shortLabel: 'Registros',
-              baseline: 94,
-              mitigated: 8,
-            },
-            {
-              label: 'Cuentas y claves históricas',
-              shortLabel: 'Credenciales',
-              baseline: 88,
-              mitigated: 4,
-            },
-            {
-              label: 'Dominios e imagen pública',
-              shortLabel: 'Dominios',
-              baseline: 79,
-              mitigated: 9,
-            },
-            {
-              label: 'Teléfonos y equipos personales',
-              shortLabel: 'Equipos',
-              baseline: 84,
-              mitigated: 6,
-            },
-            {
-              label: 'Accesos del círculo cero',
-              shortLabel: 'Círculo cero',
-              baseline: 91,
-              mitigated: 5,
-            },
+          bars: [
+            { label: 'Domicilios y teléfonos públicos', before: 94, after: 8 },
+            { label: 'Contraseñas y cuentas filtradas', before: 88, after: 4 },
+            { label: 'Accesos de familia y equipo', before: 91, after: 5 },
+            { label: 'Riesgo en móviles y líneas', before: 84, after: 6 },
           ],
-          kpis: [
-            {
-              value: '-91.6%',
-              label: 'Datos personales expuestos tras 90 días',
-            },
-            {
-              value: '98.4%',
-              label: 'Bajas efectivas en buscadores y directorios',
-            },
-            {
-              value: '< 24 min',
-              label: 'Tiempo medio de contención remota',
-            },
-            {
-              value: '0',
-              label: 'Claves maestras compartidas con terceros',
-            },
-          ],
+          summaryNote:
+            'Casos reales bajo acuerdo NDA · Contención en < 24 min · 0 claves compartidas',
         },
         {
           id: 'pep',
           tabLabel: 'Figuras Públicas',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Diagnóstico previo',
-              protocolNote: 'Localizamos residencias, líneas familiares y archivos vulnerables.',
-              exposure: 100,
-              residualRisk: 92,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Depuración prioritaria',
-              protocolNote: 'Retiramos información sensible del titular y su familia antes del anuncio.',
-              exposure: 44,
-              residualRisk: 29,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Separación patrimonial',
-              protocolNote: 'Aislamos cuentas privadas de los canales públicos de campaña.',
-              exposure: 19,
-              residualRisk: 11,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Delegación de prensa',
-              protocolNote: 'Habilitamos a jefes de prensa sin acceso a contraseñas ni códigos.',
-              exposure: 9.5,
-              residualRisk: 4.5,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Vigilancia de mandato',
-              protocolNote: 'Detectamos cuentas falsas, dominios espejo e intentos de filtración.',
-              exposure: 6.2,
-              residualRisk: 1.9,
-            },
+          headlineStat: '-94%',
+          headlineLabel: 'de rastro privado localizable',
+          points: [
+            { day: 0, label: 'Hoy', exposure: 100 },
+            { day: 30, label: 'Día 30', exposure: 19 },
+            { day: 90, label: 'Día 90', exposure: 6 },
           ],
-          vectors: [
-            {
-              label: 'Domicilios y registros privados',
-              shortLabel: 'Registros',
-              baseline: 98,
-              mitigated: 6,
-            },
-            {
-              label: 'Correos y archivos históricos',
-              shortLabel: 'Credenciales',
-              baseline: 86,
-              mitigated: 3,
-            },
-            {
-              label: 'Perfiles oficiales y suplantación',
-              shortLabel: 'Dominios',
-              baseline: 82,
-              mitigated: 7,
-            },
-            {
-              label: 'Móviles del titular y familia',
-              shortLabel: 'Equipos',
-              baseline: 90,
-              mitigated: 5,
-            },
-            {
-              label: 'Equipo de prensa y asesores',
-              shortLabel: 'Círculo cero',
-              baseline: 95,
-              mitigated: 4,
-            },
+          bars: [
+            { label: 'Domicilios y registros familiares', before: 98, after: 6 },
+            { label: 'Correos y archivos históricos', before: 86, after: 3 },
+            { label: 'Prensa y asesores con acceso', before: 95, after: 4 },
+            { label: 'Líneas móviles del círculo cero', before: 90, after: 5 },
           ],
-          kpis: [
-            {
-              value: '-93.8%',
-              label: 'Rastro privado localizable antes de campaña',
-            },
-            {
-              value: '100%',
-              label: 'Líneas familiares bloqueadas ante clonación',
-            },
-            {
-              value: '< 18 min',
-              label: 'Respuesta directa durante agenda pública',
-            },
-            {
-              value: '0',
-              label: 'Claves expuestas ante agencias externas',
-            },
-          ],
+          summaryNote:
+            'Actuación apartidista bajo NDA · Respuesta en < 18 min · 0 claves expuestas',
         },
         {
           id: 'atlas',
           tabLabel: 'Creadores y Patrimonio',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Auditoría de activos',
-              protocolNote: 'Revisamos canales de ingresos, dominios y sesiones heredadas.',
-              exposure: 100,
-              residualRisk: 84,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Revocación de accesos',
-              protocolNote: 'Cerramos sesiones antiguas, permisos conectados y claves previas.',
-              exposure: 58,
-              residualRisk: 36,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Custodia delegada',
-              protocolNote: 'Protegemos canales monetizados y tesorería frente a colaboradores.',
-              exposure: 29,
-              residualRisk: 15,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Defensa de equipos',
-              protocolNote: 'Aseguramos móviles y ordenadores de estudio sin frenar su operación.',
-              exposure: 15,
-              residualRisk: 6.5,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Control consolidado',
-              protocolNote: 'Monitoreamos su entorno y respondemos ante intentos de extorsión.',
-              exposure: 11.0,
-              residualRisk: 2.4,
-            },
+          headlineStat: '-89%',
+          headlineLabel: 'de superficie vulnerable',
+          points: [
+            { day: 0, label: 'Hoy', exposure: 100 },
+            { day: 30, label: 'Día 30', exposure: 29 },
+            { day: 90, label: 'Día 90', exposure: 11 },
           ],
-          vectors: [
-            {
-              label: 'Exposición de vida privada y bienes',
-              shortLabel: 'Registros',
-              baseline: 85,
-              mitigated: 11,
-            },
-            {
-              label: 'Canales de ingresos y bancos',
-              shortLabel: 'Credenciales',
-              baseline: 94,
-              mitigated: 3,
-            },
-            {
-              label: 'Dominios personales y correo raíz',
-              shortLabel: 'Dominios',
-              baseline: 90,
-              mitigated: 8,
-            },
-            {
-              label: 'Dispositivos móviles y portátiles',
-              shortLabel: 'Equipos',
-              baseline: 88,
-              mitigated: 5,
-            },
-            {
-              label: 'Editores, asistentes y agencias',
-              shortLabel: 'Círculo cero',
-              baseline: 96,
-              mitigated: 4,
-            },
+          bars: [
+            { label: 'Canales de ingresos y bancos', before: 94, after: 3 },
+            { label: 'Editores, agencias y asistentes', before: 96, after: 4 },
+            { label: 'Dominios y correo principal', before: 90, after: 8 },
+            { label: 'Vida privada y patrimonio', before: 85, after: 11 },
           ],
-          kpis: [
-            {
-              value: '-89.0%',
-              label: 'Superficie expuesta sobre su patrimonio digital',
-            },
-            {
-              value: '99.2%',
-              label: 'Equipos protegidos sin fricción operativa',
-            },
-            {
-              value: '< 30 min',
-              label: 'Contención ante intento de secuestro de cuenta',
-            },
-            {
-              value: '0',
-              label: 'Filtraciones de claves tras delegar accesos',
-            },
-          ],
+          summaryNote:
+            'Custodia sin fricción diaria · Contención en < 30 min · 0 claves filtradas',
         },
       ],
     },
@@ -1490,9 +1221,9 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
   },
 
   en: {
-    metaTitle: '\u2800',
-    raptorMetaTitle: '\u2800',
-    crisisMetaTitle: '\u2800',
+    metaTitle: 'Privado',
+    raptorMetaTitle: 'Privado',
+    crisisMetaTitle: 'Privado',
     nav: {
       overview: 'Home',
       profiles: 'Profiles',
@@ -1662,309 +1393,69 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       raptorCta: 'Assess exposure with Palantirr',
     },
     metrics: {
-      headline: 'Measurable reduction of your public exposure.',
-      scopeSelectorAria: 'Select metrics profile',
-      longitudinalTitle: 'Exposure index (T+0 to T+90)',
-      chartAria: 'D3 longitudinal chart of public exposure reduction from day 0 to day 90',
-      legendBaseline: 'Unprotected',
-      legendFootprint: 'Public exposure',
-      legendRisk: 'Active risks',
-      footprintReadoutLabel: 'Current exposure',
-      mitigationDeltaLabel: 'Net reduction',
-      radialTitle: 'Mitigated vectors',
-      radialAria: 'D3 polar chart comparing five exposure vectors at day 0 versus day 90',
-      radialLegendBefore: 'Start (T+0)',
-      radialLegendAfter: 'Day 90 (T+90)',
-      footnote: 'Anonymized real client engagements under NDA · Verified at days 15, 30, 60, and 90',
-      cta: 'Assess my current exposure',
+      headline: 'Measurable reduction in 90 days.',
+      scopeSelectorAria: 'Select profile',
+      chartAria: 'Public exposure reduction curve from today to day 90',
+      barsHeaderLeft: 'Protected areas',
+      barsHeaderRight: 'Today → Day 90',
+      cta: 'Assess my exposure',
       scopes: [
         {
           id: 'consolidated',
           tabLabel: 'Consolidated',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Initial audit',
-              protocolNote: 'We map leaked credentials, private addresses, and linked accounts.',
-              exposure: 100,
-              residualRisk: 86,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Record removal',
-              protocolNote: 'We remove personal listings from data brokers and search indexes.',
-              exposure: 54,
-              residualRisk: 38,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Account isolation',
-              protocolNote: 'We segregate banking and primary email with aliases and hardware keys.',
-              exposure: 26,
-              residualRisk: 16,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Device hardening',
-              protocolNote: 'We secure phones, laptops, and carrier lines against SIM cloning.',
-              exposure: 13,
-              residualRisk: 7,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Continuous monitoring',
-              protocolNote: 'We keep your public footprint minimal with early leak alerts.',
-              exposure: 8.4,
-              residualRisk: 2.8,
-            },
+          headlineStat: '-92%',
+          headlineLabel: 'of public footprint exposed',
+          points: [
+            { day: 0, label: 'Today', exposure: 100 },
+            { day: 30, label: 'Day 30', exposure: 26 },
+            { day: 90, label: 'Day 90', exposure: 8 },
           ],
-          vectors: [
-            {
-              label: 'Personal records & directories',
-              shortLabel: 'Records',
-              baseline: 94,
-              mitigated: 8,
-            },
-            {
-              label: 'Accounts & historical keys',
-              shortLabel: 'Credentials',
-              baseline: 88,
-              mitigated: 4,
-            },
-            {
-              label: 'Domains & public identity',
-              shortLabel: 'Domains',
-              baseline: 79,
-              mitigated: 9,
-            },
-            {
-              label: 'Phones & personal devices',
-              shortLabel: 'Devices',
-              baseline: 84,
-              mitigated: 6,
-            },
-            {
-              label: 'Zero circle access',
-              shortLabel: 'Zero circle',
-              baseline: 91,
-              mitigated: 5,
-            },
+          bars: [
+            { label: 'Public addresses & phone numbers', before: 94, after: 8 },
+            { label: 'Leaked passwords & accounts', before: 88, after: 4 },
+            { label: 'Family & team account access', before: 91, after: 5 },
+            { label: 'Mobile devices & carrier lines', before: 84, after: 6 },
           ],
-          kpis: [
-            {
-              value: '-91.6%',
-              label: 'Exposed personal records after 90 days',
-            },
-            {
-              value: '98.4%',
-              label: 'Verified removals across brokers and search',
-            },
-            {
-              value: '< 24 min',
-              label: 'Mean remote containment time',
-            },
-            {
-              value: '0',
-              label: 'Master passwords shared with third parties',
-            },
-          ],
+          summaryNote:
+            'Real cases under NDA · Containment in < 24 min · 0 shared passwords',
         },
         {
           id: 'pep',
           tabLabel: 'Public Figures',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Pre-announcement audit',
-              protocolNote: 'We locate exposed residences, family lines, and vulnerable archives.',
-              exposure: 100,
-              residualRisk: 92,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Priority purge',
-              protocolNote: 'We remove sensitive principal and family records ahead of launch.',
-              exposure: 44,
-              residualRisk: 29,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Patrimony isolation',
-              protocolNote: 'We separate private family accounts from public campaign channels.',
-              exposure: 19,
-              residualRisk: 11,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Press delegation',
-              protocolNote: 'We enable communications staff without sharing passwords or codes.',
-              exposure: 9.5,
-              residualRisk: 4.5,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Term monitoring',
-              protocolNote: 'We detect impersonation accounts, lookalike domains, and leaks.',
-              exposure: 6.2,
-              residualRisk: 1.9,
-            },
+          headlineStat: '-94%',
+          headlineLabel: 'of traceable private records',
+          points: [
+            { day: 0, label: 'Today', exposure: 100 },
+            { day: 30, label: 'Day 30', exposure: 19 },
+            { day: 90, label: 'Day 90', exposure: 6 },
           ],
-          vectors: [
-            {
-              label: 'Residences & private filings',
-              shortLabel: 'Records',
-              baseline: 98,
-              mitigated: 6,
-            },
-            {
-              label: 'Historical mail & archives',
-              shortLabel: 'Credentials',
-              baseline: 86,
-              mitigated: 3,
-            },
-            {
-              label: 'Official profiles & impersonation',
-              shortLabel: 'Domains',
-              baseline: 82,
-              mitigated: 7,
-            },
-            {
-              label: 'Principal & family phones',
-              shortLabel: 'Devices',
-              baseline: 90,
-              mitigated: 5,
-            },
-            {
-              label: 'Press team & advisors',
-              shortLabel: 'Zero circle',
-              baseline: 95,
-              mitigated: 4,
-            },
+          bars: [
+            { label: 'Home addresses & family records', before: 98, after: 6 },
+            { label: 'Historical emails & archives', before: 86, after: 3 },
+            { label: 'Press staff & advisor access', before: 95, after: 4 },
+            { label: 'Zero circle mobile lines', before: 90, after: 5 },
           ],
-          kpis: [
-            {
-              value: '-93.8%',
-              label: 'Traceable private data prior to campaign',
-            },
-            {
-              value: '100%',
-              label: 'Family mobile lines locked against port-out',
-            },
-            {
-              value: '< 18 min',
-              label: 'Direct response during public engagements',
-            },
-            {
-              value: '0',
-              label: 'Passwords exposed to external agencies',
-            },
-          ],
+          summaryNote:
+            'Non-partisan under NDA · Response in < 18 min · 0 exposed passwords',
         },
         {
           id: 'atlas',
           tabLabel: 'Creators & Patrimony',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Asset audit',
-              protocolNote: 'We review monetized channels, core domains, and legacy sessions.',
-              exposure: 100,
-              residualRisk: 84,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Access revocation',
-              protocolNote: 'We terminate stale sessions, third-party apps, and shared keys.',
-              exposure: 58,
-              residualRisk: 36,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Delegated custody',
-              protocolNote: 'We protect revenue channels and treasury across collaborators.',
-              exposure: 29,
-              residualRisk: 15,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Device defense',
-              protocolNote: 'We secure phones and studio workstations without workflow friction.',
-              exposure: 15,
-              residualRisk: 6.5,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Consolidated control',
-              protocolNote: 'We monitor your perimeter and respond to hijack or extortion attempts.',
-              exposure: 11.0,
-              residualRisk: 2.4,
-            },
+          headlineStat: '-89%',
+          headlineLabel: 'of vulnerable attack surface',
+          points: [
+            { day: 0, label: 'Today', exposure: 100 },
+            { day: 30, label: 'Day 30', exposure: 29 },
+            { day: 90, label: 'Day 90', exposure: 11 },
           ],
-          vectors: [
-            {
-              label: 'Private life & asset exposure',
-              shortLabel: 'Records',
-              baseline: 85,
-              mitigated: 11,
-            },
-            {
-              label: 'Revenue channels & banking',
-              shortLabel: 'Credentials',
-              baseline: 94,
-              mitigated: 3,
-            },
-            {
-              label: 'Personal domains & root email',
-              shortLabel: 'Domains',
-              baseline: 90,
-              mitigated: 8,
-            },
-            {
-              label: 'Mobile & laptop devices',
-              shortLabel: 'Devices',
-              baseline: 88,
-              mitigated: 5,
-            },
-            {
-              label: 'Editors, assistants & agencies',
-              shortLabel: 'Zero circle',
-              baseline: 96,
-              mitigated: 4,
-            },
+          bars: [
+            { label: 'Revenue channels & banking', before: 94, after: 3 },
+            { label: 'Editors, agencies & assistants', before: 96, after: 4 },
+            { label: 'Domains & primary email', before: 90, after: 8 },
+            { label: 'Private life & personal assets', before: 85, after: 11 },
           ],
-          kpis: [
-            {
-              value: '-89.0%',
-              label: 'Exposed surface across digital patrimony',
-            },
-            {
-              value: '99.2%',
-              label: 'Personal devices protected without friction',
-            },
-            {
-              value: '< 30 min',
-              label: 'Containment on account takeover attempts',
-            },
-            {
-              value: '0',
-              label: 'Key leaks after activating delegated access',
-            },
-          ],
+          summaryNote:
+            'Zero daily friction · Containment in < 30 min · 0 leaked keys',
         },
       ],
     },
@@ -2501,9 +1992,9 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
   },
 
   pt: {
-    metaTitle: '\u2800',
-    raptorMetaTitle: '\u2800',
-    crisisMetaTitle: '\u2800',
+    metaTitle: 'Privado',
+    raptorMetaTitle: 'Privado',
+    crisisMetaTitle: 'Privado',
     nav: {
       overview: 'Início',
       profiles: 'Perfis',
@@ -2673,310 +2164,69 @@ const DICTIONARIES: Record<Language, TranslationDictionary> = {
       raptorCta: 'Analisar exposição com Palantirr',
     },
     metrics: {
-      headline: 'Redução mensurável da sua exposição pública.',
-      scopeSelectorAria: 'Selecionar perfil de métricas',
-      longitudinalTitle: 'Índice de exposição (T+0 a T+90)',
-      chartAria:
-        'Gráfico longitudinal D3 de redução de exposição pública entre o dia 0 e o dia 90',
-      legendBaseline: 'Sem intervenção',
-      legendFootprint: 'Exposição pública',
-      legendRisk: 'Riscos ativos',
-      footprintReadoutLabel: 'Exposição atual',
-      mitigationDeltaLabel: 'Redução líquida',
-      radialTitle: 'Frentes mitigadas',
-      radialAria: 'Diagrama polar D3 comparando cinco vetores no dia 0 frente ao dia 90',
-      radialLegendBefore: 'Início (T+0)',
-      radialLegendAfter: 'Dia 90 (T+90)',
-      footnote: 'Casos reais anonimizados sob acordo NDA · Cortes em 15, 30, 60 e 90 dias',
-      cta: 'Avaliar minha exposição atual',
+      headline: 'Redução real em 90 dias.',
+      scopeSelectorAria: 'Selecionar perfil',
+      chartAria: 'Curva de redução de exposição pública entre hoje e o dia 90',
+      barsHeaderLeft: 'Frentes protegidas',
+      barsHeaderRight: 'Hoje → Dia 90',
+      cta: 'Avaliar minha exposição',
       scopes: [
         {
           id: 'consolidated',
           tabLabel: 'Consolidado',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Auditoria inicial',
-              protocolNote: 'Mapeamos dados vazados, senhas históricas e registros vinculados.',
-              exposure: 100,
-              residualRisk: 86,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Remoção de registros',
-              protocolNote: 'Eliminamos endereços e telefones em corretores de dados e buscadores.',
-              exposure: 54,
-              residualRisk: 38,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Isolamento de contas',
-              protocolNote: 'Separamos bancos e e-mail raiz com aliases e chaves físicas.',
-              exposure: 26,
-              residualRisk: 16,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Proteção de dispositivos',
-              protocolNote: 'Protegemos celulares, notebooks e linhas contra clonagem de SIM.',
-              exposure: 13,
-              residualRisk: 7,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Monitoramento contínuo',
-              protocolNote: 'Mantemos sua exposição mínima com alertas imediatos contra vazamentos.',
-              exposure: 8.4,
-              residualRisk: 2.8,
-            },
+          headlineStat: '-92%',
+          headlineLabel: 'da exposição pública',
+          points: [
+            { day: 0, label: 'Hoje', exposure: 100 },
+            { day: 30, label: 'Dia 30', exposure: 26 },
+            { day: 90, label: 'Dia 90', exposure: 8 },
           ],
-          vectors: [
-            {
-              label: 'Dados pessoais e diretórios',
-              shortLabel: 'Registros',
-              baseline: 94,
-              mitigated: 8,
-            },
-            {
-              label: 'Contas e senhas históricas',
-              shortLabel: 'Credenciais',
-              baseline: 88,
-              mitigated: 4,
-            },
-            {
-              label: 'Domínios e imagem pública',
-              shortLabel: 'Domínios',
-              baseline: 79,
-              mitigated: 9,
-            },
-            {
-              label: 'Celulares e equipamentos pessoais',
-              shortLabel: 'Equipamentos',
-              baseline: 84,
-              mitigated: 6,
-            },
-            {
-              label: 'Acessos do círculo zero',
-              shortLabel: 'Círculo zero',
-              baseline: 91,
-              mitigated: 5,
-            },
+          bars: [
+            { label: 'Endereços e telefones públicos', before: 94, after: 8 },
+            { label: 'Senhas e contas vazadas', before: 88, after: 4 },
+            { label: 'Acessos da família e equipe', before: 91, after: 5 },
+            { label: 'Celulares e linhas móveis', before: 84, after: 6 },
           ],
-          kpis: [
-            {
-              value: '-91.6%',
-              label: 'Dados pessoais expostos após 90 dias',
-            },
-            {
-              value: '98.4%',
-              label: 'Remoções efetivas em buscadores e diretórios',
-            },
-            {
-              value: '< 24 min',
-              label: 'Tempo médio de contenção remota',
-            },
-            {
-              value: '0',
-              label: 'Senhas mestras compartilhadas com terceiros',
-            },
-          ],
+          summaryNote:
+            'Casos reais sob NDA · Contenção em < 24 min · 0 senhas compartilhadas',
         },
         {
           id: 'pep',
           tabLabel: 'Figuras Públicas',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Diagnóstico prévio',
-              protocolNote: 'Localizamos residências, linhas familiares e arquivos vulneráveis.',
-              exposure: 100,
-              residualRisk: 92,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Remoção prioritária',
-              protocolNote: 'Retiramos informações sensíveis do titular e família antes do anúncio.',
-              exposure: 44,
-              residualRisk: 29,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Separação patrimonial',
-              protocolNote: 'Isolamos contas privadas dos canais públicos de campanha.',
-              exposure: 19,
-              residualRisk: 11,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Delegação de imprensa',
-              protocolNote: 'Habilitamos assessores sem acesso a senhas ou códigos.',
-              exposure: 9.5,
-              residualRisk: 4.5,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Vigilância de mandato',
-              protocolNote: 'Detectamos perfis falsos, domínios espelho e tentativas de vazamento.',
-              exposure: 6.2,
-              residualRisk: 1.9,
-            },
+          headlineStat: '-94%',
+          headlineLabel: 'do rastro privado localizável',
+          points: [
+            { day: 0, label: 'Hoje', exposure: 100 },
+            { day: 30, label: 'Dia 30', exposure: 19 },
+            { day: 90, label: 'Dia 90', exposure: 6 },
           ],
-          vectors: [
-            {
-              label: 'Endereços e registros privados',
-              shortLabel: 'Registros',
-              baseline: 98,
-              mitigated: 6,
-            },
-            {
-              label: 'E-mails e arquivos históricos',
-              shortLabel: 'Credenciais',
-              baseline: 86,
-              mitigated: 3,
-            },
-            {
-              label: 'Perfis oficiais e falsificação',
-              shortLabel: 'Domínios',
-              baseline: 82,
-              mitigated: 7,
-            },
-            {
-              label: 'Celulares do titular e família',
-              shortLabel: 'Equipamentos',
-              baseline: 90,
-              mitigated: 5,
-            },
-            {
-              label: 'Imprensa e assessores',
-              shortLabel: 'Círculo zero',
-              baseline: 95,
-              mitigated: 4,
-            },
+          bars: [
+            { label: 'Endereços e registros familiares', before: 98, after: 6 },
+            { label: 'E-mails e arquivos históricos', before: 86, after: 3 },
+            { label: 'Imprensa e assessores com acesso', before: 95, after: 4 },
+            { label: 'Linhas móveis do círculo zero', before: 90, after: 5 },
           ],
-          kpis: [
-            {
-              value: '-93.8%',
-              label: 'Rastro privado localizável antes da campanha',
-            },
-            {
-              value: '100%',
-              label: 'Linhas familiares bloqueadas contra clonagem',
-            },
-            {
-              value: '< 18 min',
-              label: 'Resposta direta durante agenda pública',
-            },
-            {
-              value: '0',
-              label: 'Senhas expostas a agências externas',
-            },
-          ],
+          summaryNote:
+            'Atuação apartidária sob NDA · Resposta em < 18 min · 0 senhas expostas',
         },
         {
           id: 'atlas',
           tabLabel: 'Criadores e Patrimônio',
-          milestones: [
-            {
-              day: 0,
-              code: 'T+0',
-              phase: 'Auditoria de ativos',
-              protocolNote: 'Revisamos canais monetizados, domínios e sessões antigas.',
-              exposure: 100,
-              residualRisk: 84,
-            },
-            {
-              day: 15,
-              code: 'T+15',
-              phase: 'Revogação de acessos',
-              protocolNote: 'Encerramos sessões esquecidas, apps conectados e chaves antigas.',
-              exposure: 58,
-              residualRisk: 36,
-            },
-            {
-              day: 30,
-              code: 'T+30',
-              phase: 'Custódia delegada',
-              protocolNote: 'Protegemos canais de receita e tesouraria perante colaboradores.',
-              exposure: 29,
-              residualRisk: 15,
-            },
-            {
-              day: 60,
-              code: 'T+60',
-              phase: 'Defesa de dispositivos',
-              protocolNote: 'Protegemos celulares e computadores sem interromper sua operação.',
-              exposure: 15,
-              residualRisk: 6.5,
-            },
-            {
-              day: 90,
-              code: 'T+90',
-              phase: 'Controle consolidado',
-              protocolNote: 'Monitoramos seu ambiente e respondemos a tentativas de extorsão.',
-              exposure: 11.0,
-              residualRisk: 2.4,
-            },
+          headlineStat: '-89%',
+          headlineLabel: 'da superfície vulnerável',
+          points: [
+            { day: 0, label: 'Hoje', exposure: 100 },
+            { day: 30, label: 'Dia 30', exposure: 29 },
+            { day: 90, label: 'Dia 90', exposure: 11 },
           ],
-          vectors: [
-            {
-              label: 'Exposição de vida privada e bens',
-              shortLabel: 'Registros',
-              baseline: 85,
-              mitigated: 11,
-            },
-            {
-              label: 'Canais de receita e bancos',
-              shortLabel: 'Credenciais',
-              baseline: 94,
-              mitigated: 3,
-            },
-            {
-              label: 'Domínios pessoais e e-mail raiz',
-              shortLabel: 'Domínios',
-              baseline: 90,
-              mitigated: 8,
-            },
-            {
-              label: 'Celulares e notebooks',
-              shortLabel: 'Equipamentos',
-              baseline: 88,
-              mitigated: 5,
-            },
-            {
-              label: 'Editores, assistentes e agências',
-              shortLabel: 'Círculo zero',
-              baseline: 96,
-              mitigated: 4,
-            },
+          bars: [
+            { label: 'Canais de receita e bancos', before: 94, after: 3 },
+            { label: 'Editores, agências e assistentes', before: 96, after: 4 },
+            { label: 'Domínios e e-mail principal', before: 90, after: 8 },
+            { label: 'Vida privada e patrimônio', before: 85, after: 11 },
           ],
-          kpis: [
-            {
-              value: '-89.0%',
-              label: 'Superfície exposta sobre seu patrimônio digital',
-            },
-            {
-              value: '99.2%',
-              label: 'Equipamentos protegidos sem atrito operacional',
-            },
-            {
-              value: '< 30 min',
-              label: 'Contenção diante de tentativa de sequestro',
-            },
-            {
-              value: '0',
-              label: 'Vazamentos de senhas após delegar acessos',
-            },
-          ],
+          summaryNote:
+            'Proteção sem atrito diário · Contenção em < 30 min · 0 chaves vazadas',
         },
       ],
     },
