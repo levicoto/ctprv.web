@@ -1,67 +1,94 @@
-<!doctype html>
-<html lang="es" class="bg-[#0A0F1C] text-[#E2E8F0]">
+<!DOCTYPE html>
+<html lang="en" data-title-en="Levi Coto" data-title-es="Levi Coto" data-desc-en="Incompressible. Tech, History &amp; Philosophy." data-desc-es="Incompressible. Tecnología, Historia y Filosofía.">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0A0F1C" />
-    <script type="importmap" data-cfasync="false">
-      {
-        "imports": {
-          "react": "https://esm.sh/react@19.1.0",
-          "react/jsx-runtime": "https://esm.sh/react@19.1.0/jsx-runtime",
-          "react-dom/client": "https://esm.sh/react-dom@19.1.0/client?external=react",
-          "lucide-react": "https://esm.sh/lucide-react@0.546.0?external=react",
-          "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js",
-          "three/addons/environments/RoomEnvironment.js": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/environments/RoomEnvironment.js",
-          "firebase/app": "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js",
-          "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js",
-          "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"
-        }
-      }
-    </script>
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg?v=32" />
-    <link rel="shortcut icon" href="./favicon.svg?v=32" />
-    <title>Privado</title>
-    <meta name="application-name" content="Privado" />
-    <meta name="apple-mobile-web-app-title" content="Privado" />
-    <meta
-      name="description"
-      content="Ciberseguridad e inteligencia OSINT de grado corporativo, dedicadas exclusivamente a proteger su patrimonio digital y su círculo cero."
-    />
-    <meta property="og:title" content="Coto Privado" />
-    <meta
-      property="og:description"
-      content="Ciberseguridad e inteligencia OSINT de grado corporativo, dedicadas exclusivamente a proteger su patrimonio digital y su círculo cero."
-    />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body class="bg-[#0A0F1C] text-[#E2E8F0] antialiased selection:bg-[#E2E8F0] selection:text-[#0A0F1C]">
-    <div id="root"></div>
-    <script type="module" data-cfasync="false" src="/src/main.tsx"></script>
-    <script data-cfasync="false">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
+    <meta name="format-detection" content="telephone=no">
+    <title>Levi Coto</title>
+    <meta name="description" content="Incompressible. Tech, History &amp; Philosophy.">
+    <link rel="canonical" href="https://coto.lat/">
+    <meta property="og:title" content="Levi Coto">
+    <meta property="og:description" content="Incompressible. Tech, History &amp; Philosophy.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://coto.lat/">
+    <meta property="og:locale" content="en">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="fonts/inter-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/inter-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="css/styles.css">
+    <script>
       (function () {
-        var hasViteClient = Boolean(document.querySelector('script[src*="@vite/client"]'));
-        var hasBuiltBundle = Boolean(document.querySelector('script[src*="assets/app.js"]'));
-        var hasRawTsxEntry = Boolean(document.querySelector('script[src="/src/main.tsx"]'));
-        if (!hasViteClient && !hasBuiltBundle && hasRawTsxEntry) {
-          var css = document.createElement('link');
-          css.rel = 'stylesheet';
-          css.href = './docs/assets/app.css?v=32';
-          document.head.appendChild(css);
-          var js = document.createElement('script');
-          js.type = 'module';
-          js.setAttribute('data-cfasync', 'false');
-          js.src = './docs/assets/app.js?v=32';
-          document.body.appendChild(js);
+        var root = document.documentElement;
+        var params = new URLSearchParams(window.location.search);
+        var q = params.get("lang");
+        var stored = null;
+        try { stored = localStorage.getItem("lang"); } catch (e) {}
+        var nav = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+        var lang = q === "en" || q === "es" ? q : stored === "en" || stored === "es" ? stored : nav.indexOf("es") === 0 ? "es" : "en";
+        if (q === "en" || q === "es") {
+          try { localStorage.setItem("lang", q); } catch (e) {}
         }
+        root.lang = lang;
+        root.setAttribute("data-lang", lang);
+        var title = root.getAttribute(lang === "es" ? "data-title-es" : "data-title-en");
+        var desc = root.getAttribute(lang === "es" ? "data-desc-es" : "data-desc-en");
+        if (title) document.title = title;
+        var meta = document.querySelector('meta[name="description"]');
+        if (meta && desc) meta.setAttribute("content", desc);
       })();
     </script>
+    <script type="application/ld+json">
+      {"@context":"https://schema.org","@type":"Person","name":"Levi Coto","url":"https://coto.lat/","sameAs":"https://www.tiktok.com/@levicoto"}
+    </script>
+  </head>
+  <body>
+    <a class="skip lang-en" href="#essays">Skip to essays</a>
+    <a class="skip lang-es" href="#essays">Saltar a los ensayos</a>
+    <header class="bar">
+      <a class="brand" href="./">Levi Coto</a>
+      <nav class="lang-switch" aria-label="Language">
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        <span class="sep" aria-hidden="true">/</span>
+        <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
+      </nav>
+    </header>
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <h1 class="word">Incompressible</h1>
+          <p class="tagline lang-en">Tech, History &amp; Philosophy</p>
+          <p class="tagline lang-es">Tecnología, Historia y Filosofía</p>
+          <a class="social" href="https://www.tiktok.com/@levicoto">TikTok @levicoto</a>
+        </div>
+        <!-- Portrait slot. The page uses the black-and-white crop.
+             Swap in assets/levi-coto-color.jpg to use the same crop in color. -->
+        <figure class="portrait-slot">
+          <img class="portrait" src="assets/levi-coto.jpg" width="960" height="960" alt="Levi Coto" fetchpriority="high">
+        </figure>
+      </section>
+      <section class="essays" id="essays" aria-labelledby="essays-heading">
+        <h2 id="essays-heading"><span class="lang-en">Essays</span><span class="lang-es">Ensayos</span></h2>
+      <a class="piece" href="essays/thinking-trap.html">
+        <span class="piece-title"><span class="lang-en">The Thinking Trap</span><span class="lang-es">La Trampa del Pensamiento</span></span>
+        <time datetime="2026-04-09">2026.04.09</time>
+      </a>
+      <a class="piece" href="essays/mirages.html">
+        <span class="piece-title"><span class="lang-en">Mirages in the Age of Machines and Intelligence</span><span class="lang-es">Ilusiones en la era de la inteligencia y las máquinas</span></span>
+        <time datetime="2026-04-08">2026.04.08</time>
+      </a>
+      <a class="piece" href="essays/ai-risks.html">
+        <span class="piece-title"><span class="lang-en">The Risks of Artificial Intelligence</span><span class="lang-es">Los riesgos de la inteligencia artificial</span></span>
+        <time datetime="2026-04">2026.04</time>
+      </a>
+      <a class="piece" href="essays/graph-llms.html">
+        <span class="piece-title"><span class="lang-en">Graph LLMs Against Fraud</span><span class="lang-es">Graph LLMs contra el fraude</span></span>
+        <time datetime="2025">2025</time>
+      </a>
+      </section>
+    </main>
+    <footer class="site-footer">© 2026 Levi Coto</footer>
+    <script src="js/lang.js"></script>
   </body>
 </html>

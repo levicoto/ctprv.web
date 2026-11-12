@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-title-en="Graph LLMs Against Fraud — Levi Coto" data-title-es="Graph LLMs contra el fraude — Levi Coto" data-desc-en="Graph LLMs Against Fraud" data-desc-es="Graph LLMs contra el fraude">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
+    <meta name="format-detection" content="telephone=no">
+    <title>Graph LLMs Against Fraud — Levi Coto</title>
+    <meta name="description" content="Graph LLMs Against Fraud">
+    <link rel="canonical" href="https://coto.lat/essays/graph-llms.html">
+    <meta property="og:title" content="Graph LLMs Against Fraud — Levi Coto">
+    <meta property="og:description" content="Graph LLMs Against Fraud">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://coto.lat/essays/graph-llms.html">
+    <meta property="og:locale" content="en">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="../fonts/inter-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../fonts/inter-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var params = new URLSearchParams(window.location.search);
+        var q = params.get("lang");
+        var stored = null;
+        try { stored = localStorage.getItem("lang"); } catch (e) {}
+        var nav = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+        var lang = q === "en" || q === "es" ? q : stored === "en" || stored === "es" ? stored : nav.indexOf("es") === 0 ? "es" : "en";
+        if (q === "en" || q === "es") {
+          try { localStorage.setItem("lang", q); } catch (e) {}
+        }
+        root.lang = lang;
+        root.setAttribute("data-lang", lang);
+        var title = root.getAttribute(lang === "es" ? "data-title-es" : "data-title-en");
+        var desc = root.getAttribute(lang === "es" ? "data-desc-es" : "data-desc-en");
+        if (title) document.title = title;
+        var meta = document.querySelector('meta[name="description"]');
+        if (meta && desc) meta.setAttribute("content", desc);
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip lang-en" href="#content">Skip to essay</a>
+    <a class="skip lang-es" href="#content">Saltar al ensayo</a>
+    <header class="bar">
+      <a class="brand" href="../index.html">Levi Coto</a>
+      <nav class="lang-switch" aria-label="Language">
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        <span class="sep" aria-hidden="true">/</span>
+        <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
+      </nav>
+    </header>
+    <main class="essay" id="content">
+      <p class="back-row"><a class="back" href="../index.html#essays"><span class="lang-en">Essays</span><span class="lang-es">Ensayos</span></a></p>
+      <time class="kicker" datetime="2025">2025</time>
+      <h1><span class="lang-en">Graph LLMs Against Fraud</span><span class="lang-es">Graph LLMs contra el fraude</span></h1>
+      <article class="prose lang-en" lang="en">
+        <p>Recently, I shared my concern about how digital scams are becoming more sophisticated, especially in the world of cryptocurrencies. Despite the promises of blockchain, the losses remain alarming. The truth is that AI, with tools such as deepfakes and automation, makes everything more complicated. To stay one step ahead, we need more than traditional solutions, and that is why graph analysis and personalized risk models become crucial.</p>
+        <p>Now, to complement what I talked about in a previous post, I have just read a fascinating PwC report on Graph Language Models (Graph LLMs). This document explains how traditional AI models have limitations when it comes to complex relational data, right where sophisticated scams thrive.</p>
+        <h2>Why Graph LLMs?</h2>
+        <p>Handling extremely complex data: Graph LLMs work magic when they combine Graph Neural Networks (GNNs) with Large Language Models (LLMs). This lets them see connections between data (such as customers, transactions, policies, etc.) that other models do not see. Basically, they find patterns that the others overlook.</p>
+        <p>The context does not escape you: It is not only a matter of seeing isolated entities. Graph LLMs understand the full context. In other words, they improve accuracy when detecting odd and suspicious things. It is like seeing the whole picture, not just a photo.</p>
+        <p>Top defense against fraud: This report highlights how Graph LLMs become a brutal defense against advanced fraud. And watch out, there are already companies such as BNP Paribas Personal Finance and Intuit that are using it to detect fraud, and they have managed to reduce losses impressively!</p>
+        <p>The great thing is that by integrating graphs and LLMs, companies can be clearer and more efficient in fraud detection. An advantage that can change the rules of the game in risk management.</p>
+      </article>
+      <article class="prose lang-es" lang="es">
+        <p>Hace poco, compartía mi preocupación sobre cómo las estafas digitales se están volviendo más sofisticadas, especialmente en el mundo de las criptomonedas. A pesar de las promesas del blockchain, las pérdidas siguen siendo alarmantes. La verdad es que la IA, con herramientas como los deepfakes y la automatización, hace que todo sea más complicado. Para mantenernos un paso adelante, necesitamos más que las soluciones tradicionales, y por eso el análisis de grafos y los modelos de riesgo personalizados se vuelven cruciales.</p>
+        <p>Ahora, para complementar de lo que hable en un post anterior, acabo de leer un informe fascinante de PwC sobre Graph Language Models (Graph LLMs). Este documento explica cómo los modelos tradicionales de IA tienen limitaciones cuando se trata de datos relacionales complejos, justo donde las estafas sofisticadas prosperan.</p>
+        <h2>¿Por qué Graph LLMs?</h2>
+        <p>Manejo de datos complejísimos: Los Graph LLMs hacen magia cuando combinan Redes Neuronales de Grafos (GNNs) con Modelos de Lenguaje Extensos (LLMs). Esto les permite ver conexiones entre datos (como clientes, transacciones, pólizas, etc.) que otros modelos no ven. Básicamente, encuentran patrones que los demás pasan por alto.</p>
+        <p>No se te escapa el contexto: No es solo cuestión de ver entidades aisladas. Los Graph LLMs entienden el contexto completo. O sea, mejoran la precisión a la hora de detectar cosas raras y sospechosas. Es como ver el panorama completo, no solo una foto.</p>
+        <p>Defensa top contra el fraude: Este informe resalta cómo los Graph LLMs se convierten en una defensa brutal contra el fraude avanzado. Y ojo, ya hay empresas como BNP Paribas Personal Finance e Intuit que lo están usando para detectar fraudes, y han logrado reducir pérdidas de manera impresionante!</p>
+        <p>Lo genial es que al integrar grafos y LLMs, las empresas pueden ser más claras y eficientes en la detección de fraudes. Una ventaja que puede cambiar las reglas del juego en la gestión de riesgos.</p>
+      </article>
+    </main>
+    <footer class="site-footer">© 2026 Levi Coto</footer>
+    <script src="../js/lang.js"></script>
+  </body>
+</html>
