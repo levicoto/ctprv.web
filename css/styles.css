@@ -59,6 +59,8 @@
   --line: #242424;
   --blue: #172de2;
   --measure: 38rem;
+  --page: 72rem;
+  --gutter: clamp(1.25rem, 4vw, 2.75rem);
 }
 
 *,
@@ -136,20 +138,40 @@ button {
   transform: none;
 }
 
-.lang-switch {
-  position: fixed;
+.bar {
+  position: sticky;
   z-index: 10;
   top: 0;
-  right: 0;
-  left: 0;
-  height: calc(3.5rem + env(safe-area-inset-top));
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  width: min(var(--page), calc(100% - 2 * var(--gutter)));
+  margin: 0 auto;
+  min-height: calc(4.25rem + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  background: #000;
+}
+
+.brand {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.brand:hover,
+.brand:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--blue);
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+.lang-switch {
+  display: flex;
   align-items: center;
   gap: 0.05rem;
-  padding-top: env(safe-area-inset-top);
-  padding-right: max(0.35rem, env(safe-area-inset-right));
-  background: #000;
 }
 
 .lang-switch button {
@@ -186,50 +208,58 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
 }
 
 .hero {
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+  width: min(var(--page), calc(100% - 2 * var(--gutter)));
+  margin: 0 auto;
+  min-height: calc(100svh - 4.5rem);
+  min-height: calc(100svh - 4.5rem - env(safe-area-inset-top));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 5.5rem 1.5rem 4.5rem;
+  column-gap: clamp(2.5rem, 6vw, 6.5rem);
+  padding: 1.5rem 0 4.5rem;
+}
+
+.hero-copy {
+  min-width: 0;
+}
+
+.portrait-slot {
+  width: clamp(11.25rem, 24vw, 17.5rem);
+  aspect-ratio: 1;
+  margin: 0;
+  justify-self: end;
+  border-radius: 50%;
+  overflow: hidden;
 }
 
 .portrait {
-  width: min(220px, 52vw);
-  height: auto;
-  margin: 0 0 2.5rem;
   display: block;
-}
-
-.name {
-  margin: 0 0 0.85rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
 }
 
 .word {
   margin: 0;
   max-width: 100%;
-  font-size: clamp(2.15rem, 8.6vw, 6.5rem);
+  font-size: clamp(2.7rem, 5.6vw, 6.15rem);
   font-weight: 500;
-  letter-spacing: -0.045em;
-  line-height: 0.92;
-  text-wrap: balance;
+  letter-spacing: -0.048em;
+  line-height: 0.9;
+  text-align: left;
 }
 
 .tagline {
-  margin: 1.2rem 0 0;
+  margin: 1.35rem 0 0;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: 1rem;
   letter-spacing: 0.01em;
 }
 
 .social {
   display: inline-block;
-  margin-top: 1.85rem;
+  margin-top: 1.75rem;
   color: #fff;
   text-decoration: none;
   font-size: 0.9375rem;
@@ -248,10 +278,10 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
 }
 
 .essays {
-  width: min(var(--measure), calc(100% - 3rem));
+  width: min(var(--page), calc(100% - 2 * var(--gutter)));
   margin: 0 auto;
-  padding: 4.5rem 0 1rem;
-  scroll-margin-top: 1.5rem;
+  padding: 1rem 0 1.5rem;
+  scroll-margin-top: 5rem;
 }
 
 .essays h2 {
@@ -293,18 +323,6 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   letter-spacing: 0.03em;
 }
 
-.top {
-  position: fixed;
-  z-index: 11;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  min-height: calc(3.5rem + env(safe-area-inset-top));
-  padding: env(safe-area-inset-top) 7rem 0 1.5rem;
-  background: transparent;
-}
-
 .back {
   color: #fff;
   text-decoration: none;
@@ -314,10 +332,21 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   text-transform: uppercase;
 }
 
+.back-row {
+  margin: 0 0 2.25rem;
+}
+
 .essay {
-  width: min(var(--measure), calc(100% - 3rem));
+  width: min(var(--page), calc(100% - 2 * var(--gutter)));
   margin: 0 auto;
-  padding: 5.25rem 0 1rem;
+  padding: 2.75rem 0 1rem;
+}
+
+.essay h1,
+.essay .prose,
+.essay .kicker,
+.essay .back-row {
+  max-width: var(--measure);
 }
 
 .kicker {
@@ -398,40 +427,38 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
 }
 
 .site-footer {
-  padding: 3.5rem 1.5rem 2.25rem;
+  width: min(var(--page), calc(100% - 2 * var(--gutter)));
+  margin: 0 auto;
+  padding: 3.25rem 0 2.25rem;
   padding-bottom: max(2.25rem, env(safe-area-inset-bottom));
-  text-align: center;
+  text-align: left;
   color: var(--muted);
   font-size: 0.8125rem;
+}
+
+@media (max-width: 840px) {
+  .hero {
+    grid-template-columns: 1fr;
+    align-content: center;
+    justify-items: start;
+    row-gap: 2.75rem;
+    min-height: calc(100svh - 4.25rem);
+  }
+
+  .portrait-slot {
+    width: 9.5rem;
+    justify-self: end;
+  }
+
+  .word {
+    font-size: clamp(2.65rem, 11vw, 4.25rem);
+  }
 }
 
 @media (max-width: 560px) {
   .piece {
     grid-template-columns: 1fr;
     row-gap: 0.35rem;
-  }
-
-  .hero {
-    padding-top: 5rem;
-  }
-}
-
-@media (max-height: 760px) {
-  .portrait {
-    width: min(168px, 42vw);
-    margin-bottom: 1.6rem;
-  }
-
-  .word {
-    font-size: clamp(2rem, 8vw, 4.25rem);
-  }
-
-  .tagline {
-    margin-top: 0.85rem;
-  }
-
-  .social {
-    margin-top: 1.2rem;
   }
 }
 
@@ -445,8 +472,7 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
 
 @media print {
   .lang-switch,
-  .skip,
-  .top {
+  .skip {
     display: none !important;
   }
 

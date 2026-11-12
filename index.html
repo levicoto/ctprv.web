@@ -46,20 +46,28 @@
   <body>
     <a class="skip lang-en" href="#essays">Skip to essays</a>
     <a class="skip lang-es" href="#essays">Saltar a los ensayos</a>
-    <nav class="lang-switch" aria-label="Language">
-      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
-      <span class="sep" aria-hidden="true">/</span>
-      <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
-    </nav>
-    <header class="hero">
-      <img class="portrait" src="assets/levi-coto.jpg" width="960" height="1230" alt="Levi Coto" fetchpriority="high">
-      <p class="name">Levi Coto</p>
-      <h1 class="word">Incompressible</h1>
-      <p class="tagline lang-en">Tech, History &amp; Philosophy</p>
-      <p class="tagline lang-es">Tecnología, Historia y Filosofía</p>
-      <a class="social" href="https://www.tiktok.com/@levicoto">TikTok @levicoto</a>
+    <header class="bar">
+      <a class="brand" href="./">Levi Coto</a>
+      <nav class="lang-switch" aria-label="Language">
+        <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        <span class="sep" aria-hidden="true">/</span>
+        <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
+      </nav>
     </header>
     <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <h1 class="word">Incompressible</h1>
+          <p class="tagline lang-en">Tech, History &amp; Philosophy</p>
+          <p class="tagline lang-es">Tecnología, Historia y Filosofía</p>
+          <a class="social" href="https://www.tiktok.com/@levicoto">TikTok @levicoto</a>
+        </div>
+        <!-- Portrait slot. The page uses the black-and-white crop.
+             Swap in assets/levi-coto-color.jpg to use the same crop in color. -->
+        <figure class="portrait-slot">
+          <img class="portrait" src="assets/levi-coto.jpg" width="960" height="960" alt="Levi Coto" fetchpriority="high">
+        </figure>
+      </section>
       <section class="essays" id="essays" aria-labelledby="essays-heading">
         <h2 id="essays-heading"><span class="lang-en">Essays</span><span class="lang-es">Ensayos</span></h2>
       <a class="piece" href="essays/thinking-trap.html">
