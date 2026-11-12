@@ -1,6 +1,0 @@
-{
-  "name": "Coto Privado",
-  "description": "Ciberseguridad e inteligencia OSINT de grado corporativo, dedicadas exclusivamente a proteger su patrimonio digital y su círculo cero.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}

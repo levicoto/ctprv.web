@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" data-title-en="The Risks of Artificial Intelligence — Levi Coto" data-title-es="Los riesgos de la inteligencia artificial — Levi Coto" data-desc-en="The Risks of Artificial Intelligence" data-desc-es="Los riesgos de la inteligencia artificial">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="color-scheme" content="dark">
+    <meta name="format-detection" content="telephone=no">
+    <title>The Risks of Artificial Intelligence — Levi Coto</title>
+    <meta name="description" content="The Risks of Artificial Intelligence">
+    <link rel="canonical" href="https://coto.lat/essays/ai-risks.html">
+    <meta property="og:title" content="The Risks of Artificial Intelligence — Levi Coto">
+    <meta property="og:description" content="The Risks of Artificial Intelligence">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://coto.lat/essays/ai-risks.html">
+    <meta property="og:locale" content="en">
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="preload" href="../fonts/inter-latin-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="../fonts/inter-latin-500.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="../css/styles.css">
+    <script>
+      (function () {
+        var root = document.documentElement;
+        var params = new URLSearchParams(window.location.search);
+        var q = params.get("lang");
+        var stored = null;
+        try { stored = localStorage.getItem("lang"); } catch (e) {}
+        var nav = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+        var lang = q === "en" || q === "es" ? q : stored === "en" || stored === "es" ? stored : nav.indexOf("es") === 0 ? "es" : "en";
+        if (q === "en" || q === "es") {
+          try { localStorage.setItem("lang", q); } catch (e) {}
+        }
+        root.lang = lang;
+        root.setAttribute("data-lang", lang);
+        var title = root.getAttribute(lang === "es" ? "data-title-es" : "data-title-en");
+        var desc = root.getAttribute(lang === "es" ? "data-desc-es" : "data-desc-en");
+        if (title) document.title = title;
+        var meta = document.querySelector('meta[name="description"]');
+        if (meta && desc) meta.setAttribute("content", desc);
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip lang-en" href="#content">Skip to essay</a>
+    <a class="skip lang-es" href="#content">Saltar al ensayo</a>
+    <nav class="lang-switch" aria-label="Language">
+      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+      <span class="sep" aria-hidden="true">/</span>
+      <button type="button" data-set-lang="es" aria-pressed="false">ES</button>
+    </nav>
+    <header class="top">
+      <a class="back" href="../index.html#essays"><span class="lang-en">Essays</span><span class="lang-es">Ensayos</span></a>
+    </header>
+    <main class="essay" id="content">
+      <time class="kicker" datetime="2026-04">2026.04</time>
+      <h1><span class="lang-en">The Risks of Artificial Intelligence</span><span class="lang-es">Los riesgos de la inteligencia artificial</span></h1>
+      <article class="prose lang-en" lang="en">
+        <p>Ignoring the risks of artificial intelligence is completely irresponsible. It is an irresponsibility toward your projects, your team, and society.</p>
+        <p>This is not about being alarmists, which is why they are called "risks," nor is it a call to idealize the future in a positive way; it is about understanding what we are facing and why it is worth continuing to develop artificial intelligence.</p>
+        <p>Not all the necessary decisions have been made to determine the future that awaits us.</p>
+        <p>It is everyone's responsibility to get involved and to make those decisions with clarity.</p>
+      </article>
+      <article class="prose lang-es" lang="es">
+        <p>Ignorar los riesgos de la inteligencia artificial es totalmente irresponsable. Es una irresponsabilidad con tus proyectos, con tu equipo y con la sociedad.</p>
+        <p>No se trata de ser alarmistas, por eso se llaman "riesgos", tampoco es un llamado a idealizar el futuro de forma positiva; se trata de entender a qué nos enfrentamos y por qué vale la pena seguir desarrollando la inteligencia artificial.</p>
+        <p>No se han tomado todas las decisiones necesarias para determinar el futuro que nos espera.</p>
+        <p>Es responsabilidad de todos involucrarnos y tomar esas decisiones con claridad.</p>
+      </article>
+    </main>
+    <footer class="site-footer">© 2026 Levi Coto</footer>
+    <script src="../js/lang.js"></script>
+  </body>
+</html>
