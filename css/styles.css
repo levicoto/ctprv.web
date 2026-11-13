@@ -72,7 +72,6 @@
 html {
   background: var(--bg);
   color-scheme: dark;
-  overflow-x: clip;
 }
 
 html:not([data-lang="es"]) .lang-es {
@@ -94,19 +93,6 @@ body {
   line-height: 1.5;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-}
-
-/* Static film grain. The tile is mostly transparent, so this stays a light dusting. */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-  pointer-events: none;
-  background-image: url("../assets/grain.png");
-  background-repeat: repeat;
-  background-size: 160px 160px;
-  opacity: 0.22;
 }
 
 ::selection {
@@ -140,7 +126,7 @@ button {
   left: 1rem;
   top: 0;
   transform: translateY(-120%);
-  z-index: 50;
+  z-index: 20;
   padding: 0.6rem 0.8rem;
   background: #000;
   color: #fff;
@@ -159,22 +145,11 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  margin: 0;
+  width: min(var(--page), calc(100% - 2 * var(--gutter)));
+  margin: 0 auto;
   min-height: calc(4.25rem + env(safe-area-inset-top));
   padding-top: env(safe-area-inset-top);
-  padding-left: max(var(--gutter), calc((100% - var(--page)) / 2));
-  padding-right: max(var(--gutter), calc((100% - var(--page)) / 2));
-  background: rgba(0, 0, 0, 0.72);
-  -webkit-backdrop-filter: blur(18px) saturate(1.35);
-  backdrop-filter: blur(18px) saturate(1.35);
-  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.14);
-}
-
-@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .bar {
-    background: rgba(0, 0, 0, 0.52);
-  }
+  background: #000;
 }
 
 .brand {
@@ -233,8 +208,6 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
 }
 
 .hero {
-  position: relative;
-  isolation: isolate;
   width: min(var(--page), calc(100% - 2 * var(--gutter)));
   margin: 0 auto;
   min-height: calc(100svh - 4.5rem);
@@ -244,32 +217,6 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   align-items: center;
   column-gap: clamp(2.5rem, 6vw, 6.5rem);
   padding: 1.5rem 0 4.5rem;
-}
-
-/* Soft light behind the title, bleeding in from the left. */
-.hero::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  pointer-events: none;
-  width: min(34rem, 58%);
-  aspect-ratio: 1;
-  left: -16%;
-  top: 50%;
-  translate: 0 -54%;
-  background: radial-gradient(
-    circle at 48% 46%,
-    rgba(186, 200, 255, 0.2) 0%,
-    rgba(23, 45, 226, 0.32) 16%,
-    rgba(23, 45, 226, 0.1) 38%,
-    transparent 64%
-  );
-}
-
-.hero-copy,
-.portrait-slot {
-  position: relative;
-  z-index: 1;
 }
 
 .hero-copy {
@@ -283,10 +230,6 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   justify-self: end;
   border-radius: 50%;
   overflow: hidden;
-  box-shadow:
-    0 0 22px 2px rgba(198, 210, 255, 0.28),
-    0 0 58px 16px rgba(23, 45, 226, 0.34),
-    0 0 108px 34px rgba(23, 45, 226, 0.16);
 }
 
 .portrait {
@@ -359,15 +302,6 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   border-top: 1px solid var(--line);
   color: #fff;
   text-decoration: none;
-  transition: background-color 0.45s ease, box-shadow 0.45s ease;
-}
-
-.piece:hover,
-.piece:focus-visible {
-  background-color: rgba(23, 45, 226, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
 }
 
 .piece:last-of-type {
@@ -403,30 +337,9 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
 }
 
 .essay {
-  position: relative;
-  isolation: isolate;
   width: min(var(--page), calc(100% - 2 * var(--gutter)));
   margin: 0 auto;
   padding: 2.75rem 0 1rem;
-}
-
-.essay::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  pointer-events: none;
-  width: min(34rem, 78%);
-  height: 18rem;
-  left: -6%;
-  top: -1rem;
-  background:
-    radial-gradient(ellipse at 32% 42%, rgba(176, 192, 255, 0.14), transparent 42%),
-    radial-gradient(ellipse at 28% 48%, rgba(23, 45, 226, 0.24), transparent 68%);
-}
-
-.essay > * {
-  position: relative;
-  z-index: 1;
 }
 
 .essay h1,
@@ -532,20 +445,9 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
     min-height: calc(100svh - 4.25rem);
   }
 
-  .hero::before {
-    width: min(18rem, 92%);
-    left: -30%;
-    top: 18%;
-    translate: 0 0;
-  }
-
   .portrait-slot {
     width: 9.5rem;
     justify-self: end;
-    box-shadow:
-      0 0 14px 1px rgba(198, 210, 255, 0.26),
-      0 0 36px 10px rgba(23, 45, 226, 0.32),
-      0 0 64px 18px rgba(23, 45, 226, 0.14);
   }
 
   .word {
@@ -565,42 +467,6 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   *::before,
   *::after {
     transition: none !important;
-    animation: none !important;
-  }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .bar {
-    background: rgba(0, 0, 0, 0.94);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .piece:hover,
-  .piece:focus-visible {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-}
-
-@media (forced-colors: active) {
-  body::after,
-  .hero::before,
-  .essay::before {
-    display: none;
-  }
-
-  .portrait-slot {
-    box-shadow: none;
-  }
-
-  .bar,
-  .piece:hover,
-  .piece:focus-visible {
-    background: Canvas;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 }
 
@@ -608,31 +474,6 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   .lang-switch,
   .skip {
     display: none !important;
-  }
-
-  body::after,
-  .hero::before,
-  .essay::before {
-    display: none !important;
-  }
-
-  .portrait-slot {
-    box-shadow: none;
-  }
-
-  .bar {
-    background: #000;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
-  .piece:hover,
-  .piece:focus-visible {
-    background: transparent;
-    box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 
   body {
