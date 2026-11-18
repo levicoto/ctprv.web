@@ -265,6 +265,11 @@ html[data-lang="es"] .lang-switch [data-set-lang="es"] {
   font-size: 0.9375rem;
 }
 
+.social + .social {
+  display: block;
+  margin-top: 0.7rem;
+}
+
 .social:hover,
 .social:focus-visible,
 .back:hover,
